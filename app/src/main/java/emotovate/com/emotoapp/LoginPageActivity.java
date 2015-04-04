@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,11 +31,18 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import eMotoLogic.eMotoLoginResponse;
+import eMotoLogic.eMotoService;
+import eMotoLogic.eMotoUtility;
+
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginPageActivity extends Activity implements LoaderCallbacks<Cursor> {
+
+    private eMotoLoginResponse mLoginResponse;
+    private static final String TAG = "LoginPageActivity";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -240,54 +249,63 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, String> {
 
         private final String mEmail;
         private final String mPassword;
 
+        ProgressDialog progress = new ProgressDialog(LoginPageActivity.this);
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
+
+            progress.setTitle("Logging in");
+            progress.setMessage("Wait while logging in...");
+            progress.show();
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            eMotoUtility.bypassSSLAllCertificate();
+            mLoginResponse = eMotoUtility.performLogin("peter.ayre@emotovate.com", "password");
 
-            //HACK bypass authentication
-            return true;
+            return "Login Task";
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
+        protected void onPostExecute(String result) {
 
-            if (success) {
-
-                LoginSuccessful ();
-
-            } else {
+            if(mLoginResponse.isSuccess()){
+                Log.d(TAG, String.format("Token:%s", mLoginResponse.getToken()));
+                Log.d(TAG,String.format("Idle:%s",mLoginResponse.getIdle()));
+                LoginSuccessful();
+            }
+            else
+            {
+                //loginUnauthorizedAlert();
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
-        }
+            progress.dismiss();
 
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
+            Log.d("AyncThread", "onPostExecute");
+
         }
     }
 
     private void LoginSuccessful (){
+
+
+        // use this to start and trigger a service
+        Intent i= new Intent(this, eMotoService.class);
+        // add data to the intent
+        i.putExtra("ServiceCMD", eMotoService.CMD_STARTAUTOREAUTHENTICATE);
+        i.putExtra("eMotoLoginResponse",mLoginResponse);
+        this.startService(i);
+
         Intent newActivity = new Intent(LoginPageActivity.this, manageAdsActivity.class);
         this.startActivity(newActivity);
         finish();

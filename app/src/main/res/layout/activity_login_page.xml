@@ -15,12 +15,14 @@
 
         <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical"
-            android:weightSum="1">
+            android:weightSum="2">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:weightSum="1"
                 android:id="@+id/imageView"
+
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/em_logo_splash" />
 

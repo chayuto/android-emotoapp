@@ -1,7 +1,11 @@
 package emotovate.com.emotoapp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -19,6 +23,10 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import eMotoLogic.eMotoLoginResponse;
+import eMotoLogic.eMotoService;
 
 
 public class manageAdsActivity extends ActionBarActivity
@@ -35,6 +43,13 @@ public class manageAdsActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    /**
+     * eMotoService
+     */
+    private eMotoLoginResponse mLoginResponse = new eMotoLoginResponse();
+    private ServiceResponseReceiver mServiceResponseReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +73,18 @@ public class manageAdsActivity extends ActionBarActivity
                 .commit();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG,"onResume()");
+
+        //register for background service
+        this.registerBackgroundService();
+        //request initial token
+        this.requestToken();
+    }
+
+    //region Nav Drawer
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
@@ -154,7 +181,9 @@ public class manageAdsActivity extends ActionBarActivity
 
         return super.onOptionsItemSelected(item);
     }
+    //endregion
 
+    //region Fragments
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -194,5 +223,79 @@ public class manageAdsActivity extends ActionBarActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+    //endregion
+
+    //region Backgroud Service
+
+    private void requestToken(){
+        Log.d("Activity","requestToken()");
+        // use this to start and trigger a service
+        Intent i= new Intent(this, eMotoService.class);
+        // potentially add data to the intent
+        i.putExtra("ServiceCMD", eMotoService.CMD_GETTOKEN);
+        this.startService(i);
+    }
+
+    private void registerBackgroundService(){
+
+        // The filter's action is BROADCAST_ACTION
+        IntentFilter statusIntentFilter = new IntentFilter(eMotoService.BROADCAST_ACTION);
+        // Sets the filter's category to DEFAULT
+        statusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        // Instantiates a new ServiceResponseReceiver
+        mServiceResponseReceiver = new ServiceResponseReceiver();
+        // Registers the ServiceResponseReceiver and its intent filters
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mServiceResponseReceiver,
+                statusIntentFilter);
+    }
+
+    private void unregisterBackgroundService(){
+        // If the DownloadStateReceiver still exists, unregister it and set it to null
+        if (mServiceResponseReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceResponseReceiver);
+            mServiceResponseReceiver = null;
+        }
+        // Unregisters the FragmentDisplayer instance
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(this.mServiceResponseReceiver);
+
+    }
+
+    private class ServiceResponseReceiver extends BroadcastReceiver
+    {
+        // Prevents instantiation
+        private ServiceResponseReceiver() {
+        }
+        // Called when the BroadcastReceiver gets an Intent it's registered to receive
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.d(TAG, "BroadCastReceived: " + intent.getStringExtra(eMotoService.BROADCAST_STATUS));
+
+            switch(intent.getStringExtra(eMotoService.BROADCAST_STATUS)){
+                case eMotoService.RES_TOKEN_UPDATE:
+                    String token = intent.getStringExtra(eMotoService.RES_TOKEN_UPDATE);
+                    if (token != null){
+                        mLoginResponse.setToken(token);
+                        Log.d(TAG,"New Token: " + mLoginResponse.getToken());
+                    }
+
+                    break;
+                case eMotoService.RES_LOCATION_UPDATE:
+                    Location location = intent.getParcelableExtra(eMotoService.RES_LOCATION_UPDATE);
+                    Toast.makeText(getApplicationContext(), String.format("Location %f %f %f", location.getLatitude(), location.getLongitude(), location.getAccuracy()),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case eMotoService.RES_LOCATION_ERROR:
+                case eMotoService.RES_TOKEN_UNAUTHORIZED:
+                case eMotoService.RES_EXCEPTION_ENCOUNTERED:
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    //endregion
 
 }
