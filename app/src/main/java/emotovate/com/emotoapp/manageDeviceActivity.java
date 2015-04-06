@@ -26,41 +26,23 @@ import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 
 
-public class manageDeviceActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,manageDeviceMainFragment.OnFragmentInteractionListener {
+public class manageDeviceActivity extends baseActivity
+        implements manageDeviceMainFragment.OnFragmentInteractionListener {
 
     //Debug
-    private static String TAG = "manageDeviceActivity";
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    public static String TAG = "manageDeviceActivity";
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
-
-    /**
-     * eMotoService
-     */
-    private eMotoLoginResponse mLoginResponse = new eMotoLoginResponse();
-    private ServiceResponseReceiver mServiceResponseReceiver;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate()");
+        super.TAG = TAG;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_device);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        super.setupNavFragment(1);
 
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(  R.id.navigation_drawer,(DrawerLayout) findViewById(R.id.drawer_layout),1);
 
         //setup simple fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -72,93 +54,32 @@ public class manageDeviceActivity extends ActionBarActivity
 
     @Override
     public void onResume(){
+        Log.d(TAG,"onResume()");
         super.onResume();
-        Log.d(TAG, "onResume()");
-
-        //register for background service
-        this.registerBackgroundService();
-        //request initial token
-        this.requestToken();
 
     }
 
     @Override
     public void onPause() {
         Log.d(TAG,"onPause()");
-        this.unregisterBackgroundService();
         super.onPause();
+    }
+
+    @Override
+    public void onOverrideTest(){
+        //super.onOverrideTest();
+        Log.d(TAG,"onOverrideTest successful");
     }
 
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-
-        /*
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
-                */
-
-        Log.d(TAG, String.format("NavDraw %d", position));
-        // depending on the position in your drawer list change this
-        switch (position) {
-            case 0: {
-                //start first item in nav drawer
-                Intent intent = new Intent(manageDeviceActivity.this ,manageAdsActivity.class);
-                startActivity(intent);
-                break;
-            }
-            case 1: {
-                /*
-
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                break;*/
-                break;
-            }
-            case 2: {
-
-
-            /*
-                // if this position is to add fragment
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container,
-                                PlaceholderFragment.newInstance(position + 1)).commit();
-                 */
-                break;
-            }
-            default:
-                break;
-
-
-        }
-
+    public void onNarvigationFirstItemSelected() {
+        super.onNarvigationFirstItemSelected();
+        //start first item in nav drawer
+        Intent intent = new Intent(manageDeviceActivity.this, manageAdsActivity.class);
+        startActivity(intent);
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
 
 
     @Override
@@ -195,92 +116,5 @@ public class manageDeviceActivity extends ActionBarActivity
 
     }
 
-    //region Backgroud Service
 
-    private void requestToken(){
-        Log.d("Activity", "requestToken()");
-        // use this to start and trigger a service
-        Intent i= new Intent(this, eMotoService.class);
-        i.putExtra("ServiceCMD", eMotoService.CMD_GETTOKEN);
-        this.startService(i);
-    }
-
-    private void registerBackgroundService(){
-
-        // The filter's action is BROADCAST_ACTION
-        IntentFilter statusIntentFilter = new IntentFilter(
-                eMotoService.BROADCAST_ACTION);
-
-        // Sets the filter's category to DEFAULT
-        statusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-
-        // Instantiates a new DownloadStateReceiver
-        mServiceResponseReceiver = new ServiceResponseReceiver();
-
-        // Registers the DownloadStateReceiver and its intent filters
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                mServiceResponseReceiver,
-                statusIntentFilter);
-    }
-
-    private void unregisterBackgroundService(){
-        // If the DownloadStateReceiver still exists, unregister it and set it to null
-        if (mServiceResponseReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mServiceResponseReceiver);
-            mServiceResponseReceiver = null;
-        }
-        // Unregisters the FragmentDisplayer instance
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(this.mServiceResponseReceiver);
-
-    }
-
-    private class ServiceResponseReceiver extends BroadcastReceiver
-    {
-        // Prevents instantiation
-        private ServiceResponseReceiver() {
-        }
-        // Called when the BroadcastReceiver gets an Intent it's registered to receive
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Log.d(TAG, "BroadCastReceived: " + intent.getStringExtra(eMotoService.BROADCAST_STATUS));
-
-            switch(intent.getStringExtra(eMotoService.BROADCAST_STATUS)){
-                case eMotoService.RES_TOKEN_UPDATE:
-                    String token = intent.getStringExtra(eMotoService.RES_TOKEN_UPDATE);
-                    if (token != null){
-                        mLoginResponse.setToken(token);
-                        Log.d(TAG,"New Token: " + mLoginResponse.getToken());
-                    }
-
-                    break;
-                case eMotoService.RES_LOCATION_UPDATE:
-                    Location location = intent.getParcelableExtra(eMotoService.RES_LOCATION_UPDATE);
-                    Toast.makeText(getApplicationContext(), String.format("Location %f %f %f", location.getLatitude(), location.getLongitude(), location.getAccuracy()),
-                            Toast.LENGTH_SHORT).show();
-                    break;
-                case eMotoService.RES_LOCATION_ERROR:
-                case eMotoService.RES_TOKEN_UNAUTHORIZED:
-                case eMotoService.RES_EXCEPTION_ENCOUNTERED:
-                    break;
-                case eMotoService.RES_BT_DATA_RECEIVED:
-                    break;
-                case eMotoService.RES_BT_ERROR:
-                    String errorMsg = intent.getStringExtra(eMotoService.RES_BT_ERROR);
-                    Toast.makeText(getApplicationContext(),errorMsg,
-                            Toast.LENGTH_SHORT).show();
-                    break;
-                case eMotoService.RES_BT_STATUS:
-                    String statusMsg = intent.getStringExtra(eMotoService.RES_BT_STATUS);
-                    Toast.makeText(getApplicationContext(),statusMsg,
-                            Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-
-    //endregion
 }

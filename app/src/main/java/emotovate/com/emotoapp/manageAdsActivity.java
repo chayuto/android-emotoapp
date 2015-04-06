@@ -84,6 +84,7 @@ public class manageAdsActivity extends ActionBarActivity
         this.requestToken();
     }
 
+
     //region Nav Drawer
     @Override
     public void onNavigationDrawerItemSelected(int position) {
