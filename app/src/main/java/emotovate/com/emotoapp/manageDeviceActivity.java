@@ -1,29 +1,12 @@
 package emotovate.com.emotoapp;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.Location;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import eMotoLogic.eMotoLoginResponse;
-import eMotoLogic.eMotoService;
 
 
 public class manageDeviceActivity extends baseActivity
@@ -37,11 +20,11 @@ public class manageDeviceActivity extends baseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG,"onCreate()");
-        super.TAG = TAG;
+        //super.TAG = TAG;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_device);
 
-        super.setupNavFragment(1);
+
 
 
         //setup simple fragment
@@ -49,20 +32,32 @@ public class manageDeviceActivity extends baseActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, manageDeviceMainFragment.newInstance("test1", "test2"))
                 .commit();
+
+
+
     }
 
 
     @Override
     public void onResume(){
         Log.d(TAG,"onResume()");
-        super.onResume();
 
+        //set fragment
+        super.setupNavFragment(1);
+
+        super.onResume();
     }
 
     @Override
     public void onPause() {
         Log.d(TAG,"onPause()");
         super.onPause();
+    }
+
+    @Override
+    public void onNewIntent (Intent intent){
+        super.onNewIntent(intent);
+        Log.d(TAG,"onNewIntent()");
     }
 
     @Override
@@ -73,13 +68,14 @@ public class manageDeviceActivity extends baseActivity
 
 
     @Override
-    public void onNarvigationFirstItemSelected() {
-        super.onNarvigationFirstItemSelected();
+    public void onNavigationFirstItemSelected() {
+        super.onNavigationFirstItemSelected();
         //start first item in nav drawer
         Intent intent = new Intent(manageDeviceActivity.this, manageAdsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
-
 
 
     @Override

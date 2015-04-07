@@ -1,6 +1,5 @@
 package emotovate.com.emotoapp;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -8,21 +7,11 @@ import android.location.Location;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import eMotoLogic.eMotoLoginResponse;
@@ -105,10 +94,10 @@ public class baseActivity extends ActionBarActivity
 
     }
 
-    public void onNarvigationFirstItemSelected(){
+    public void onNavigationFirstItemSelected(){
 
     }
-    public void onNarvigationSecondItemSelected(){
+    public void onNavigationSecondItemSelected(){
 
     }
     //endregion
@@ -120,11 +109,11 @@ public class baseActivity extends ActionBarActivity
         // depending on the position in your drawer list change this
         switch (position) {
             case 0: {
-                this.onNarvigationFirstItemSelected();
+                this.onNavigationFirstItemSelected();
                 break;
             }
             case 1: {
-                this.onNarvigationSecondItemSelected();
+                this.onNavigationSecondItemSelected();
                 break;
             }
             case 2: {
