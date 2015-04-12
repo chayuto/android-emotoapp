@@ -1,42 +1,23 @@
 package emotovate.com.emotoapp;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.Location;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
+import android.app.FragmentManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import eMotoLogic.eMotoLoginResponse;
-import eMotoLogic.eMotoService;
+import eMotoLogic.eMotoCell;
 
 
-public class manageAdsActivity extends baseActivity {
-
-    //TODO: change to extends baseAvtivity
+public class manageAdsActivity extends baseActivity
+        implements manageAdsMainFragment.OnEmotoCellSelectedListener,
+        manageAdsApproveListFragment.OnFragmentInteractionListener {
 
     //Debug
     private static String TAG = "manageAdsActivity";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +26,7 @@ public class manageAdsActivity extends baseActivity {
         setContentView(R.layout.activity_manage_ads);
 
         //setup simple fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, manageAdsMainFragment.newInstance(1))
                 .commit();
@@ -75,6 +56,11 @@ public class manageAdsActivity extends baseActivity {
         super.onPause();
     }
 
+    @Override
+    public String getLoginToken()
+    {
+        return super.getLoginToken();
+    }
 
     @Override
     public void onNavigationSecondItemSelected(){
@@ -87,79 +73,7 @@ public class manageAdsActivity extends baseActivity {
         startActivity(intent);
     }
 
-    //region Nav Drawer
-    /*
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-
-
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
-
-        Log.d(TAG,String.format("NavDraw %d",position));
-        // depending on the position in your drawer list change this
-        switch (position) {
-
-
-            case 0: {
-               /* Intent intent = new Intent(MainActivity.this, HelpActivity.class);
-                startActivity(intent);
-
-                break;
-            }
-            case 1: {
-
-                //start second item in nav drawer
-                Intent intent = new Intent(manageAdsActivity.this,manageDeviceActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                break;
-            }
-            case 3: {
-            /*
-                // if this position is to add fragment
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container,
-                                PlaceholderFragment.newInstance(position + 1)).commit();
-
-                break;
-            }
-            default:
-                break;
-
-
-        }
-
-     }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-   */
-
+    //region OptionMenu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         /* if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -192,9 +106,29 @@ public class manageAdsActivity extends baseActivity {
     //endregion
 
 
-    public String getLoginToken()
-    {
-        return super.getLoginToken();
+    //region Logic
+
+
+    public void onEmotoCellSelected(eMotoCell cell){
+        Log.d(TAG,"onEmotoCellSelected()");
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell));
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+
     }
+
+    public void onFragmentInteraction(Uri uri){
+
+    }
+
+
+    //endregion
 
 }

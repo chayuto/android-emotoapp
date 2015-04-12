@@ -3,7 +3,7 @@ package emotovate.com.emotoapp;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +11,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import eMotoLogic.eMotoCell;
@@ -28,11 +31,20 @@ public class manageAdsMainFragment extends Fragment  {
     //ads array for ListView
     private ArrayList<eMotoCell> cellArray = new ArrayList<eMotoCell>();
 
+    OnEmotoCellSelectedListener mCallback;
+
+    // Container Activity must implement this interface
+    public interface OnEmotoCellSelectedListener {
+        public void onEmotoCellSelected(eMotoCell cell);
+    }
+
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -65,7 +77,7 @@ public class manageAdsMainFragment extends Fragment  {
             @Override
             public void onClick(View view) {
                Log.d(TAG,"onClick");
-               new getDeviceTaskTask().execute(((manageAdsActivity)getActivity()).getLoginToken());
+               new getDeviceTaskTask().execute(((manageAdsActivity) getActivity()).getLoginToken());
             }
         });
     }
@@ -76,6 +88,15 @@ public class manageAdsMainFragment extends Fragment  {
         super.onAttach(activity);
         ((manageAdsActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (OnEmotoCellSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnEmotoCellSelectedListener");
+        }
 
     }
 
@@ -97,6 +118,10 @@ public class manageAdsMainFragment extends Fragment  {
 
             eMotoCell myMotoCell = cellArray.get(position);
 
+            Toast.makeText(getActivity(), String.format("Item Clicked: ID %s", myMotoCell.deviceID),
+                    Toast.LENGTH_SHORT).show();
+
+            mCallback.onEmotoCellSelected(myMotoCell);
         }
     };
 
@@ -117,6 +142,15 @@ public class manageAdsMainFragment extends Fragment  {
                 cellArray.clear();
                 cellArray.addAll(cellHashMap.values());
 
+                //Sorting result by dev ID
+                Collections.sort(cellArray, new Comparator<eMotoCell>() {
+                    @Override
+                    public int compare(eMotoCell cell1, eMotoCell cell2) {
+
+                        return cell1.deviceID.compareTo(cell2.deviceID);
+                    }
+                });
+
                 return "put the background thread function here";
             } catch (Exception ex) {
                 return "Unable to retrieve web page. URL may be invalid.";
@@ -127,7 +161,6 @@ public class manageAdsMainFragment extends Fragment  {
         protected void onPostExecute(String result) {
             Log.d(TAG, "onPostExecute");
             //completion handler
-
             fillInListView();
         }
     }
