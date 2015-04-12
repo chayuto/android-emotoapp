@@ -27,6 +27,7 @@
             android:name=".manageAdsActivity"
             android:label="manageAdsActivity" >
         </activity>
+
         <activity
             android:name=".LoginPageActivity"
             android:label="@string/app_name"

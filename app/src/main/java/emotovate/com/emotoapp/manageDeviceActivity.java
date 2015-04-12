@@ -74,6 +74,7 @@ public class manageDeviceActivity extends baseActivity
         Intent intent = new Intent(manageDeviceActivity.this, manageAdsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 
