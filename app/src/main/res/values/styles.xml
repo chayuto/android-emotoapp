@@ -1,8 +1,28 @@
 <resources>
 
+    <color name="custom_theme_color">#ff99cc33</color>
+    <color name="white_theme_color">#fffdfdff</color>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/custom_theme_color</item>
+        <item name="android:colorBackground">@color/custom_theme_color</item>
+
     </style>
+
+    <style name="AppTheme2" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/white_theme_color</item>
+        <item name="android:colorBackground">@color/white_theme_color</item>
+
+    </style>
+
+    <style name="CodeFont" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#fffdfdff</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColorHint">#ffd6d6d8</item>
+    </style>
+
 
 </resources>

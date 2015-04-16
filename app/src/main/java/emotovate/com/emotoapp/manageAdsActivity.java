@@ -1,5 +1,6 @@
 package emotovate.com.emotoapp;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.app.FragmentManager;
 import android.net.Uri;
@@ -9,15 +10,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoCell;
 
 
 public class manageAdsActivity extends baseActivity
         implements manageAdsMainFragment.OnEmotoCellSelectedListener,
-        manageAdsApproveListFragment.OnFragmentInteractionListener {
+        manageAdsApproveListFragment.OnAdsListSelectListener {
 
     //Debug
     private static String TAG = "manageAdsActivity";
+
+    private static String FragAdsListTag = "FragAdsList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,26 @@ public class manageAdsActivity extends baseActivity
         Log.d(TAG,"onPause()");
 
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Log.d(TAG,"onBackPressed()");
+        final Fragment fragment = getFragmentManager().findFragmentByTag(FragAdsListTag );
+        if(fragment ==null)
+        {
+            super.onBackPressed(); //exit app
+            return;
+        }
+
+        if (fragment.isVisible()) {
+            Log.d(TAG,"Visible");
+            getFragmentManager().popBackStack(FragAdsListTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            Log.d(TAG,"Not Visible");
+            super.onBackPressed(); //exit app
+        }
     }
 
     @Override
@@ -116,16 +140,14 @@ public class manageAdsActivity extends baseActivity
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell));
-        transaction.addToBackStack(null);
+        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag );
 
         // Commit the transaction
         transaction.commit();
-
     }
 
-    public void onFragmentInteraction(Uri uri){
-
+    public void onAdsListSelect(eMotoAds Ads){
+        Log.d(TAG,"Ads Selected: " + Ads.description());
     }
 
 

@@ -1,33 +1,51 @@
 package emotovate.com.emotoapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import eMotoLogic.eMotoAds;
+import eMotoLogic.eMotoAdsArrayAdapter;
+import eMotoLogic.eMotoAdsCollection;
 import eMotoLogic.eMotoCell;
 
 //TODO: setup ads view fragments
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link manageAdsApproveListFragment.OnFragmentInteractionListener} interface
+ *
  * to handle interaction events.
  * Use the {@link manageAdsApproveListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class manageAdsApproveListFragment extends Fragment {
 
+    //debug
+    private static String TAG = "manageAdsApproveListFragment";
+
     private static final String ARG_PARAM1 = "eMotoCell";
 
     private eMotoCell mCell;
+    private ArrayList<eMotoAds> adsArray = new ArrayList<eMotoAds>();
+    private eMotoAdsCollection myAdsCollection = new eMotoAdsCollection();
+    ListView listview;
+    eMotoAdsArrayAdapter myAdapter;
 
-    private OnFragmentInteractionListener mListener;
+    private OnAdsListSelectListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -54,6 +72,7 @@ public class manageAdsApproveListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mCell = getArguments().getParcelable(ARG_PARAM1);
+
         }
     }
 
@@ -66,21 +85,21 @@ public class manageAdsApproveListFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        listview = (ListView) view.findViewById(R.id.adsListView);
+        myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
+        listview .setOnItemClickListener(mOnClickListener);
 
+        //start retrieving ads
+        new getAdsCollectionTask().execute();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnAdsListSelectListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -94,19 +113,78 @@ public class manageAdsApproveListFragment extends Fragment {
     }
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
+    public interface OnAdsListSelectListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onAdsListSelect(eMotoAds Ads);
     }
+
+
+
+    private class getAdsCollectionTask extends AsyncTask<Object, Void, String> {
+
+        ProgressDialog progress = new ProgressDialog(getActivity());
+        @Override
+        protected void onPreExecute()
+        {
+            //show progress dialogure
+            progress.setTitle("Loading");
+            progress.setMessage("Wait while loading...");
+            progress.show();
+        }
+        @Override
+        protected String doInBackground(Object... prams) {
+
+
+            //while( ((manageAdsActivity) getActivity()).getLoginToken() == null){} // loop while waiting for token
+
+            String token = ((manageAdsActivity) getActivity()).getLoginToken();
+            Log.d(TAG,"getAdsCollectionTask()"+token);
+            mCell.putDeviceOnServer(token);
+
+            myAdsCollection.adsHashMap= eMotoAdsCollection.getAdsCollection(token,  mCell);
+
+            return "test";
+
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("AyncThread", "onPostExecute");
+            //completion handler
+            adsArray.clear();
+            adsArray.addAll(myAdsCollection.adsHashMap.values());
+
+
+            int index =listview.getFirstVisiblePosition();
+            View v = listview.getChildAt(0);
+            int top = (v == null) ? 0 : (v.getTop() - listview.getPaddingTop());
+
+            fillListView();
+
+            listview.setSelectionFromTop(index, top);
+            progress.dismiss();
+        }
+    }
+
+    private void fillListView(){
+
+        listview.setAdapter(myAdapter);
+    }
+
+
+    protected void onListItemClick(ListView l, View v, int position, long id) { }
+
+    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+            onListItemClick((ListView) parent, v, position, id);
+
+            eMotoAds ads =  adsArray.get(position);
+            Toast.makeText(getActivity(), String.format("Item Clicked %s", ads.description()),
+                    Toast.LENGTH_SHORT).show();
+
+            mListener.onAdsListSelect(ads);
+        }
+    };
 
 }

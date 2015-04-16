@@ -28,6 +28,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +62,13 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
+
+        // Create global configuration and initialize ImageLoader with this config
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .writeDebugLogs()
+                .build();
+        ImageLoader.getInstance().init(config);
+
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -180,7 +190,7 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+           // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
