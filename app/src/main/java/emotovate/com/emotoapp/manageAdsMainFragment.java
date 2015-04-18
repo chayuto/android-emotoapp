@@ -32,6 +32,8 @@ public class manageAdsMainFragment extends Fragment  {
 
     //ads array for ListView
     private ArrayList<eMotoCell> cellArray = new ArrayList<eMotoCell>();
+    ListView listview;
+    eMotoCellArrayAdapter myAdapter;
 
     OnEmotoCellSelectedListener mCallback;
 
@@ -53,6 +55,7 @@ public class manageAdsMainFragment extends Fragment  {
      * number.
      */
     public static manageAdsMainFragment newInstance(int sectionNumber) {
+        Log.d(TAG,"newInstance");
         manageAdsMainFragment fragment = new manageAdsMainFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -64,10 +67,21 @@ public class manageAdsMainFragment extends Fragment  {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+         myAdapter = new eMotoCellArrayAdapter(this.getActivity(),R.layout.emotocell_item_row,cellArray);
+
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG,"onCreateView()");
         View rootView = inflater.inflate(R.layout.fragment_manage_ads, container, false);
-
+        listview = (ListView) rootView.findViewById(R.id.cellListView);
+        listview .setOnItemClickListener(mOnClickListener);
+        fillInListView ();
 
         return rootView;
     }
@@ -75,6 +89,7 @@ public class manageAdsMainFragment extends Fragment  {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Button testButton = (Button) view.findViewById(R.id.btnStartManageAdsTest);
+        Log.d(TAG,"onViewCreated()");
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,17 +114,13 @@ public class manageAdsMainFragment extends Fragment  {
             throw new ClassCastException(activity.toString()
                     + " must implement OnEmotoCellSelectedListener");
         }
-
     }
 
     //region ListView
 
     private void fillInListView (){
-        ListView listview = (ListView) getView().findViewById(R.id.cellListView);
-        eMotoCellArrayAdapter myAdapter = new eMotoCellArrayAdapter(this.getActivity(),R.layout.emotocell_item_row,cellArray);
-        listview.setAdapter(myAdapter);
-        listview .setOnItemClickListener(mOnClickListener);
 
+        listview.setAdapter(myAdapter);
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) { }
@@ -151,7 +162,6 @@ public class manageAdsMainFragment extends Fragment  {
                 Collections.sort(cellArray, new Comparator<eMotoCell>() {
                     @Override
                     public int compare(eMotoCell cell1, eMotoCell cell2) {
-
                         return cell1.deviceID.compareTo(cell2.deviceID);
                     }
                 });

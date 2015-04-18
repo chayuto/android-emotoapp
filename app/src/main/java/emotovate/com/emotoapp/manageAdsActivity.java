@@ -16,12 +16,15 @@ import eMotoLogic.eMotoCell;
 
 public class manageAdsActivity extends baseActivity
         implements manageAdsMainFragment.OnEmotoCellSelectedListener,
-        manageAdsApproveListFragment.OnAdsListSelectListener {
+        manageAdsApproveListFragment.OnAdsListSelectListener,
+        manageAdsDetailsFragment.OnAdsApproveSelectListener{
 
     //Debug
     private static String TAG = "manageAdsActivity";
 
     private static String FragAdsListTag = "FragAdsList";
+    private static String FragAdsDetailsTag = "FragAdsDetails";
+    private static String FragStackTag = "FragStack";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,7 @@ public class manageAdsActivity extends baseActivity
         //setup simple fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, manageAdsMainFragment.newInstance(1))
+                .replace(R.id.container, manageAdsMainFragment.newInstance(1)).addToBackStack(FragStackTag)
                 .commit();
     }
 
@@ -64,20 +67,32 @@ public class manageAdsActivity extends baseActivity
     public void onBackPressed()
     {
         Log.d(TAG,"onBackPressed()");
-        final Fragment fragment = getFragmentManager().findFragmentByTag(FragAdsListTag );
-        if(fragment ==null)
+        final Fragment fragment = getFragmentManager().findFragmentByTag(FragAdsDetailsTag);
+        if(fragment!=null)
         {
-            super.onBackPressed(); //exit app
-            return;
+            if (fragment.isVisible()) {
+                Log.d(TAG,"FragAdsDetails Visible");
+                getFragmentManager().popBackStack(FragStackTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                return;
+            }
+            else {
+                Log.d(TAG,"FragAdsDetails Not Visible");
+            }
+        }
+        final Fragment fragment2 = getFragmentManager().findFragmentByTag(FragAdsListTag);
+        if(fragment2!=null)
+        {
+            if (fragment2.isVisible()) {
+                Log.d(TAG,"FragAdsList Visible");
+                getFragmentManager().popBackStack(FragStackTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                return;
+            }
+            else {
+                Log.d(TAG,"FragAdsList Not Visible");
+            }
         }
 
-        if (fragment.isVisible()) {
-            Log.d(TAG,"Visible");
-            getFragmentManager().popBackStack(FragAdsListTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else {
-            Log.d(TAG,"Not Visible");
-            super.onBackPressed(); //exit app
-        }
+        super.onBackPressed(); //exit app
     }
 
     @Override
@@ -140,7 +155,7 @@ public class manageAdsActivity extends baseActivity
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag );
+        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragStackTag);
 
         // Commit the transaction
         transaction.commit();
@@ -148,6 +163,21 @@ public class manageAdsActivity extends baseActivity
 
     public void onAdsListSelect(eMotoAds Ads){
         Log.d(TAG,"Ads Selected: " + Ads.description());
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack(FragStackTag);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    public void onAdsApproveSelect(eMotoAds Ads){
+
+    }
+    public void onAdsUnapproveSelect(eMotoAds Ads){
+
     }
 
 

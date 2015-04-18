@@ -23,10 +23,8 @@ import eMotoLogic.eMotoAdsArrayAdapter;
 import eMotoLogic.eMotoAdsCollection;
 import eMotoLogic.eMotoCell;
 
-//TODO: setup ads view fragments
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
+ *
  *
  * to handle interaction events.
  * Use the {@link manageAdsApproveListFragment#newInstance} factory method to
@@ -74,21 +72,27 @@ public class manageAdsApproveListFragment extends Fragment {
             mCell = getArguments().getParcelable(ARG_PARAM1);
 
         }
+        //setup ads array
+        myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_ads_approve_list, container, false);
+
+        //view recreated every time when backed from backstack
+        View view  =  inflater.inflate(R.layout.fragment_manage_ads_approve_list, container, false);
+        listview = (ListView) view.findViewById(R.id.adsListView);
+        listview.setOnItemClickListener(mOnClickListener);
+        fillListView(); //fill list view from content in adsArray
+
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        listview = (ListView) view.findViewById(R.id.adsListView);
-        myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
-        listview .setOnItemClickListener(mOnClickListener);
-
         //start retrieving ads
         new getAdsCollectionTask().execute();
     }
@@ -114,7 +118,6 @@ public class manageAdsApproveListFragment extends Fragment {
 
 
     public interface OnAdsListSelectListener {
-        // TODO: Update argument type and name
         public void onAdsListSelect(eMotoAds Ads);
     }
 

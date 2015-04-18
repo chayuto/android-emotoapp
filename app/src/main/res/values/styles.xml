@@ -2,6 +2,7 @@
 
     <color name="custom_theme_color">#ff99cc33</color>
     <color name="white_theme_color">#fffdfdff</color>
+    <color name="emotoColor_text_1">#ff0d1b0d</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -19,9 +20,10 @@
     </style>
 
     <style name="CodeFont" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">#fffdfdff</item>
-        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">@color/emotoColor_text_1</item>
+        <!--item name="android:typeface">monospace</item-->
         <item name="android:textColorHint">#ffd6d6d8</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
 
