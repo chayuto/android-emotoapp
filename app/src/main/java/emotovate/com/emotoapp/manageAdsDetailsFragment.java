@@ -2,11 +2,18 @@ package emotovate.com.emotoapp;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import eMotoLogic.eMotoAds;
 
@@ -15,7 +22,7 @@ import eMotoLogic.eMotoAds;
 /**
  * create an instance of this fragment.
  */
-public class manageAdsDetailsFragment extends Fragment {
+public class manageAdsDetailsFragment extends Fragment implements View.OnClickListener{
 
 
 
@@ -25,6 +32,12 @@ public class manageAdsDetailsFragment extends Fragment {
 
     private eMotoAds mAds;
     private OnAdsApproveSelectListener mListener;
+    private ImageView ivAdsImage;
+
+    ImageLoader imageLoader = ImageLoader.getInstance();
+    DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
+            .cacheOnDisc(true).resetViewBeforeLoading(false).build();
+
 
     /**
      * Create new instance of manageAdsDetailsFragment
@@ -50,13 +63,42 @@ public class manageAdsDetailsFragment extends Fragment {
         if (getArguments() != null) {
             mAds = getArguments().getParcelable(ARG_PARAM1);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_ads_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_manage_ads_details, container, false);
+
+        Button btnAccept = (Button) view.findViewById(R.id.btnAccept);
+        TextView tvAdsID = (TextView)  view.findViewById(R.id.adsIDTextview);
+        TextView tvAdsDescription = (TextView)  view.findViewById(R.id.adsDescriptionTextview);
+        ivAdsImage = (ImageView)  view.findViewById(R.id.AdsImageView);
+
+        tvAdsID.setText(mAds.id());
+        tvAdsDescription.setText(mAds.description());
+
+        if(mAds.isApproved()){
+            btnAccept.setText("Unapprove");
+        }
+        else
+        {
+            btnAccept.setText("Approve");
+        }
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated( view,savedInstanceState);
+        //download and display image from url
+        imageLoader.displayImage(mAds.getAdsThumbnailURLstr(), ivAdsImage, options);
+        imageLoader.displayImage(mAds.getAdsImageURLstr(), ivAdsImage, options);
+
     }
 
     @Override
@@ -74,6 +116,23 @@ public class manageAdsDetailsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        //do what you want to do when button is clicked
+        switch (v.getId()) {
+            case R.id.btnAccept:
+                if(mAds.isApproved()){
+                    mListener.onAdsUnapproveSelect(mAds);
+                }
+                else
+                {
+                    mListener.onAdsApproveSelect(mAds);
+                }
+                break;
+        }
     }
 
 

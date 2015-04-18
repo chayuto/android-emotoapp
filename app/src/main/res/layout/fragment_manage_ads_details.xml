@@ -23,7 +23,6 @@
         android:id="@+id/btnAccept"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:onClick="btnAcceptOnClick"
         android:layout_alignParentStart="true" />
 
     <TextView

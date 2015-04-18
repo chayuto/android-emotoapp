@@ -72,7 +72,7 @@ public class manageAdsActivity extends baseActivity
         {
             if (fragment.isVisible()) {
                 Log.d(TAG,"FragAdsDetails Visible");
-                getFragmentManager().popBackStack(FragStackTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 return;
             }
             else {
@@ -84,7 +84,7 @@ public class manageAdsActivity extends baseActivity
         {
             if (fragment2.isVisible()) {
                 Log.d(TAG,"FragAdsList Visible");
-                getFragmentManager().popBackStack(FragStackTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getFragmentManager().popBackStack(FragAdsListTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 return;
             }
             else {
@@ -155,7 +155,7 @@ public class manageAdsActivity extends baseActivity
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragStackTag);
+        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag);
 
         // Commit the transaction
         transaction.commit();
@@ -167,13 +167,17 @@ public class manageAdsActivity extends baseActivity
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack(FragStackTag);
+        transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack( FragAdsDetailsTag);
 
         // Commit the transaction
         transaction.commit();
     }
 
     public void onAdsApproveSelect(eMotoAds Ads){
+
+        //TODO: popbackstack
+        //TODO: Execute network calls
+        //TODO: rethrive new ads collection
 
     }
     public void onAdsUnapproveSelect(eMotoAds Ads){

@@ -93,6 +93,7 @@ public class manageAdsApproveListFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated( view,savedInstanceState);
         //start retrieving ads
         new getAdsCollectionTask().execute();
     }
