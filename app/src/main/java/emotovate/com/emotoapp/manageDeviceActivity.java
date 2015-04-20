@@ -8,13 +8,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import eMotoLogic.eMotoService;
+
 
 public class manageDeviceActivity extends baseActivity
         implements manageDeviceMainFragment.OnFragmentInteractionListener {
 
     //Debug
     public static String TAG = "manageDeviceActivity";
-
 
 
     @Override
@@ -24,19 +25,12 @@ public class manageDeviceActivity extends baseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_device);
 
-
-
-
         //setup simple fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, manageDeviceMainFragment.newInstance("test1", "test2"))
+                .replace(R.id.container, manageDeviceMainFragment.newInstance())
                 .commit();
-
-
-
     }
-
 
     @Override
     public void onResume(){
@@ -109,9 +103,26 @@ public class manageDeviceActivity extends baseActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void onFragmentInteraction(Uri uri){
+    //region Fragments Interface
+    public void onClickBtnConnect(){
+        Log.d(TAG,"onClickBtnConnect()");
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra("ServiceCMD", eMotoService.CMD_BT_START);
+        this.startService(i);
 
     }
-
+    public void onClickBtnTest1(){
+        Log.d(TAG,"onClickBtnTest1()");
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra("ServiceCMD", eMotoService.CMD_BT_SEND_TEST1);
+        this.startService(i);
+    }
+    public void onClickBtnTest2(){
+        Log.d(TAG,"onClickBtnTest2()");
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra("ServiceCMD", eMotoService.CMD_BT_GET_REPORT);
+        this.startService(i);
+    }
+    //endregion
 
 }
