@@ -2,8 +2,6 @@ package emotovate.com.emotoapp;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -12,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,13 +24,13 @@ import eMotoLogic.eMotoCell;
  *
  *
  * to handle interaction events.
- * Use the {@link manageAdsApproveListFragment#newInstance} factory method to
+ * Use the {@link manageAdsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class manageAdsApproveListFragment extends Fragment {
+public class manageAdsListFragment extends Fragment {
 
     //debug
-    private static String TAG = "manageAdsApproveListFragment";
+    private static String TAG = "manageAdsListFragment";
 
     private static final String ARG_PARAM1 = "eMotoCell";
 
@@ -53,15 +50,15 @@ public class manageAdsApproveListFragment extends Fragment {
 
      * @return A new instance of fragment manageAdsApproveListFragment.
      */
-    public static manageAdsApproveListFragment newInstance(eMotoCell myCell) {
-        manageAdsApproveListFragment fragment = new manageAdsApproveListFragment();
+    public static manageAdsListFragment newInstance(eMotoCell myCell) {
+        manageAdsListFragment fragment = new manageAdsListFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1,myCell);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public manageAdsApproveListFragment() {
+    public manageAdsListFragment() {
         // Required empty public constructor
     }
 
@@ -122,7 +119,7 @@ public class manageAdsApproveListFragment extends Fragment {
         public void onAdsListSelect(eMotoAds Ads);
     }
 
-
+    //region Task
 
     private class getAdsCollectionTask extends AsyncTask<Object, Void, String> {
 
@@ -170,6 +167,59 @@ public class manageAdsApproveListFragment extends Fragment {
         }
     }
 
+    private class ApproveTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute()
+        {
+
+        }
+        @Override
+        protected String doInBackground(String... prams) {
+            try {
+                myAdsCollection.approveAdsWithID(prams[0],prams[1]);
+                return "put the background thread function here";
+            } catch (Exception ex) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("AyncThread", "onPostExecute");
+            new getAdsCollectionTask().execute();
+            //completion handler
+        }
+    }
+
+    private class UnapproveTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute()
+        {
+
+        }
+        @Override
+        protected String doInBackground(String... prams) {
+            try {
+                myAdsCollection.unapproveAdsWithID(prams[0],prams[1]);
+                return "put the background thread function here";
+            } catch (Exception ex) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("AyncThread", "onPostExecute");
+            new getAdsCollectionTask().execute();
+            //completion handler
+        }
+    }
+
+    //endregion
+
+    //region Listview
     private void fillListView(){
 
         listview.setAdapter(myAdapter);
@@ -190,5 +240,20 @@ public class manageAdsApproveListFragment extends Fragment {
             mListener.onAdsListSelect(ads);
         }
     };
+
+    //endregion
+
+    //region logic
+
+    private String getLoginToken (){
+        return ((manageAdsActivity) getActivity()).getLoginToken();
+    }
+    public void approveAds(eMotoAds Ads){
+        new ApproveTask().execute(Ads.id(),this.getLoginToken());
+    }
+
+    public void unapproveAds(eMotoAds Ads){
+        new UnapproveTask().execute(Ads.id(),this.getLoginToken());
+    }
 
 }

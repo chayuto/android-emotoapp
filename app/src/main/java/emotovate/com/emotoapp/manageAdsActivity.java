@@ -3,7 +3,6 @@ package emotovate.com.emotoapp;
 import android.app.Fragment;
 import android.content.Intent;
 import android.app.FragmentManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.FragmentTransaction;
 import android.util.Log;
@@ -16,7 +15,7 @@ import eMotoLogic.eMotoCell;
 
 public class manageAdsActivity extends baseActivity
         implements manageAdsMainFragment.OnEmotoCellSelectedListener,
-        manageAdsApproveListFragment.OnAdsListSelectListener,
+        manageAdsListFragment.OnAdsListSelectListener,
         manageAdsDetailsFragment.OnAdsApproveSelectListener{
 
     //Debug
@@ -147,7 +146,6 @@ public class manageAdsActivity extends baseActivity
 
     //region Logic
 
-
     public void onEmotoCellSelected(eMotoCell cell){
         Log.d(TAG,"onEmotoCellSelected()");
 
@@ -155,7 +153,7 @@ public class manageAdsActivity extends baseActivity
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsApproveListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag);
+        transaction.replace(R.id.container, manageAdsListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag);
 
         // Commit the transaction
         transaction.commit();
@@ -175,15 +173,21 @@ public class manageAdsActivity extends baseActivity
 
     public void onAdsApproveSelect(eMotoAds Ads){
 
-        //TODO: popbackstack
-        //TODO: Execute network calls
-        //TODO: rethrive new ads collection
+        //popbackstack
+        getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        //Pass Ads to fragment to make Network calls and update info
+        manageAdsListFragment listFrag = (manageAdsListFragment) getFragmentManager().findFragmentByTag(FragAdsListTag);
+        listFrag.approveAds(Ads);
 
     }
     public void onAdsUnapproveSelect(eMotoAds Ads){
+        //popbackstack
+        getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        //Pass Ads to fragment to make Network calls and update info
+        manageAdsListFragment listFrag = (manageAdsListFragment) getFragmentManager().findFragmentByTag(FragAdsListTag);
+        listFrag.unapproveAds(Ads);
 
     }
-
 
     //endregion
 

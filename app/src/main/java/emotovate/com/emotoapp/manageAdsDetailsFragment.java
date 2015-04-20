@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import eMotoLogic.eMotoAds;
 public class manageAdsDetailsFragment extends Fragment implements View.OnClickListener{
 
 
+    //debug
+    private static String TAG = "manageAdsDetailsFragment";
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "eMotoAds";
@@ -74,6 +77,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.fragment_manage_ads_details, container, false);
 
         Button btnAccept = (Button) view.findViewById(R.id.btnAccept);
+        btnAccept.setOnClickListener(this);
         TextView tvAdsID = (TextView)  view.findViewById(R.id.adsIDTextview);
         TextView tvAdsDescription = (TextView)  view.findViewById(R.id.adsDescriptionTextview);
         ivAdsImage = (ImageView)  view.findViewById(R.id.AdsImageView);
@@ -121,6 +125,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        Log.d(TAG, "onClick()");
         //do what you want to do when button is clicked
         switch (v.getId()) {
             case R.id.btnAccept:
