@@ -20,6 +20,7 @@ public class eMotoBTPacketManager {
 
     //Setup
     private eMotoBTServiceInterface mBTServiceInterface;
+    private eMotoBTSessionInterface mBTSessionInterface;
 
 
     //store all pending packets
@@ -34,6 +35,7 @@ public class eMotoBTPacketManager {
         packetList = new ArrayList<>();
         lastSendIndex = 0;
         mBTServiceInterface = mServiceInterface;
+        mBTSessionInterface = mSessionInterface;
     }
 
 
@@ -112,6 +114,7 @@ public class eMotoBTPacketManager {
 
         }
     }
+
     //================================================================================
     // Process Incoming Section
     //================================================================================
@@ -127,8 +130,30 @@ public class eMotoBTPacketManager {
                     {
                         Log.d(TAG,String.format("ACK for txn:%d "  , (int) mPacket.getTransactionID() ));
                         sourcePacket.setPacketStat(eMotoBTPacket.PKT_ACKED);
-                        //TODO:Send response to Logic
                         packetList.remove(i);
+                        Log.d(TAG,String.format("DID:%02x ",(int)mPacket.getDataId()));
+
+                        switch(mPacket.getDataId()){
+
+                            case eMotoBTPacket.DID_DEVICE_ID:
+                                int len = eMotoBTPacket.LEN_DID_ACK_DEV_ID;
+                                byte[] devIDbytes = new byte[len];
+                                System.arraycopy(mPacket.getmPayloadBytes(), 1, devIDbytes, 0, len);
+                                String devID = String.format("%02x%02x%02x%02x",devIDbytes[0],devIDbytes[1],devIDbytes[2],devIDbytes[3]);
+                                Log.d(TAG,String.format("devID:%s ",devID));
+                                mBTSessionInterface.setupSessionWithDeviceID(devID);
+
+                            case eMotoBTPacket.DID_HW_VERSION:
+                            case eMotoBTPacket.DID_FW_VERSION:
+                            case eMotoBTPacket.DID_IMG_INFO:
+
+                            case eMotoBTPacket.DID_PROTOCOL:
+
+                            default:
+
+                                break;
+
+                        }
 
                     }
                 }

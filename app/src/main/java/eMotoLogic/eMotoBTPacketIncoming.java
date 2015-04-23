@@ -65,6 +65,12 @@ public class eMotoBTPacketIncoming  {
     public int getTransactionID() {
         return transactionID;
     }
+    public byte[] getmPayloadBytes(){
+        return mPayloadBytes;
+    }
+    public byte getDataId() {
+        return mPayloadBytes[0];
+    }
 
 
 }

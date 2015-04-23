@@ -134,7 +134,7 @@ public class manageAdsMainFragment extends Fragment  {
             Toast.makeText(getActivity(), String.format("Item Clicked: ID %s", myMotoCell.deviceID),
                     Toast.LENGTH_SHORT).show();
 
-            //set dummy position TODO:remove dummy position
+            //HACK: set dummy position
             myMotoCell.deviceLatitude = "-33.7238297";
             myMotoCell.deviceLongitude =  "151.1220244";
             mCallback.onEmotoCellSelected(myMotoCell);
@@ -152,7 +152,7 @@ public class manageAdsMainFragment extends Fragment  {
         protected String doInBackground(String... prams) {
             try {
 
-                HashMap<String,eMotoCell> cellHashMap =  eMotoUtility.getDeviceListFromServer(prams[0]);
+                HashMap<String,eMotoCell> cellHashMap =  eMotoCell.getDeviceListFromServer(prams[0]);
 
                 //fill into List Array
                 cellArray.clear();

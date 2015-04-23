@@ -5,5 +5,5 @@ package eMotoLogic;
  */
 public interface eMotoBTSessionInterface {
 
-
+    public void setupSessionWithDeviceID(String deviceID);
 }

@@ -177,7 +177,8 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
             case CMD_BT_START:
                 if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
-                    mBTService.startBTService();
+                    //TODO:remove mock up name
+                    mBTService.startBTService("HC-06");
                 }
                 break;
 

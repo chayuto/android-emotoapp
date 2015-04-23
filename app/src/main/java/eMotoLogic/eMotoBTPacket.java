@@ -98,7 +98,19 @@ public class eMotoBTPacket {
 
         payloadBytes[0] = DID_HW_VERSION;
 
-        mPacket = new eMotoBTPacket(SET_COMMAND,transactionID,payloadBytes);
+        mPacket = new eMotoBTPacket(GET_COMMAND,transactionID,payloadBytes);
+        return mPacket;
+    }
+
+    public static eMotoBTPacket GetDeviceIdPacket (int transactionID){
+
+        eMotoBTPacket mPacket;
+
+        byte[] payloadBytes = new byte[1];
+
+        payloadBytes[0] = DID_DEVICE_ID;
+
+        mPacket = new eMotoBTPacket(GET_COMMAND,transactionID,payloadBytes);
         return mPacket;
     }
 

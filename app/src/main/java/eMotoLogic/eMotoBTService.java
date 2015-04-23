@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 
@@ -62,26 +61,33 @@ public class eMotoBTService implements eMotoBTServiceInterface {
 
     //region BT management
 
-    public void startBTService(){
+    public void startBTService(String cellName){
 
         if(BTServiceState == BT_STATE_CONNECTED )
         {
+            //TODO:Choose to disconnect and reconnect
             return;
         }
+        if(ifHardwareSupportBT()){
+            BluetoothDevice mDevice =  getPairedCell(cellName);
 
-        BluetoothDevice mDevice =  getPairedCell(eMotoCellBTName);
-        if (mDevice!= null) {
-            mConnectThread = new ConnectThread(mDevice);
-            mConnectThread.start();
-        }
-        else
-        {
-            Log.d(TAG, "Device is not Paired");
-            eMotoServiceBroadcaster.broadcastBTError("Device is not Paired",mContext);
+            if (mDevice!= null) {
+                mConnectThread = new ConnectThread(mDevice);
+                mConnectThread.start();
+            }
+            else
+            {
+                Log.d(TAG, "Device is not Paired");
+                eMotoServiceBroadcaster.broadcastBTError("Device is not Paired",mContext);
+            }
         }
     }
 
-    public boolean checkBTHardware (){
+    /**
+     *
+     * @return true if the device support bluetooth
+     */
+    private boolean ifHardwareSupportBT(){
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -119,7 +125,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
             // Loop through paired devices
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
-                Log.d(TAG,"Paired: " + device.getName() + " : " + device.getAddress());
+                Log.d(TAG,"Paired:" + device.getName() + " : " + device.getAddress());
                 String devName = device.getName();
                 if (devName.toLowerCase().contains(eMotoCellBTName.toLowerCase())) {
                    deviceList.add(devName);
@@ -129,29 +135,23 @@ public class eMotoBTService implements eMotoBTServiceInterface {
         return deviceList;
     }
 
-
-    public BluetoothDevice getPairedCell (String cellName){
+    private BluetoothDevice getPairedCell (String cellName){
         Log.d(TAG,"getPairedCell()");
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(mBluetoothAdapter==null){
-            eMotoServiceBroadcaster.broadcastBTError("Device does not support Bluetooth",mContext);
-            return null;
-        }
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         // If there are paired devices
-        BluetoothDevice mDevice = null;
         if (pairedDevices.size() > 0) {
             // Loop through paired devices
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
-                Log.d(TAG,"Paired: " + device.getName() + " : " + device.getAddress());
+                Log.d(TAG,"Paired:" + device.getName() + " : " + device.getAddress());
                 if (device.getName().equalsIgnoreCase(cellName)) {
-                    return mDevice; //return if match
+                    return device; //return if match
                 }
             }
         }
-        return mDevice;
+        return null;
     }
 
     public int getServiceState (){

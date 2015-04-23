@@ -19,15 +19,36 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
 
 
     public eMotoBTSession(eMotoBTServiceInterface BTServiceInterface, eMotoServiceInterface serviceInterface) {
+        Log.d(TAG,"eMotoBTSession()");
         mServiceInterface = serviceInterface;
         mBTServiceInterface = BTServiceInterface;
         mPacketManager = new eMotoBTPacketManager(BTServiceInterface,this);
+
+        initializeSession();
     }
 
     private void initializeSession(){
-        //TODO:get device ID
+        Log.d(TAG,"initializeSession()");
+        //get device ID
+        mPacketManager.addPacketToPendingList(eMotoBTPacket.GetDeviceIdPacket(getNewTransactionID()));
+        mPacketManager.sendPendingPackets();
+    }
 
-        //TODO:get cell info from the server
+    public void setupSessionWithDeviceID(String deviceID){
+        Log.d(TAG,"setupSessionWithDeviceID()");
+        //TODO:make network call to get device info
+        mCell = eMotoCell.getDeviceFromServer(mServiceInterface.getLoginToken(),deviceID);
+        if(mCell.isFixed()){
+            Log.d(TAG,"FixedCell");
+        }
+        else{
+            Log.d(TAG,"MobileCell");
+        }
+        //HACK: set dummy position
+        mCell.setDeviceAssetId("Test2");
+        mCell.deviceLatitude = "-33.7238297";
+        mCell.deviceLongitude =  "151.1220244";
+        mCell.putDeviceOnServer(mServiceInterface.getLoginToken());
     }
 
 
@@ -56,5 +77,7 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
     public void reveiceIncomingPacket(eMotoBTPacketIncoming mPacket){
         mPacketManager.ackReceived(mPacket);
     }
+
+
 
 }
