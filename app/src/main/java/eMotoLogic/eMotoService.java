@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by chayut on 6/02/15.
  */
-public class eMotoService extends Service {
+public class eMotoService extends Service implements eMotoServiceInterface {
 
     //Debug
     private final static String TAG = "eMotoService";
@@ -194,16 +194,7 @@ public class eMotoService extends Service {
 
             case CMD_BT_SEND_TEST1:
 
-                //HACK mock up image data
-                int len = 800;
-                byte[] testData = new byte[len];
-                for (int i =0;i<len;i++){
-                    testData[i] = (byte) (i%254);
-                }
-                eMotoBTPacket testPacket = eMotoBTPacket.SetImageDataPacket(mBTService.getNewTransactionID(),testData,100);
-                Log.d(TAG,testPacket.getPacketKeyStr());
-
-                 mBTService.addPacketToSendingQueue(testPacket);
+                mBTService.btTestInteractionTrigger();
 
                 break;
             default:
@@ -211,6 +202,11 @@ public class eMotoService extends Service {
                 break;
         }
     }
+
+    public Context getServiceContext(){
+        return eMotoService.this;
+    }
+
 
 
     //region Authentication Service
@@ -265,11 +261,14 @@ public class eMotoService extends Service {
         }
     }
 
+    public String getLoginToken(){
+        return mLoginResponse.getToken();
+    }
+
     //endregion
 
-
     //region Bluetooth Service
-    private eMotoBTService mBTService = new eMotoBTService(eMotoService.this);
+    private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
 
 
     //endregion

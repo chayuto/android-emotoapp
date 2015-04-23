@@ -45,209 +45,22 @@ public class eMotoBTService implements eMotoBTServiceInterface {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int BTServiceState;
+
     private Context mContext;
+    private eMotoServiceInterface mServiceInterface;
     private eMotoBTPacketManager mPacketManager;
-    private int iTransactionID;
-
-    /** @deprecated */
-    private byte[] mainIncomingBuffer = {0};
+    private eMotoBTSession mBTSession;
 
 
-    public eMotoBTService(Context context) { //, Handler handler
+    public eMotoBTService(Context context,eMotoServiceInterface myServiceInterface) { //, Handler handler
         BTServiceState = BT_STATE_DISCONNECTED;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         //mHandler = handler;
+        mServiceInterface = myServiceInterface;
         mContext = context;
-        mPacketManager = new eMotoBTPacketManager(this);
-
-        iTransactionID = 0;//reset packet ID
     }
 
-
-    //region send data section
-
-    //supply new section ID for every new Transaction
-    public int getNewTransactionID (){
-
-        iTransactionID++;
-        if(iTransactionID>=255){
-            iTransactionID =0;
-        }
-
-        return iTransactionID;
-    }
-
-    public void addPacketToSendingQueue (eMotoBTPacket packet){
-        mPacketManager.addPacketToPendingList(packet);
-
-        sendPendingPackets();
-    }
-
-    public void sendTest(){
-
-         sendBytes(mPacketManager.nextPacketSendBytes());
-    }
-
-
-    public void sendPendingPackets(){
-
-        byte[] byteToSend = mPacketManager.nextPacketSendBytes();
-
-        while (byteToSend != null) {
-            sendBytes(byteToSend);
-            byteToSend = mPacketManager.nextPacketSendBytes();
-        }
-    }
-
-    /**
-     * Send byte array over outputStream
-     * @param bytes
-     */
-    public void sendBytes (byte[] bytes){
-
-        if(bytes == null){
-            Log.d(TAG,"sendBytes: null");
-            return;
-        }
-
-        if(BTServiceState == BT_STATE_CONNECTED) {
-            mConnectedThread.write(bytes);
-        }
-        else
-        {
-            Log.d(TAG,"BT is not in ready state");
-            eMotoServiceBroadcaster.broadcastBTError("BT is not in ready state",mContext);
-        }
-    }
-
-    //endregion
-
-    //region Receive data section
-
-
-    /**
-     * @deprecated
-     */
-    private void processIncomingBytes (byte[] incomingBytes){
-        String TAG = "BTProcessing";
-
-        //append new data to buffer
-        byte[] newMainBuffer = new byte[mainIncomingBuffer.length + incomingBytes.length];
-        System.arraycopy(mainIncomingBuffer, 0, newMainBuffer, 0, mainIncomingBuffer.length);
-        System.arraycopy(incomingBytes, 0, newMainBuffer, mainIncomingBuffer.length, incomingBytes.length);
-
-        mainIncomingBuffer = newMainBuffer;
-
-        Log.d(TAG,"MainBuffer:" + new String(mainIncomingBuffer, 0, mainIncomingBuffer.length));
-
-        detectPacket();
-    }
-
-    /**
-     * @deprecated
-     */
-    private void detectPacket(){
-
-        for (int i =0 ; i<= (mainIncomingBuffer.length - LEN_PKT_HEADER); i++) {
-
-            if (mainIncomingBuffer[i] == PREAMBLE0) {
-                if (mainIncomingBuffer[i + 1] == PREAMBLE1) {
-                    Log.d(TAG, "Detect incoming PreAmble");
-
-                    byte[] headerBytes = new byte[LEN_PKT_HEADER];
-                    System.arraycopy(mainIncomingBuffer, i, headerBytes, 0, LEN_PKT_HEADER);
-
-                    //Extract Header info (Some to done after check packet length
-                    byte transactionID =    headerBytes[2];
-                    byte command =          headerBytes[3];
-                    byte contentSize0 =     headerBytes[4];
-                    byte contentSize1  =    headerBytes[5];
-                    byte contentCRC  =      headerBytes[6];
-                    byte headerCRC  =       headerBytes[7];
-                    byte[] contentSizeArray = {contentSize0,contentSize1};
-                    int iContentSize = (int)ByteBuffer.wrap(contentSizeArray).order(ByteOrder.LITTLE_ENDIAN).getShort();
-
-                    Log.d(TAG, String.format("Content Size:%d",iContentSize));
-
-                    if (headerCRC != xCRCGen.crc_8_ccitt(headerBytes, LEN_PKT_HEADER - 1)){
-                        Log.d(TAG,"Header Corrupt");
-
-
-
-
-                      break; //break for loop, ignore the bytes
-                    }
-
-                    int iMessageLength = LEN_PKT_HEADER+iContentSize;
-
-                    //check if received the full packet
-                    if(i+iMessageLength <= mainIncomingBuffer.length) {
-
-
-                        int iNewRemainingMainBufferLength = mainIncomingBuffer.length - iMessageLength - i;
-                        byte[] newRemainingMainBuffer = new byte[iNewRemainingMainBufferLength];
-                        byte[] contentBytes = new byte[iContentSize];
-
-                        i=0;
-
-                        //Extract message from main Buffer
-                        System.arraycopy(mainIncomingBuffer, iMessageLength + i, newRemainingMainBuffer, 0, iNewRemainingMainBufferLength);
-                        System.arraycopy(mainIncomingBuffer, i+ LEN_PKT_HEADER,  contentBytes, 0, iContentSize);
-                        mainIncomingBuffer = newRemainingMainBuffer; //update buffer after dectect Preamble
-                        i = 0; //reset counter
-
-                        //TODO: process response
-                        eMotoBTPacketIncoming incomingPacket = new eMotoBTPacketIncoming(headerBytes, contentBytes,iContentSize);
-                        if(incomingPacket.isContentValid()){
-                            Log.d(TAG,"Packet is valid");
-                            mPacketManager.ackReceived(incomingPacket);
-                        }
-                        else{
-                            Log.d(TAG,"Packet is invalid");
-                        }
-                    }
-
-
-                }
-            }
-        }
-    }
-
-    /**
-     * Analyse packet header with header CRC checking and obtain the length of the payload
-     * @param headerBytes
-     * @return the size of the content in the expecting packet, return -1, if header is invalid
-     */
-    private int analyseHeader (byte[] headerBytes){
-        //Extract Header info (Some to done after check packet length
-
-        if(headerBytes.length != LEN_PKT_HEADER){
-            return -1;
-        }
-
-        byte transactionID =    headerBytes[2];
-        byte command =          headerBytes[3];
-        byte contentSize0 =     headerBytes[4];
-        byte contentSize1  =    headerBytes[5];
-        byte contentCRC  =      headerBytes[6];
-        byte headerCRC  =       headerBytes[7];
-        byte[] contentSizeArray = {contentSize0,contentSize1};
-        int iContentSize = (int)ByteBuffer.wrap(contentSizeArray).order(ByteOrder.LITTLE_ENDIAN).getShort();
-
-        Log.d(TAG, String.format("Content Size:%d",iContentSize));
-
-        if (headerCRC != xCRCGen.crc_8_ccitt(headerBytes, LEN_PKT_HEADER - 1)){
-            Log.d(TAG,"Header Corrupt");
-            Log.d(TAG,eMotoUtility.bytesToHex(headerBytes));
-
-            return -1;
-        }
-
-        return iContentSize;
-    }
-
-
-    //endregion
+    //region BT management
 
     public void startBTService(){
 
@@ -268,7 +81,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
         }
     }
 
-    public boolean initiateBTHardware (){
+    public boolean checkBTHardware (){
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -289,7 +102,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
     /**
      * get List of paired eMotoCell to the phone
      *
-     * @return
+     * @return ArrayList of device Name of eMotoCell
      */
     public ArrayList<String> getPairedCellList (){
         Log.d(TAG,"getPairedCellList()");
@@ -346,8 +159,107 @@ public class eMotoBTService implements eMotoBTServiceInterface {
     }
 
     public String getServiceReport (){
-        return String.format("State:%d TxnID:%d PendingPkt:%d",getServiceState(),iTransactionID,mPacketManager.countPendingPacket());
+        //TODO:Add debugging functionality
+        return String.format("State:%d",getServiceState());
     }
+
+    /**
+     * Setup initial setup after connected to an eMotoCell
+     */
+    private void onDeviceConnect(){
+        Log.d(TAG,"onDeviceConnect()");
+        eMotoServiceBroadcaster.broadcastBTStatus("Connected to eMotoCell", mContext);
+        BTServiceState = BT_STATE_CONNECTED;
+        mBTSession = new eMotoBTSession(this,mServiceInterface);
+    }
+
+    /**
+     * Clear Session after disconnected
+     */
+    private void onDeviceDisconnect(){
+        Log.d(TAG,"onDeviceDisconnect()");
+        eMotoServiceBroadcaster.broadcastBTError("Disconnected from eMotoCell", mContext);
+        BTServiceState = BT_STATE_DISCONNECTED;
+
+    }
+
+    public Context getBTServiceContext(){
+        return mContext;
+    }
+
+    //endregion
+
+    //region send data section
+
+
+    /**
+     * Test functionality
+     */
+    public void btTestInteractionTrigger(){
+        if(mBTSession!= null){
+            mBTSession.testInteraction();
+        }
+    }
+
+    /**
+     * Send byte array over outputStream
+     * @param bytes
+     */
+    public void sendBytes (byte[] bytes){
+
+        if(bytes == null){
+            Log.d(TAG,"sendBytes: null");
+            return;
+        }
+
+        if(BTServiceState == BT_STATE_CONNECTED) {
+            mConnectedThread.write(bytes);
+        }
+        else
+        {
+            Log.d(TAG,"BT is not in ready state");
+            eMotoServiceBroadcaster.broadcastBTError("BT is not in ready state",mContext);
+        }
+    }
+
+    //endregion
+
+    //region Receive data section
+
+    /**
+     * Analyse packet header with header CRC checking and obtain the length of the payload
+     * @param headerBytes
+     * @return the size of the content in the expecting packet, return -1, if header is invalid
+     */
+    private int analyseHeader (byte[] headerBytes){
+        //Extract Header info (Some to done after check packet length
+
+        if(headerBytes.length != LEN_PKT_HEADER){
+            return -1;
+        }
+
+        byte transactionID =    headerBytes[2];
+        byte command =          headerBytes[3];
+        byte contentSize0 =     headerBytes[4];
+        byte contentSize1  =    headerBytes[5];
+        byte contentCRC  =      headerBytes[6];
+        byte headerCRC  =       headerBytes[7];
+        byte[] contentSizeArray = {contentSize0,contentSize1};
+        int iContentSize = (int)ByteBuffer.wrap(contentSizeArray).order(ByteOrder.LITTLE_ENDIAN).getShort();
+
+        Log.d(TAG, String.format("Content Size:%d",iContentSize));
+
+        if (headerCRC != xCRCGen.crc_8_ccitt(headerBytes, LEN_PKT_HEADER - 1)){
+            Log.d(TAG,"Header Corrupt");
+            Log.d(TAG,eMotoUtility.bytesToHex(headerBytes));
+
+            return -1;
+        }
+
+        return iContentSize;
+    }
+
+    //endregion
 
     //region Threads section
 
@@ -443,14 +355,12 @@ public class eMotoBTService implements eMotoBTServiceInterface {
         public void run() {
 
             Log.d(TAG,"ConnectedThread Run");
-            eMotoServiceBroadcaster.broadcastBTStatus("Connected to EmotoCell", mContext);
-            BTServiceState = BT_STATE_CONNECTED;
+            onDeviceConnect();
 
             // Keep listening to the InputStream until an exception occurs
             while (BTServiceState == BT_STATE_CONNECTED) {
                 try {
                     //int availableBytes = mmInStream.available();
-
 
                     byte firstByte = (byte) mmInStream.read();
                     //Log.d(TAG,String.format("Read %x",firstByte));
@@ -487,29 +397,18 @@ public class eMotoBTService implements eMotoBTServiceInterface {
                                 eMotoBTPacketIncoming mPacket = new eMotoBTPacketIncoming(headerBytes,contentBytes,contentSize);
                                 if(mPacket.isContentValid()){
                                     Log.d(TAG,"Packet is valid");
-                                    mPacketManager.ackReceived(mPacket);
+                                    mBTSession.reveiceIncomingPacket(mPacket);
                                 }
                                 else{
                                     Log.d(TAG,"Packet is invalid");
                                 }
 
                             }
-
-
                         }
                     }
 
-
-                        /*
-                    byte[] byteArray = new byte[availableBytes];
-                    // Read from the InputStream
-                    mmInStream.read(byteArray,0,availableBytes);
-
-                    //mmOutStream.write(PREAMBLE);
-                    processIncomingBytes(byteArray);
-                    */
-
                 } catch (IOException e) {
+                    onDeviceDisconnect();
                     break;
                 }
             }
@@ -519,7 +418,9 @@ public class eMotoBTService implements eMotoBTServiceInterface {
         public void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes);
-            } catch (IOException e) { }
+            } catch (IOException e) {
+
+            }
         }
 
         /* Call this from the main activity to shutdown the connection */
@@ -529,9 +430,8 @@ public class eMotoBTService implements eMotoBTServiceInterface {
             } catch (IOException e) { }
         }
     }
-
-
     //endregion
+
 
 
 

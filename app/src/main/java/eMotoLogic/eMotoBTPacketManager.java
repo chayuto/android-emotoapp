@@ -21,6 +21,7 @@ public class eMotoBTPacketManager {
     //Setup
     private eMotoBTServiceInterface mBTServiceInterface;
 
+
     //store all pending packets
     private ArrayList<eMotoBTPacket> packetList;
     private int lastSendIndex;
@@ -29,10 +30,10 @@ public class eMotoBTPacketManager {
     // Constructors
     //================================================================================
 
-    public eMotoBTPacketManager(eMotoBTServiceInterface mInterface){
+    public eMotoBTPacketManager(eMotoBTServiceInterface mServiceInterface,eMotoBTSessionInterface mSessionInterface){
         packetList = new ArrayList<>();
         lastSendIndex = 0;
-        mBTServiceInterface = mInterface;
+        mBTServiceInterface = mServiceInterface;
     }
 
 
@@ -41,15 +42,18 @@ public class eMotoBTPacketManager {
     //================================================================================
 
     public boolean addPacketToPendingList(eMotoBTPacket mPacket){
-
-
         //add packet to queue
         packetList.add(mPacket);
         return true;
     }
 
-    private void sendBytes(byte[] bytesToSend){
-        mBTServiceInterface.sendBytes(bytesToSend);
+    public void sendPendingPackets(){
+        byte[] byteToSend = nextPacketSendBytes();
+
+        while (byteToSend != null) {
+            mBTServiceInterface.sendBytes(byteToSend);
+            byteToSend = nextPacketSendBytes();
+        }
     }
 
     public byte[] nextPacketSendBytes(){
@@ -123,7 +127,7 @@ public class eMotoBTPacketManager {
                     {
                         Log.d(TAG,String.format("ACK for txn:%d "  , (int) mPacket.getTransactionID() ));
                         sourcePacket.setPacketStat(eMotoBTPacket.PKT_ACKED);
-                        //TODO:Send response to Logic/UI
+                        //TODO:Send response to Logic
                         packetList.remove(i);
 
                     }
@@ -158,6 +162,8 @@ public class eMotoBTPacketManager {
     public void clearPendingPacket (){
         packetList.clear();
     }
+
+
 
 
 

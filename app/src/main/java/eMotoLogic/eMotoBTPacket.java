@@ -170,7 +170,7 @@ public class eMotoBTPacket {
         headerBytes[1] = eMotoBTService.PREAMBLE1;
         headerBytes[2] = (byte) mTransactionID;
         headerBytes[3] = mCMD_Type;
-        headerBytes[4] = (byte) mPayload.length;  //TODO:confirm int to byte array
+        headerBytes[4] = (byte) mPayload.length;
         headerBytes[5] = (byte) (mPayload.length>>8);
         headerBytes[6] = xCRCGen.crc_8_ccitt(mPayload,mPayload.length);
         headerBytes[7] = xCRCGen.crc_8_ccitt(headerBytes, HEADER_LENGTH - 1); //exclude the header bytes
