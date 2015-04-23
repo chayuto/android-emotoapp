@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 
@@ -94,6 +96,11 @@ public class baseActivity extends ActionBarActivity
 
     }
 
+    public void onBTPairedList(ArrayList<String> list)
+    {
+
+    }
+
     public void onNavigationFirstItemSelected(){
 
     }
@@ -169,7 +176,7 @@ public class baseActivity extends ActionBarActivity
         Log.d("Activity", "requestToken()");
         // use this to start and trigger a service
         Intent i= new Intent(this, eMotoService.class);
-        i.putExtra("ServiceCMD", eMotoService.CMD_GETTOKEN);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_GETTOKEN);
         this.startService(i);
     }
 
@@ -232,18 +239,27 @@ public class baseActivity extends ActionBarActivity
                 case eMotoService.RES_TOKEN_UNAUTHORIZED:
                 case eMotoService.RES_EXCEPTION_ENCOUNTERED:
                     break;
-                case eMotoService.RES_BT_DATA_RECEIVED:
-                    break;
-                case eMotoService.RES_BT_ERROR:
-                    String errorMsg = intent.getStringExtra(eMotoService.RES_BT_ERROR);
-                    Toast.makeText(getApplicationContext(),errorMsg,
-                            Toast.LENGTH_SHORT).show();
-                    break;
                 case eMotoService.RES_BT_STATUS:
                     String statusMsg = intent.getStringExtra(eMotoService.RES_BT_STATUS);
+                    Log.d(TAG,statusMsg);
                     Toast.makeText(getApplicationContext(),statusMsg,
                             Toast.LENGTH_SHORT).show();
                     break;
+                case eMotoService.RES_BT_ERROR:
+
+                    String errorMsg = intent.getStringExtra(eMotoService.RES_BT_ERROR);
+                    Log.d(TAG,errorMsg);
+                    Toast.makeText(getApplicationContext(),errorMsg,
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case eMotoService.RES_BT_PAIRED_LIST:
+                    ArrayList<String> devList = intent.getStringArrayListExtra(eMotoService.RES_BT_PAIRED_LIST);
+                    onBTPairedList(devList);
+                    break;
+                case eMotoService.RES_BT_DATA_RECEIVED:
+                    break;
+
+
                 default:
                     break;
             }

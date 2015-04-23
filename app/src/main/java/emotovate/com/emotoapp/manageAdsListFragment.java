@@ -140,6 +140,7 @@ public class manageAdsListFragment extends Fragment {
 
             String token = ((manageAdsActivity) getActivity()).getLoginToken();
             Log.d(TAG,"getAdsCollectionTask()"+token);
+            mCell.deviceAssetId = "test";
             mCell.putDeviceOnServer(token);
 
             myAdsCollection.adsHashMap= eMotoAdsCollection.getAdsCollection(token,  mCell);

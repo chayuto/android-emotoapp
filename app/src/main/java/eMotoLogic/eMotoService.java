@@ -38,16 +38,24 @@ public class eMotoService extends Service {
     public static final String RES_TOKEN_UPDATE = "RES_TOKEN_UPDATE";
     public static final String RES_TOKEN_UNAUTHORIZED = "RES_TOKEN_UNAUTHORIZED";
     public static final String RES_EXCEPTION_ENCOUNTERED = "RES_EXCEPTION_ENCOUNTERED";
+    public static final String RES_BT_PAIRED_LIST= "RES_BT_PAIRED_LIST";
     public static final String RES_BT_DATA_RECEIVED = "RES_BT_DATA_RECEIVED";
     public static final String RES_BT_STATUS= "RES_BT_STATUS";
     public static final String RES_BT_ERROR= "RES_BT_ERROR";
 
+    //EXTRA
+    public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
+
+
     //Public CMD
+    public final static String SERVICE_CMD = "ServiceCMD";
     public final static String CMD_STARTAUTOREAUTHENTICATE = "CMD_STARTAUTOREAUTHENTICATE";
     public final static String CMD_GETTOKEN = "CMD_GETTOKEN";
     public final static String CMD_STARTLOCATIONSERVICE = "CMD_STARTLOCATIONSERVICE";
     public final static String CMD_STOPLOCATIONSERVICE = "CMD_STOPLOCATIONSERVICE";
     public final static String CMD_BT_START= "CMD_BT_START";
+    public final static String CMD_BT_GET_PAIRED_LIST= "CMD_BT_GET_PAIRED_LIST";
+    public final static String CMD_BT_CONNECT_CELL = "CMD_BT_CONNECT_CELL";
     public final static String CMD_BT_GET_REPORT = "CMD_BT_GET_REPORT";
     public final static String CMD_BT_SEND_DATA = "CMD_BT_SEND_DATA";
     public final static String CMD_BT_SEND_TEST1 = "CMD_BT_SEND_TEST1";
@@ -126,14 +134,18 @@ public class eMotoService extends Service {
     }
 
 
-
+    /**
+     * classify intent from activity and decide what action to take
+     *
+     * @param intent
+     */
     private void classifyIntent(Intent intent){
-        String ServiceCMD = intent.getStringExtra("ServiceCMD");
+        String ServiceCMD = intent.getStringExtra(SERVICE_CMD);
         Log.d(TAG, ServiceCMD);
 
         switch (ServiceCMD){
             case CMD_STARTAUTOREAUTHENTICATE:
-                mLoginResponse = intent.getExtras().getParcelable("eMotoLoginResponse");
+                mLoginResponse = intent.getExtras().getParcelable(EXTRA_EMOTOLOGINRESPONSE);
                 if(mLoginResponse != null) {
                     Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
                     this.startAutoReauthenticate(mLoginResponse);
@@ -167,6 +179,13 @@ public class eMotoService extends Service {
                 if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
                     mBTService.startBTService();
                 }
+                break;
+
+            case CMD_BT_GET_PAIRED_LIST:
+                //response with List of paired emotocell
+                eMotoServiceBroadcaster.broadcastBTPairedList(mBTService.getPairedCellList(),eMotoService.this);
+                break;
+            case CMD_BT_CONNECT_CELL:
                 break;
 
             case CMD_BT_GET_REPORT:

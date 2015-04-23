@@ -20,6 +20,9 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by chayut on 6/01/15.
  */
 public class eMotoCell implements Parcelable {
+
+    private static final String TAG = "eMotoCell";
+
     public String deviceID;
     public String deviceName;
     public String eMotocellSerialNo;
@@ -27,6 +30,7 @@ public class eMotoCell implements Parcelable {
 
     public String deviceLatitude;
     public String deviceLongitude;
+    public String deviceAssetId;
 
 
     public eMotoCell(JSONObject cell)
@@ -45,6 +49,8 @@ public class eMotoCell implements Parcelable {
             deviceName = cell.getString("DeviceName");
             eMotocellSerialNo = cell.getString("eMotocellSerialNo");
             deviceFixed = cell.getString("Fixed");
+            deviceAssetId = ""; //set empty string
+
         }
         catch (JSONException ex){
             ex.printStackTrace();
@@ -71,6 +77,7 @@ public class eMotoCell implements Parcelable {
         out.writeString(deviceLatitude);
         out.writeString(deviceLongitude);
         out.writeString(deviceFixed);
+        out.writeString(deviceAssetId);
     }
 
     public static final Creator<eMotoCell> CREATOR
@@ -91,20 +98,21 @@ public class eMotoCell implements Parcelable {
         deviceLatitude = in.readString();
         deviceLongitude = in.readString();
         deviceFixed = in.readString();
+        deviceAssetId = in.readString();
     }
     //endregion
 
     //region network connection
     public void putDeviceOnServer (String token) {
-        Log.d("eMotoCell:", "putDeviceOnServer");
+        Log.d(TAG, "putDeviceOnServer");
 
         BufferedReader rd ;
 
         try {
             URL u = new URL(String.format("https://emotovate.com/api/devicetracking/add/%s",token));
-            String jsonString = String.format("{\"DeviceId\":\"%s\",\"LightSensor\":\"%s\",\"Longitude\":\"%s\",\"Latitude\":\"%s\",\"Temperature\":\"%s\"}",deviceID,"true",deviceLongitude,deviceLatitude,"24.3");
+            String jsonString = String.format("{\"DeviceId\":\"%s\",\"LightSensor\":\"%s\",\"Longitude\":\"%s\",\"Latitude\":\"%s\",\"Temperature\":\"%s\",\"AssetId\":\"%s\"}",deviceID,"true",deviceLongitude,deviceLatitude,"24.3",deviceAssetId);
             //String jsonString = String.format("{DeviceId:\"%s\",LightSensor:\"%s\",Longitude:\"%s\",Latitude:\"%s\",Temperature:\"%s\"}","00000000","true","-33.8238395","151.1996951","24.3");
-            Log.d("eMotoCell:", String.format("JSON:%s", jsonString));
+            Log.d(TAG, String.format("JSON:%s", jsonString));
             HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
 
 
@@ -128,22 +136,22 @@ public class eMotoCell implements Parcelable {
 
             int status = c.getResponseCode();
 
-            Log.d("eMotoCell:", String.format("http-response:%3d", status));
+            Log.d(TAG, String.format("http-response:%3d", status));
             switch (status) {
 
                 case 200:
                 case 201:
                     rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                    Log.d("eMotoCell:",rd.readLine());
+                    Log.d(TAG,rd.readLine());
                     break;
                 case 400:
                 case 500:
                     rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
-                    Log.d("eMotoCell:",rd.readLine());
+                    Log.d(TAG,rd.readLine());
                     break;
                 case 401:
                     rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                    Log.d("Application:","Server unauthorized");
+                    Log.d(TAG,"Server unauthorized");
                     break;
                 default:
 

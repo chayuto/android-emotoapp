@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 import eMotoLogic.eMotoService;
 
 
@@ -107,22 +109,29 @@ public class manageDeviceActivity extends baseActivity
     public void onClickBtnConnect(){
         Log.d(TAG,"onClickBtnConnect()");
         Intent i= new Intent(this, eMotoService.class);
-        i.putExtra("ServiceCMD", eMotoService.CMD_BT_START);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_START);
         this.startService(i);
 
     }
     public void onClickBtnTest1(){
         Log.d(TAG,"onClickBtnTest1()");
         Intent i= new Intent(this, eMotoService.class);
-        i.putExtra("ServiceCMD", eMotoService.CMD_BT_SEND_TEST1);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_SEND_TEST1);
         this.startService(i);
     }
     public void onClickBtnTest2(){
         Log.d(TAG,"onClickBtnTest2()");
         Intent i= new Intent(this, eMotoService.class);
-        i.putExtra("ServiceCMD", eMotoService.CMD_BT_GET_REPORT);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_GET_REPORT);
         this.startService(i);
     }
     //endregion
+
+    //region Service Interaction
+
+    @Override
+    public void onBTPairedList(ArrayList<String> list){
+        //TODO:handle device list
+    }
 
 }

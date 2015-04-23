@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -254,7 +256,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
             return;
         }
 
-        BluetoothDevice mDevice = getBTDevice();
+        BluetoothDevice mDevice =  getPairedCell(eMotoCellBTName);
         if (mDevice!= null) {
             mConnectThread = new ConnectThread(mDevice);
             mConnectThread.start();
@@ -284,20 +286,55 @@ public class eMotoBTService implements eMotoBTServiceInterface {
         return true;
     }
 
-    public static BluetoothDevice getBTDevice (){
-
+    /**
+     * get List of paired eMotoCell to the phone
+     *
+     * @return
+     */
+    public ArrayList<String> getPairedCellList (){
+        Log.d(TAG,"getPairedCellList()");
+        ArrayList<String> deviceList = new ArrayList<String>();
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        // If there are paired devices
+        if(mBluetoothAdapter==null){
+            eMotoServiceBroadcaster.broadcastBTError("Device does not support Bluetooth",mContext);
+            return null;
+        }
 
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0) {
+            // Loop through paired devices
+            for (BluetoothDevice device : pairedDevices) {
+                // Add the name and address to an array adapter to show in a ListView
+                Log.d(TAG,"Paired: " + device.getName() + " : " + device.getAddress());
+                String devName = device.getName();
+                if (devName.toLowerCase().contains(eMotoCellBTName.toLowerCase())) {
+                   deviceList.add(devName);
+                }
+            }
+        }
+        return deviceList;
+    }
+
+
+    public BluetoothDevice getPairedCell (String cellName){
+        Log.d(TAG,"getPairedCell()");
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(mBluetoothAdapter==null){
+            eMotoServiceBroadcaster.broadcastBTError("Device does not support Bluetooth",mContext);
+            return null;
+        }
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        // If there are paired devices
         BluetoothDevice mDevice = null;
         if (pairedDevices.size() > 0) {
             // Loop through paired devices
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
                 Log.d(TAG,"Paired: " + device.getName() + " : " + device.getAddress());
-                if (device.getName().equalsIgnoreCase(eMotoCellBTName)) {
-                    mDevice = device; //if the device is the BT dongle, TODO: selection
+                if (device.getName().equalsIgnoreCase(cellName)) {
+                    return mDevice; //return if match
                 }
             }
         }

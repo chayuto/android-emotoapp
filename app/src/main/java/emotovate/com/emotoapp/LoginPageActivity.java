@@ -304,8 +304,8 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         // use this to start and trigger a service
         Intent i= new Intent(this, eMotoService.class);
         // add data to the intent
-        i.putExtra("ServiceCMD", eMotoService.CMD_STARTAUTOREAUTHENTICATE);
-        i.putExtra("eMotoLoginResponse",mLoginResponse);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_STARTAUTOREAUTHENTICATE);
+        i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
         this.startService(i);
 
         Intent newActivity = new Intent(LoginPageActivity.this, manageAdsActivity.class);
