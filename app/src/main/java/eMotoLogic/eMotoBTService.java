@@ -168,7 +168,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
      */
     private void onDeviceConnect(){
         Log.d(TAG,"onDeviceConnect()");
-        eMotoServiceBroadcaster.broadcastBTStatus("Connected to eMotoCell", mContext);
+        eMotoServiceBroadcaster.broadcastIntentWithState(eMotoService.RES_BT_CONNECTED,mContext);
         BTServiceState = BT_STATE_CONNECTED;
         mBTSession = new eMotoBTSession(this,mServiceInterface);
     }
@@ -178,7 +178,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
      */
     private void onDeviceDisconnect(){
         Log.d(TAG,"onDeviceDisconnect()");
-        eMotoServiceBroadcaster.broadcastBTError("Disconnected from eMotoCell", mContext);
+        eMotoServiceBroadcaster.broadcastIntentWithState(eMotoService.RES_BT_DISCONNECTED,mContext);
         BTServiceState = BT_STATE_DISCONNECTED;
 
     }
@@ -203,7 +203,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
 
     /**
      * Send byte array over outputStream
-     * @param bytes
+     * @param bytes bytes array to send
      */
     public void sendBytes (byte[] bytes){
 
@@ -228,7 +228,7 @@ public class eMotoBTService implements eMotoBTServiceInterface {
 
     /**
      * Analyse packet header with header CRC checking and obtain the length of the payload
-     * @param headerBytes
+     * @param headerBytes bytes array
      * @return the size of the content in the expecting packet, return -1, if header is invalid
      */
     private int analyseHeader (byte[] headerBytes){

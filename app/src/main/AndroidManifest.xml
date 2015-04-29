@@ -11,24 +11,21 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/em_logo_sq"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <service
             android:name="eMotoLogic.eMotoService"
-            android:label="eMotoService">
+            android:label="eMotoService" >
         </service>
 
         <activity
             android:name=".manageAdsActivity"
             android:label="manageAdsActivity"
-            android:theme="@style/AppTheme2">
+            android:theme="@style/AppTheme2" >
         </activity>
-
         <activity
             android:name=".LoginPageActivity"
             android:label="@string/app_name"
@@ -39,11 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".manageDeviceActivity"
             android:label="@string/title_activity_manage_device"
-            android:theme="@style/AppTheme2">
+            android:theme="@style/AppTheme2" >
         </activity>
     </application>
 

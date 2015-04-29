@@ -14,5 +14,6 @@
     <string name="title_activity_manage_device">manageDevice</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_advertiser">AdvertiserActivity</string>
 
 </resources>

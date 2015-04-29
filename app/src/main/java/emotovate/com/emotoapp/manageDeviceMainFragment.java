@@ -9,7 +9,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import eMotoLogic.eMotoAds;
+import eMotoLogic.eMotoAdsArrayAdapter;
+import eMotoLogic.eMotoCellArrayAdapter;
 
 
 /**
@@ -25,16 +35,11 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
     //debug
     private static String TAG = "manageDeviceMainFragment";
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private ArrayList<String> pairedArrayList = new ArrayList<String>();
     private OnFragmentInteractionListener mListener;
+
+    private ListView pairedListView;
+    ArrayAdapter myAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -43,12 +48,9 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
 
      * @return A new instance of fragment manageDeviceMainFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static manageDeviceMainFragment newInstance() {
         manageDeviceMainFragment fragment = new manageDeviceMainFragment();
         Bundle args = new Bundle();
-       // args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
        // fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +67,9 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }*/
+
+        //setup ads array
+        myAdapter = new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1,pairedArrayList);
     }
 
     @Override
@@ -75,18 +80,15 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         Button btnConnect = (Button) view.findViewById(R.id.btnConnect);
         Button btnTest1 = (Button) view.findViewById(R.id.btnTest1);
         Button btnTest2 = (Button) view.findViewById(R.id.btnTest2);
+        pairedListView = (ListView) view.findViewById(R.id.pairedlistView);
+        pairedListView.setOnItemClickListener(mOnClickListener);
+        fillListView();
+        
         btnConnect.setOnClickListener(this);
         btnTest1.setOnClickListener(this);
         btnTest2.setOnClickListener(this);
 
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-          //  mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -125,6 +127,14 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         }
     }
 
+    public void deviceListUpdate(ArrayList<String> list){
+        pairedArrayList = list;
+        if(pairedListView != null){
+            fillListView();
+        }
+
+
+    }
     /**
      * This interface must be implemented by activities
      */
@@ -132,6 +142,26 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         public void onClickBtnConnect();
         public void onClickBtnTest1();
         public void onClickBtnTest2();
+        public void requestConnect(String eMotoCell);
     }
+
+    //region Listview
+    private void fillListView(){
+        pairedListView.setAdapter(myAdapter);
+    }
+
+
+    protected void onListItemClick(ListView l, View v, int position, long id) { }
+
+    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+            onListItemClick((ListView) parent, v, position, id);
+            Log.d(TAG," onListItemClick()" + pairedArrayList.get(position));
+            mListener.requestConnect(pairedArrayList.get(position));
+        }
+    };
+
+    //endregion
 
 }

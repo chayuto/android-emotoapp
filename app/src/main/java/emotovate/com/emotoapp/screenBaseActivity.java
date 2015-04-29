@@ -20,16 +20,16 @@ import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 
 
-public class baseActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class screenBaseActivity extends ActionBarActivity
+        implements screenNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     //Debug
-    public String TAG = "baseActivity";
+    public String TAG = "screenBaseActivity";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private screenNavigationDrawerFragment mScreenNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -72,14 +72,14 @@ public class baseActivity extends ActionBarActivity
     //region Child class Interface
 
     public void setupNavFragment (int position){
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
+        mScreenNavigationDrawerFragment = (screenNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         //Log.d(TAG,"Title : " + mTitle);
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        mScreenNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout),position);
+                (DrawerLayout) findViewById(R.id.drawer_layout), position);
     }
 
 
@@ -98,6 +98,14 @@ public class baseActivity extends ActionBarActivity
 
     public void onBTPairedList(ArrayList<String> list)
     {
+
+    }
+
+    public void onBTConnected(){
+
+    }
+
+    public void onBTDisconnected(){
 
     }
 
@@ -157,7 +165,7 @@ public class baseActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (!mScreenNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
@@ -173,7 +181,7 @@ public class baseActivity extends ActionBarActivity
     //region Background Service
 
     private void requestToken(){
-        Log.d("Activity", "requestToken()");
+        Log.d(TAG, "requestToken()");
         // use this to start and trigger a service
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_GETTOKEN);
@@ -238,6 +246,12 @@ public class baseActivity extends ActionBarActivity
                 case eMotoService.RES_LOCATION_ERROR:
                 case eMotoService.RES_TOKEN_UNAUTHORIZED:
                 case eMotoService.RES_EXCEPTION_ENCOUNTERED:
+                    break;
+                case eMotoService.RES_BT_CONNECTED:
+                    onBTConnected();
+                    break;
+                case eMotoService.RES_BT_DISCONNECTED:
+                    onBTDisconnected();
                     break;
                 case eMotoService.RES_BT_STATUS:
                     String statusMsg = intent.getStringExtra(eMotoService.RES_BT_STATUS);

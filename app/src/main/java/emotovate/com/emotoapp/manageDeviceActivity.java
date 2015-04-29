@@ -1,24 +1,25 @@
 package emotovate.com.emotoapp;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import eMotoLogic.eMotoService;
 
 
-public class manageDeviceActivity extends baseActivity
+public class manageDeviceActivity extends screenBaseActivity
         implements manageDeviceMainFragment.OnFragmentInteractionListener {
 
     //Debug
     public static String TAG = "manageDeviceActivity";
 
+    manageDeviceMainFragment mainFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +30,9 @@ public class manageDeviceActivity extends baseActivity
 
         //setup simple fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
+        mainFragment =  manageDeviceMainFragment.newInstance();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, manageDeviceMainFragment.newInstance())
+                .replace(R.id.container,mainFragment)
                 .commit();
     }
 
@@ -108,10 +110,9 @@ public class manageDeviceActivity extends baseActivity
     //region Fragments Interface
     public void onClickBtnConnect(){
         Log.d(TAG,"onClickBtnConnect()");
-        Intent i= new Intent(this, eMotoService.class);
-        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_START);
-        this.startService(i);
-
+        Intent intent= new Intent(this, eMotoService.class);
+        intent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_GET_PAIRED_LIST);
+        this.startService(intent);
     }
     public void onClickBtnTest1(){
         Log.d(TAG,"onClickBtnTest1()");
@@ -125,13 +126,38 @@ public class manageDeviceActivity extends baseActivity
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_GET_REPORT);
         this.startService(i);
     }
+
+    public void requestConnect(String eMotoCell)
+    {
+        Log.d(TAG,"requestConnect()");
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_CONNECT_CELL);
+        i.putExtra(eMotoService.EXTRA_EMOTOCELL_NAME,eMotoCell);
+        this.startService(i);
+    }
     //endregion
 
-    //region Service Interaction
 
+    //region Service Interaction
     @Override
     public void onBTPairedList(ArrayList<String> list){
-        //TODO:handle device list
+        Log.d(TAG," onBTPairedList()");
+        if(mainFragment != null){
+            mainFragment.deviceListUpdate(list);
+        }
     }
+
+    @Override
+    public void onBTConnected(){
+        Toast.makeText(getApplicationContext(),"Connected eMotoCell",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBTDisconnected(){
+        Toast.makeText(getApplicationContext(),"Disconnected from eMotoCell",
+                Toast.LENGTH_SHORT).show();
+    }
+
 
 }

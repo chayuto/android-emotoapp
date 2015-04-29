@@ -249,13 +249,12 @@ public class eMotoUtility
                     jArray  = new JSONArray(json);
                     Log.d(TAG,String.format("JSON Length %d",jArray.length()));
 
+                    /*
                     for(int n = 0; n < jArray.length(); n++) {
 
-                        //Log.d("Logic",jArray.getJSONObject(n).getString("FullName"));
+                        Log.d("Logic",jArray.getJSONObject(n).getString("FullName"));
                     }
-
-
-
+                    */
                     break;
                 case 401:
                     rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
@@ -311,11 +310,8 @@ public class eMotoUtility
                     Log.d(TAG,String.format("JSON Length %d",jArray.length()));
 
                     for(int n = 0; n < jArray.length(); n++) {
-
                         //Log.d("Logic",jArray.getJSONObject(n).getString("FullName"));
                     }
-
-
 
                     break;
                 case 401:

@@ -40,11 +40,15 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public static final String RES_EXCEPTION_ENCOUNTERED = "RES_EXCEPTION_ENCOUNTERED";
     public static final String RES_BT_PAIRED_LIST= "RES_BT_PAIRED_LIST";
     public static final String RES_BT_DATA_RECEIVED = "RES_BT_DATA_RECEIVED";
+    public static final String RES_BT_CONNECTED = "RES_BT_CONNECTED";
+    public static final String RES_BT_DISCONNECTED = "RES_BT_DISCONNECTED";
     public static final String RES_BT_STATUS= "RES_BT_STATUS";
     public static final String RES_BT_ERROR= "RES_BT_ERROR";
 
+
     //EXTRA
     public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
+    public static final String EXTRA_EMOTOCELL_NAME = "EXTRA_EMOTOCELL_NAME";
 
 
     //Public CMD
@@ -53,6 +57,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_GETTOKEN = "CMD_GETTOKEN";
     public final static String CMD_STARTLOCATIONSERVICE = "CMD_STARTLOCATIONSERVICE";
     public final static String CMD_STOPLOCATIONSERVICE = "CMD_STOPLOCATIONSERVICE";
+    @Deprecated
     public final static String CMD_BT_START= "CMD_BT_START";
     public final static String CMD_BT_GET_PAIRED_LIST= "CMD_BT_GET_PAIRED_LIST";
     public final static String CMD_BT_CONNECT_CELL = "CMD_BT_CONNECT_CELL";
@@ -177,7 +182,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
             case CMD_BT_START:
                 if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
-                    //TODO:remove mock up name
                     mBTService.startBTService("HC-06");
                 }
                 break;
@@ -187,6 +191,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 eMotoServiceBroadcaster.broadcastBTPairedList(mBTService.getPairedCellList(),eMotoService.this);
                 break;
             case CMD_BT_CONNECT_CELL:
+                if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
+                    mBTService.startBTService(intent.getStringExtra(EXTRA_EMOTOCELL_NAME));
+                }
                 break;
 
             case CMD_BT_GET_REPORT:
@@ -207,7 +214,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public Context getServiceContext(){
         return eMotoService.this;
     }
-
 
 
     //region Authentication Service

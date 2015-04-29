@@ -13,7 +13,7 @@ import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoCell;
 
 
-public class manageAdsActivity extends baseActivity
+public class manageAdsActivity extends screenBaseActivity
         implements manageAdsMainFragment.OnEmotoCellSelectedListener,
         manageAdsListFragment.OnAdsListSelectListener,
         manageAdsDetailsFragment.OnAdsApproveSelectListener{
@@ -52,7 +52,6 @@ public class manageAdsActivity extends baseActivity
 
         //set fragment
         super.setupNavFragment(0); //position 0
-
     }
 
     @Override
