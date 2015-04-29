@@ -4,6 +4,12 @@
     <string name="title_section1">Manage Ads</string>
     <string name="title_section2">Connect Device</string>
     <string name="title_section3">Test</string>
+    <string name="screen_nav_draw_section4">To Advertiser View</string>
+
+    <string name="advert_nav_draw_section1">Add new Ads</string>
+    <string name="advert_nav_draw_section2">Schedule an Ads</string>
+    <string name="advert_nav_draw_section3">What\'s on Display</string>
+    <string name="advert_nav_draw_section4">To Screen Owner View</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

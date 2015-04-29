@@ -41,6 +41,10 @@
             android:label="@string/title_activity_manage_device"
             android:theme="@style/AppTheme2" >
         </activity>
+        <activity
+            android:name=".advertiserActivity"
+            android:label="@string/title_activity_advertiser" >
+        </activity>
     </application>
 
 </manifest>

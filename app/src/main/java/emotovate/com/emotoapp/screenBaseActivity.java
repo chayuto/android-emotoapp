@@ -115,6 +115,15 @@ public class screenBaseActivity extends ActionBarActivity
     public void onNavigationSecondItemSelected(){
 
     }
+
+    public void onNavigationForthItemSelected(){
+        //start first item in nav drawer
+        Intent intent = new Intent(screenBaseActivity.this, advertiserActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
     //endregion
 
     //region Nav Drawer
@@ -135,6 +144,10 @@ public class screenBaseActivity extends ActionBarActivity
 
                 break;
             }
+            case 3:{
+                this.onNavigationForthItemSelected();
+                break;
+            }
             default:
                 break;
         }
@@ -151,6 +164,9 @@ public class screenBaseActivity extends ActionBarActivity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                break;
+            case 4:
+                mTitle = getString(R.string.screen_nav_draw_section4);
                 break;
         }
     }

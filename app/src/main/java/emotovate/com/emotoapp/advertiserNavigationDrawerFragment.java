@@ -27,7 +27,7 @@ import android.widget.Toast;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class screenNavigationDrawerFragment extends Fragment {
+public class advertiserNavigationDrawerFragment extends Fragment {
 
     /**
      * Remember the position of the selected item.
@@ -58,7 +58,7 @@ public class screenNavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public screenNavigationDrawerFragment() {
+    public advertiserNavigationDrawerFragment() {
     }
 
     @Override
@@ -76,9 +76,7 @@ public class screenNavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-
-        //disable initial auto select
-        //selectItem(mCurrentSelectedPosition);
+        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class screenNavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_screen_navigation_drawer, container, false);
+                R.layout.fragment_advertiser_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -104,10 +102,10 @@ public class screenNavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.screen_nav_draw_section4)
+                        getString(R.string.advert_nav_draw_section1),
+                        getString(R.string.advert_nav_draw_section2),
+                        getString(R.string.advert_nav_draw_section3),
+                        getString(R.string.advert_nav_draw_section4)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -123,14 +121,9 @@ public class screenNavigationDrawerFragment extends Fragment {
      * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    public void setUp(int fragmentId, DrawerLayout drawerLayout, int position) {
+    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
-
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -276,10 +269,6 @@ public class screenNavigationDrawerFragment extends Fragment {
 
     private ActionBar getActionBar() {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
-    }
-
-    public void SetCurrentSelectedPosition (int position){
-        mCurrentSelectedPosition = position;
     }
 
     /**
