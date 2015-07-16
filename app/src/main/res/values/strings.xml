@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">eMotoApp</string>
 
-    <string name="title_section1">Manage Ads</string>
-    <string name="title_section2">Connect Device</string>
-    <string name="title_section3">Test</string>
+    <string name="screen_nav_draw_section1">Manage Ads</string>
+    <string name="screen_nav_draw_section2">Connect Device</string>
+    <string name="screen_nav_draw_section3">My Account</string>
     <string name="screen_nav_draw_section4">To Advertiser View</string>
 
     <string name="advert_nav_draw_section1">Add new Ads</string>
@@ -19,7 +19,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_manage_device">manageDevice</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_advertiser">AdvertiserActivity</string>
 
 </resources>

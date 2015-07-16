@@ -1,11 +1,12 @@
 # eMotoApp #
 
-## User Interface ##
+-----------------------
+## 1.User Interface ##
 
-## App Logic ##
+-----------------------
+## 2.App Logic ##
 
-
-### 1. eMotoBackground Service  ###
+### 2.1. eMotoBackground Service  ###
 
   * keeping track of the eMotoCell device and upload to server
   * update authentication token in background
@@ -16,7 +17,6 @@
 <service
 android:name="me.chayut.eMotoLogic.eMotoService"
 android:label="eMotoService">
-</service>
 ```
 
 ```
@@ -35,8 +35,8 @@ LocalBroadcastManager.getInstance(this).registerReceiver( mServiceResponseReceiv
 ```
 
 
-### 2. Ads Management Classes ###
+### 2.2. Ads Management Classes ###
 
-### 3. Supporting Class ###
+### 2.3. Supporting Class ###
 
-### 4. Dependentcies ###
+### 2.4. Dependentcies ###

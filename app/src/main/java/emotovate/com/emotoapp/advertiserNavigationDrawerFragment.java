@@ -97,6 +97,8 @@ public class advertiserNavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+
+
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,

@@ -17,6 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by chayut on 6/01/15.
+ * @deprecated
  */
 public class eMotoAdsCollection {
 
@@ -66,7 +67,7 @@ public class eMotoAdsCollection {
             }
 
             HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
-
+            Log.v(TAG, "GET:" + u);
             c.setRequestMethod("GET");
 
             c.setRequestProperty("Content-length", "0");
@@ -78,7 +79,7 @@ public class eMotoAdsCollection {
             c.connect();
             int status = c.getResponseCode();
 
-            Log.d(TAG, String.format("http-response:%3d", status));
+            Log.v(TAG, String.format("http-response:%3d", status));
             switch (status) {
 
                 case 200:
@@ -88,6 +89,9 @@ public class eMotoAdsCollection {
                     hashMap.clear();//clear all old entry in hashmap
 
                     String json = rd.readLine();
+
+                    Log.d(TAG, "Response: " + json);
+
                     JSONArray jArray  = new JSONArray(json);
                     for(int n = 0; n < jArray.length(); n++) {
                         eMotoAds myAds = new eMotoAds(jArray.getJSONObject(n));

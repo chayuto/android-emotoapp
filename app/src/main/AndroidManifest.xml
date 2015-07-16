@@ -44,7 +44,8 @@
         </activity>
         <activity
             android:name=".advertiserActivity"
-            android:label="@string/title_activity_advertiser" >
+            android:label="@string/title_activity_advertiser"
+            android:theme="@style/AppTheme2" >
         </activity>
     </application>
 

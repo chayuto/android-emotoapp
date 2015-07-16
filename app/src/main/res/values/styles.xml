@@ -3,6 +3,7 @@
     <color name="custom_theme_color">#ff99cc33</color>
     <color name="white_theme_color">#fffdfdff</color>
     <color name="emotoColor_text_1">#ff0d1b0d</color>
+    <color name="nav_draw_highlight_color">#ff99cc33</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
