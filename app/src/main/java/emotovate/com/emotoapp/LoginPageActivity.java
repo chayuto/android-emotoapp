@@ -308,9 +308,20 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
         this.startService(i);
 
+
+        //testIntent
+        Intent testIntent= new Intent(this, eMotoService.class);
+        testIntent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_TEST_SCHEDULE);
+        this.startService(testIntent);
+
+        //start new activity
         Intent newActivity = new Intent(LoginPageActivity.this, manageAdsActivity.class);
         this.startActivity(newActivity);
+
+        //finish activity
         finish();
+
+
     }
 
 }

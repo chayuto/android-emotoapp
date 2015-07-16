@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoAdsArrayAdapter;
+import eMotoLogic.eMotoAdsSchedule;
 import eMotoLogic.eMotoAdsCollection;
 import eMotoLogic.eMotoCell;
 
@@ -116,7 +117,7 @@ public class manageAdsListFragment extends Fragment {
 
 
     public interface OnAdsListSelectListener {
-        public void onAdsListSelect(eMotoAds Ads);
+        void onAdsListSelect(eMotoAds Ads);
     }
 
     //region Task
@@ -142,6 +143,8 @@ public class manageAdsListFragment extends Fragment {
             Log.d(TAG,"getAdsCollectionTask()"+token);
             mCell.setDeviceAssetId("test");
             mCell.putDeviceOnServer(token);
+
+
 
             myAdsCollection.adsHashMap= eMotoAdsCollection.getAdsCollection(token,  mCell);
 

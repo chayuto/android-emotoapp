@@ -64,6 +64,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_BT_GET_REPORT = "CMD_BT_GET_REPORT";
     public final static String CMD_BT_SEND_DATA = "CMD_BT_SEND_DATA";
     public final static String CMD_BT_SEND_TEST1 = "CMD_BT_SEND_TEST1";
+    public final static String CMD_TEST_SCHEDULE = "CMD_TEST_SCHEDULE";
 
 
     //LocalVariable
@@ -78,7 +79,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG,"onCreate()");
+        Log.d(TAG, "onCreate()");
 
         // Handler will get associated with the current thread,
         // which is the main thread.
@@ -201,9 +202,11 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
 
             case CMD_BT_SEND_TEST1:
-
                 mBTService.btTestInteractionTrigger();
+                break;
 
+            case CMD_TEST_SCHEDULE:
+                this.testGetSchedule();
                 break;
             default:
                 Log.d(TAG, "Service Command Unrecognized");
@@ -211,10 +214,18 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         }
     }
 
-    public Context getServiceContext(){
-        return eMotoService.this;
-    }
 
+    //region Testing
+
+    private void testGetSchedule ()
+    {
+        String token = mLoginResponse.getToken();
+        eMotoCell mCell = eMotoCell.getDeviceFromServer(token, "00000000");
+
+        eMotoAdsSchedule.getScheduleAds (token, mCell);
+
+    }
+    //endregion
 
     //region Authentication Service
 

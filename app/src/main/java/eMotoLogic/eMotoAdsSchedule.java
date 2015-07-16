@@ -4,13 +4,17 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -23,10 +27,12 @@ public class eMotoAdsSchedule {
 
 
     //region network connection
-    static public HashMap<String,eMotoAds> getScheduleAds (String token,eMotoCell eMotoCell) {
+    static public List<eMotoAdsScheduleEntry> getScheduleAds (String token,eMotoCell eMotoCell) {
 
         Log.d(TAG, "getAdsCollection()");
-        HashMap<String,eMotoAds> hashMap =  new HashMap<String,eMotoAds>();
+
+        List<eMotoAdsScheduleEntry> mySchedule = new ArrayList<>();
+
         BufferedReader rd  = null;
 
 
@@ -63,22 +69,46 @@ public class eMotoAdsSchedule {
                 case 201:
                     rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
 
-                    hashMap.clear();//clear all old entry in hashmap
 
                     String json = rd.readLine();
 
-                    Log.d(TAG, "Response: " + json);
+                    //Log.d(TAG, "Response: " + json);
 
                     JSONArray jArray  = new JSONArray(json);
                     for(int n = 0; n < jArray.length(); n++) {
-                        eMotoAds myAds = new eMotoAds(jArray.getJSONObject(n));
-                        hashMap.put(myAds.id(), myAds);
+
+
+                        HashMap<String,eMotoAds> hashMap =  new HashMap<String,eMotoAds>();
+
+                        JSONObject myJSONObject = jArray.getJSONObject(n);
+
+                        String entryFrom = myJSONObject.getString("From");
+                        String entryTo = myJSONObject.getString("To");
+
+
+                        Log.d(TAG, "From: " + entryFrom );
+                        Log.d(TAG, "TO: " + entryTo);
+
+                        JSONArray adsJSONArray =  myJSONObject.getJSONArray("Ads");
+
+                        List<eMotoAds> adsList = new ArrayList<>();
+
+                        for(int m = 0; m < adsJSONArray.length(); m++) {
+
+
+                            JSONObject adsJSONObject = adsJSONArray.getJSONObject(m);
+                            eMotoAds myAds = new eMotoAds(adsJSONObject);
+                            adsList.add(myAds);
+
+                            Log.d(TAG, "Ads ID" + adsJSONObject.getString("Id") );
+
+                        }
+                        eMotoAdsScheduleEntry myEntry = new eMotoAdsScheduleEntry(entryFrom,entryTo,adsList);
+
+                        mySchedule.add(myEntry);
                     }
 
-                    for(HashMap.Entry<String, eMotoAds> entry: hashMap.entrySet())  {
 
-                        Log.d(TAG, "Ads: " + entry.getValue().id());
-                    }
 
                     break;
                 case 400:
@@ -90,6 +120,9 @@ public class eMotoAdsSchedule {
                     Log.d(TAG,"ERROR " +rd.readLine());
                     break;
                 default:
+
+                //TODO: remove this later!
+                throw new EmptyStackException();
 
 
             }
@@ -104,6 +137,10 @@ public class eMotoAdsSchedule {
         catch (JSONException ex){
             ex.printStackTrace();
         }
-        return hashMap;
+
+        //TODO: remove this later!
+        return mySchedule;
     }
+
+
 }
