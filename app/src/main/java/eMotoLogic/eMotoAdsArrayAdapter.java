@@ -25,15 +25,14 @@ import emotovate.com.emotoapp.R;
  */
 
 
-public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
+public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
 
 
     private final String TAG = "AdsArrayAdapter";
 
     // declaring our ArrayList of items
-    private ArrayList<eMotoAds> objects;
+    private ArrayList<eMotoAdsApprovalItem> objects;
     private LayoutInflater inflater;
-    //private eMotoAssetLibrary mEMotoAssetLibrary = new eMotoAssetLibrary();
     ImageLoader imageLoader;
     DisplayImageOptions options;
 
@@ -41,7 +40,7 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
     * the only variable we care about now is ArrayList<Item> objects,
     * because it is the list of objects we want to display.
     */
-    public eMotoAdsArrayAdapter(Context context, int textViewResourceId, ArrayList<eMotoAds> objects) {
+    public eMotoAdsArrayAdapter(Context context, int textViewResourceId, ArrayList<eMotoAdsApprovalItem> objects) {
         super(context, textViewResourceId, objects);
         this.objects = objects;
 
@@ -58,7 +57,7 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
         ImageView approveImageView;
         TextView textView;
         Bitmap bitmap;
-        eMotoAds ads;
+        eMotoAdsApprovalItem ads;
     }
 
 
@@ -96,7 +95,7 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
 		 *
 		 * Therefore, i refers to the current Item object.
 		 */
-        eMotoAds i = objects.get(position);
+        eMotoAdsApprovalItem i = objects.get(position);
 
         Log.d(TAG,"GetView: " + i.id());
 
@@ -104,6 +103,10 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
         viewholder.textView.setText(i.description());
         viewholder.ads = i;
 
+        viewholder.textView.setTextColor(0xff99cc33);
+        viewholder.approveImageView.setImageResource(R.drawable.approved_icon);
+
+        /*
         if(i.isApproved())
         {
             viewholder.textView.setTextColor(0xff99cc33);
@@ -114,6 +117,7 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAds> {
             viewholder.textView.setTextColor(0xff000000);
             viewholder.approveImageView.setImageResource(R.drawable.unapproved_icon);
         }
+        */
 
         //download and display image from url
         imageLoader.displayImage(i.getAdsThumbnailURLstr(), viewholder.imageView, options);

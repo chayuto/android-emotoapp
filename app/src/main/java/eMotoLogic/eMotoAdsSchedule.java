@@ -29,7 +29,7 @@ public class eMotoAdsSchedule {
     //region network connection
     static public List<eMotoAdsScheduleEntry> getScheduleAds (String token,eMotoCell eMotoCell) {
 
-        Log.d(TAG, "getAdsCollection()");
+        Log.d(TAG, "getScheduleAds()");
 
         List<eMotoAdsScheduleEntry> mySchedule = new ArrayList<>();
 
@@ -39,7 +39,6 @@ public class eMotoAdsSchedule {
 
         try {
             URL u;
-
             if (eMotoCell.isFixed())
             {
                 u = new URL(String.format("https://emotovate.com/api/ads/getbydevice/%s?deviceId=%s",token, eMotoCell.deviceID)); //
@@ -121,9 +120,7 @@ public class eMotoAdsSchedule {
                     break;
                 default:
 
-                //TODO: remove this later!
-                throw new EmptyStackException();
-
+                    break;
 
             }
         } catch (MalformedURLException ex) {

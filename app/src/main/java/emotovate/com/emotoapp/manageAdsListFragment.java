@@ -16,14 +16,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import eMotoLogic.eMotoAds;
+import eMotoLogic.eMotoAdsApprovalItem;
 import eMotoLogic.eMotoAdsArrayAdapter;
-import eMotoLogic.eMotoAdsSchedule;
 import eMotoLogic.eMotoAdsCollection;
-import eMotoLogic.eMotoCell;
+import eMotoLogic.eMotoAdsApproval;
 
 /**
- *
- *
  * to handle interaction events.
  * Use the {@link manageAdsListFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -35,9 +33,9 @@ public class manageAdsListFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "eMotoCell";
 
-    private eMotoCell mCell;
-    private ArrayList<eMotoAds> adsArray = new ArrayList<eMotoAds>();
-    private eMotoAdsCollection myAdsCollection = new eMotoAdsCollection();
+    private ArrayList<eMotoAdsApprovalItem> adsArray = new ArrayList<eMotoAdsApprovalItem>();
+    private eMotoAdsApproval myAdsApproval = new eMotoAdsApproval();
+
     ListView listview;
     eMotoAdsArrayAdapter myAdapter;
 
@@ -51,11 +49,12 @@ public class manageAdsListFragment extends Fragment {
 
      * @return A new instance of fragment manageAdsApproveListFragment.
      */
-    public static manageAdsListFragment newInstance(eMotoCell myCell) {
+    public static manageAdsListFragment newInstance() {
+        Log.d(TAG,"newInstance()");
         manageAdsListFragment fragment = new manageAdsListFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1,myCell);
-        fragment.setArguments(args);
+        //Bundle args = new Bundle();
+        //args.putParcelable(ARG_PARAM1,myCell);
+        //fragment.setArguments(args);
         return fragment;
     }
 
@@ -66,10 +65,13 @@ public class manageAdsListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mCell = getArguments().getParcelable(ARG_PARAM1);
 
-        }
+        Log.d(TAG, "onCreate()");
+        //if (getArguments() != null) {
+        //    mCell = getArguments().getParcelable(ARG_PARAM1);
+        //
+        //}
+
         //setup ads array
         myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
 
@@ -79,6 +81,7 @@ public class manageAdsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d(TAG, "onCreateView()");
 
         //view recreated every time when backed from backstack
         View view  =  inflater.inflate(R.layout.fragment_manage_ads_approve_list, container, false);
@@ -92,6 +95,8 @@ public class manageAdsListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated( view,savedInstanceState);
+        Log.d(TAG, "onViewCreated()");
+
         //start retrieving ads
         new getAdsCollectionTask().execute();
     }
@@ -117,7 +122,7 @@ public class manageAdsListFragment extends Fragment {
 
 
     public interface OnAdsListSelectListener {
-        void onAdsListSelect(eMotoAds Ads);
+        void onAdsListSelect(eMotoAdsApprovalItem Ads);
     }
 
     //region Task
@@ -137,16 +142,12 @@ public class manageAdsListFragment extends Fragment {
         protected String doInBackground(Object... prams) {
 
 
-            //while( ((manageAdsActivity) getActivity()).getLoginToken() == null){} // loop while waiting for token
+            while( ((manageAdsActivity) getActivity()).getLoginToken() == null){} // loop while waiting for token
 
             String token = ((manageAdsActivity) getActivity()).getLoginToken();
-            Log.d(TAG,"getAdsCollectionTask()"+token);
-            mCell.setDeviceAssetId("test");
-            mCell.putDeviceOnServer(token);
+            Log.d(TAG,"getAdsCollectionTask():"+token);
 
-
-
-            myAdsCollection.adsHashMap= eMotoAdsCollection.getAdsCollection(token,  mCell);
+            myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
 
             return "test";
 
@@ -157,7 +158,7 @@ public class manageAdsListFragment extends Fragment {
             Log.d("AyncThread", "onPostExecute");
             //completion handler
             adsArray.clear();
-            adsArray.addAll(myAdsCollection.adsHashMap.values());
+            adsArray.addAll(myAdsApproval.adsHashMap.values());
 
 
             int index =listview.getFirstVisiblePosition();
@@ -181,7 +182,7 @@ public class manageAdsListFragment extends Fragment {
         @Override
         protected String doInBackground(String... prams) {
             try {
-                myAdsCollection.approveAdsWithID(prams[0],prams[1]);
+                myAdsApproval.approveAdsWithID(prams[0],prams[1]);
                 return "put the background thread function here";
             } catch (Exception ex) {
                 return "Unable to retrieve web page. URL may be invalid.";
@@ -206,7 +207,7 @@ public class manageAdsListFragment extends Fragment {
         @Override
         protected String doInBackground(String... prams) {
             try {
-                myAdsCollection.unapproveAdsWithID(prams[0],prams[1]);
+                myAdsApproval.unapproveAdsWithID(prams[0], prams[1]);
                 return "put the background thread function here";
             } catch (Exception ex) {
                 return "Unable to retrieve web page. URL may be invalid.";
@@ -237,7 +238,7 @@ public class manageAdsListFragment extends Fragment {
 
             onListItemClick((ListView) parent, v, position, id);
 
-            eMotoAds ads =  adsArray.get(position);
+            eMotoAdsApprovalItem ads =  adsArray.get(position);
             Toast.makeText(getActivity(), String.format("Item Clicked %s", ads.description()),
                     Toast.LENGTH_SHORT).show();
 

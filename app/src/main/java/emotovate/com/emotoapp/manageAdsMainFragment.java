@@ -23,6 +23,9 @@ import eMotoLogic.eMotoCell;
 import eMotoLogic.eMotoCellArrayAdapter;
 import eMotoLogic.eMotoUtility;
 
+/**
+ *@deprecated
+ */
 public class manageAdsMainFragment extends Fragment  {
 
     //debug

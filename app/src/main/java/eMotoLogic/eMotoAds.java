@@ -26,10 +26,6 @@ public class eMotoAds implements Parcelable {
         setAdsProperties(ads);
     }
 
-    public String description() {
-       return AdsDescription;
-    }
-
     private void setAdsProperties(JSONObject ads){
         try {
             AdsId = ads.getString("Id");
@@ -46,6 +42,11 @@ public class eMotoAds implements Parcelable {
             ex.printStackTrace();
         }
     }
+
+    public String description() {
+        return AdsDescription;
+    }
+
     public String id() { return AdsId;}
 
     public String scheduleAssetId() {

@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import eMotoLogic.eMotoAds;
+import eMotoLogic.eMotoAdsApprovalItem;
 import eMotoLogic.eMotoCell;
 
 
@@ -34,7 +35,8 @@ public class manageAdsActivity extends screenBaseActivity
         //setup simple fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, manageAdsMainFragment.newInstance(1)).addToBackStack(FragStackTag)
+                .replace(R.id.container, manageAdsListFragment.newInstance(), FragAdsListTag )
+                .addToBackStack(FragAdsListTag)
                 .commit();
     }
 
@@ -144,26 +146,30 @@ public class manageAdsActivity extends screenBaseActivity
 
     //region Logic
 
+    /**
+     * @deprecated
+     * @param cell
+     */
     public void onEmotoCellSelected(eMotoCell cell){
         Log.d(TAG,"onEmotoCellSelected()");
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsListFragment.newInstance(cell), FragAdsListTag ).addToBackStack(FragAdsListTag);
+        transaction.replace(R.id.container, manageAdsListFragment.newInstance(), FragAdsListTag ).addToBackStack(FragAdsListTag);
 
         // Commit the transaction
         transaction.commit();
     }
 
-    public void onAdsListSelect(eMotoAds Ads){
+    public void onAdsListSelect(eMotoAdsApprovalItem Ads){
         Log.d(TAG,"Ads Selected: " + Ads.description());
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack( FragAdsDetailsTag);
+
+        //TODO:handle ads
+        //transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack( FragAdsDetailsTag);
 
         // Commit the transaction
         transaction.commit();

@@ -156,12 +156,12 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
+        //TODO: Replace this with logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
+        //TODO: Replace this with logic
         return password.length() > 4;
     }
 
@@ -308,15 +308,14 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
         this.startService(i);
 
+        //start new activity
+        Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
+        this.startActivity(newActivityIntent);
 
         //testIntent
         Intent testIntent= new Intent(this, eMotoService.class);
         testIntent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_TEST_SCHEDULE);
         this.startService(testIntent);
-
-        //start new activity
-        Intent newActivity = new Intent(LoginPageActivity.this, manageAdsActivity.class);
-        this.startActivity(newActivity);
 
         //finish activity
         finish();
