@@ -54,7 +54,6 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
 
     private static class ViewHolder {
         ImageView imageView;
-        ImageView approveImageView;
         TextView textView;
         Bitmap bitmap;
         eMotoAdsApprovalItem ads;
@@ -78,8 +77,6 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
 
             viewholder.imageView = (ImageView) convertView.findViewById(R.id.adsThumbnail);
             viewholder.textView = (TextView) convertView.findViewById(R.id.adsTitle);
-            viewholder.approveImageView = (ImageView) convertView.findViewById(R.id.imageViewApprove);
-
 
 
             convertView.setTag(viewholder);
@@ -104,7 +101,6 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
         viewholder.ads = i;
 
         viewholder.textView.setTextColor(0xff99cc33);
-        viewholder.approveImageView.setImageResource(R.drawable.approved_icon);
 
         /*
         if(i.isApproved())

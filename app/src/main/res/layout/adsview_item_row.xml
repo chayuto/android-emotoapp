@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:padding="3dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:showDividers="middle"
+    android:divider="?android:dividerVertical"
+    >
+
+
 
 
     <ImageView android:id="@+id/adsThumbnail"
         android:layout_width="200dp"
-        android:layout_height="112dp"
+        android:layout_height="130dp"
         android:scaleType="fitCenter"
         android:gravity="left"
         android:layout_alignParentTop="true"
@@ -18,33 +23,26 @@
         android:layout_marginBottom="5dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dp"
-        android:background="#43c3ffb3" />
+        android:background="#02c3ffb3" />
 
-    <TextView android:id="@+id/adsTitle"
-        android:layout_height="56dp"
-        android:gravity="fill_horizontal"
-        android:layout_alignParentTop="true"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:textColor="#000000"
-        android:layout_marginTop="5dp"
-        android:layout_width="300dp"
-        android:layout_marginLeft="0dp"
-        android:layout_toEndOf="@+id/adsThumbnail" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageViewApprove"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:scaleType="fitCenter"
-        android:gravity="center_vertical"
-        android:layout_marginRight="5dp"
-        android:layout_weight="0.25"
-        android:layout_marginLeft="5dp"
-        android:layout_alignStart="@+id/adsTitle"
-        android:layout_below="@+id/adsTitle"
-        android:layout_alignEnd="@+id/adsTitle"
-        android:layout_alignBottom="@+id/adsThumbnail"
-        android:contentDescription="isAdsApproved" />
+        <TextView android:id="@+id/adsTitle"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:textColor="#000000"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_toEndOf="@+id/adsThumbnail"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="test" />
 
-</RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
