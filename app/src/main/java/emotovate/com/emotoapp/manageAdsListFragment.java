@@ -253,11 +253,11 @@ public class manageAdsListFragment extends Fragment {
     private String getLoginToken (){
         return ((manageAdsActivity) getActivity()).getLoginToken();
     }
-    public void approveAds(eMotoAds Ads){
+    public void approveAds(eMotoAdsApprovalItem  Ads){
         new ApproveTask().execute(Ads.id(),this.getLoginToken());
     }
 
-    public void unapproveAds(eMotoAds Ads){
+    public void unapproveAds(eMotoAdsApprovalItem  Ads){
         new UnapproveTask().execute(Ads.id(),this.getLoginToken());
     }
 

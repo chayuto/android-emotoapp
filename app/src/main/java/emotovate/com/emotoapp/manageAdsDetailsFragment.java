@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import eMotoLogic.eMotoAds;
-
+import eMotoLogic.eMotoAdsApprovalItem;
 
 
 /**
@@ -30,10 +30,10 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
     private static String TAG = "manageAdsDetailsFragment";
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "eMotoAds";
+    private static final String ARG_PARAM1 = "eMotoAdsApprovalItem";
 
 
-    private eMotoAds mAds;
+    private eMotoAdsApprovalItem mAds;
     private OnAdsApproveSelectListener mListener;
     private ImageView ivAdsImage;
 
@@ -48,7 +48,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
      * @param ads
      * @return A new instance of fragment manageAdsDetailsFragment.
      */
-    public static manageAdsDetailsFragment newInstance(eMotoAds ads) {
+    public static manageAdsDetailsFragment newInstance(eMotoAdsApprovalItem ads) {
         manageAdsDetailsFragment fragment = new manageAdsDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM1,ads);
@@ -85,7 +85,9 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         tvAdsID.setText(mAds.id());
         tvAdsDescription.setText(mAds.description());
 
-        if(mAds.isApproved()){
+        //TODO:Update Logic
+        //if(mAds.isApproved()){
+        if(true){
             btnAccept.setText("Unapprove");
         }
         else
@@ -129,7 +131,9 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         //do what you want to do when button is clicked
         switch (v.getId()) {
             case R.id.btnAccept:
-                if(mAds.isApproved()){
+
+                //TODO:update date status
+                if(false){
                     mListener.onAdsUnapproveSelect(mAds);
                 }
                 else
@@ -142,8 +146,8 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
 
 
     public interface OnAdsApproveSelectListener {
-        public void onAdsApproveSelect(eMotoAds Ads);
-        public void onAdsUnapproveSelect(eMotoAds Ads);
+        void onAdsApproveSelect(eMotoAdsApprovalItem Ads);
+        void onAdsUnapproveSelect(eMotoAdsApprovalItem  Ads);
     }
 
 

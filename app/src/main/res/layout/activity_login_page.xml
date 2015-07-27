@@ -30,7 +30,8 @@
                 android:layout_height="wrap_content" android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress" android:maxLines="1"
                 android:singleLine="true"
-                style="@style/CodeFont"/>
+                style="@style/CodeFont"
+                android:text="peter.ayre@emotovate.com" />
 
             <EditText android:id="@+id/password" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="@string/prompt_password"
@@ -38,7 +39,8 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified" android:inputType="textPassword"
                 android:maxLines="1" android:singleLine="true"
-                style="@style/CodeFont" />
+                style="@style/CodeFont"
+                android:text="password" />
 
             <Button android:id="@+id/email_sign_in_button" style="@style/CodeFont"
                 android:layout_width="match_parent" android:layout_height="wrap_content"

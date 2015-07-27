@@ -72,6 +72,7 @@ public class screenBaseActivity extends ActionBarActivity
     //region Child class Interface
 
     public void setupNavFragment (int position){
+        Log.d(TAG, "setupNavFragment()");
         mScreenNavigationDrawerFragment = (screenNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();

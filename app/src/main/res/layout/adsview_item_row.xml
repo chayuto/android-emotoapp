@@ -9,7 +9,7 @@
     <ImageView android:id="@+id/adsThumbnail"
         android:layout_width="200dp"
         android:layout_height="112dp"
-        android:scaleType="fitStart"
+        android:scaleType="fitCenter"
         android:gravity="left"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
@@ -17,7 +17,8 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="5dp" />
+        android:layout_marginLeft="5dp"
+        android:background="#43c3ffb3" />
 
     <TextView android:id="@+id/adsTitle"
         android:layout_height="56dp"

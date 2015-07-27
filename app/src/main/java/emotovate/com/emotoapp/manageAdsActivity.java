@@ -78,6 +78,8 @@ public class manageAdsActivity extends screenBaseActivity
                 Log.d(TAG,"FragAdsDetails Not Visible");
             }
         }
+
+        /*
         final Fragment fragment2 = getFragmentManager().findFragmentByTag(FragAdsListTag);
         if(fragment2!=null)
         {
@@ -90,6 +92,7 @@ public class manageAdsActivity extends screenBaseActivity
                 Log.d(TAG,"FragAdsList Not Visible");
             }
         }
+        */
 
         super.onBackPressed(); //exit app
     }
@@ -168,14 +171,14 @@ public class manageAdsActivity extends screenBaseActivity
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
 
-        //TODO:handle ads
-        //transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack( FragAdsDetailsTag);
+
+        transaction.replace(R.id.container, manageAdsDetailsFragment.newInstance(Ads), FragAdsDetailsTag ).addToBackStack( FragAdsDetailsTag);
 
         // Commit the transaction
         transaction.commit();
     }
 
-    public void onAdsApproveSelect(eMotoAds Ads){
+    public void onAdsApproveSelect(eMotoAdsApprovalItem Ads){
 
         //popbackstack
         getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -184,7 +187,7 @@ public class manageAdsActivity extends screenBaseActivity
         listFrag.approveAds(Ads);
 
     }
-    public void onAdsUnapproveSelect(eMotoAds Ads){
+    public void onAdsUnapproveSelect(eMotoAdsApprovalItem Ads){
         //popbackstack
         getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         //Pass Ads to fragment to make Network calls and update info

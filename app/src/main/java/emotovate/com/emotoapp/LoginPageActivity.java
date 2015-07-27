@@ -272,7 +272,7 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         protected String doInBackground(Void... params) {
 
             eMotoUtility.bypassSSLAllCertificate();
-            mLoginResponse = eMotoUtility.performLogin("peter.ayre@emotovate.com", "password");
+            mLoginResponse = eMotoUtility.performLogin(mEmail, mPassword);
 
             return "Login Task";
         }
