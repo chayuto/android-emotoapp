@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.support.v4.widget.DrawerLayout;
@@ -20,7 +20,7 @@ import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 
 
-public class screenBaseActivity extends ActionBarActivity
+public class screenBaseActivity extends AppCompatActivity
         implements screenNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     //Debug
