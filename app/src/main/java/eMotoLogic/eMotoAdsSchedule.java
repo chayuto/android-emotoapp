@@ -36,7 +36,6 @@ public class eMotoAdsSchedule {
         BufferedReader rd  = null;
 
 
-
         try {
             URL u;
             if (eMotoCell.isFixed())

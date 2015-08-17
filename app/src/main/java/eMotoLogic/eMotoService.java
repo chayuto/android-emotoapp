@@ -26,8 +26,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     //Debug
     private final static String TAG = "eMotoService";
 
-    Handler handler;
-
     // Defines Intent action
     public static final String BROADCAST_ACTION = "com.emotovate.android.eMotoApp.BROADCAST";
     public static final String BROADCAST_STATUS = "com.emotovate.android.eMotoApp.STATUS";
@@ -45,7 +43,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public static final String RES_BT_STATUS= "RES_BT_STATUS";
     public static final String RES_BT_ERROR= "RES_BT_ERROR";
 
-
     //EXTRA
     public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
     public static final String EXTRA_EMOTOCELL_NAME = "EXTRA_EMOTOCELL_NAME";
@@ -57,8 +54,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_GETTOKEN = "CMD_GETTOKEN";
     public final static String CMD_STARTLOCATIONSERVICE = "CMD_STARTLOCATIONSERVICE";
     public final static String CMD_STOPLOCATIONSERVICE = "CMD_STOPLOCATIONSERVICE";
-    @Deprecated
-    public final static String CMD_BT_START= "CMD_BT_START";
     public final static String CMD_BT_GET_PAIRED_LIST= "CMD_BT_GET_PAIRED_LIST";
     public final static String CMD_BT_CONNECT_CELL = "CMD_BT_CONNECT_CELL";
     public final static String CMD_BT_GET_REPORT = "CMD_BT_GET_REPORT";
@@ -69,6 +64,10 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
     //LocalVariable
     private eMotoLoginResponse mLoginResponse ;
+    private Handler handler;
+
+
+    private boolean serviceIsInitialized = false;
 
 
     /** interface for clients that bind */
@@ -86,6 +85,8 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         handler = new Handler();
 
         mLoginResponse = new eMotoLoginResponse();
+
+        serviceIsInitialized = true;
     }
 
     @Override
@@ -164,14 +165,22 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 }
                 break;
             case CMD_GETTOKEN:
-                if(mLoginResponse != null) {
+
+                if (mLoginResponse == null)
+                {
+                    Log.d(TAG, "Null Object Reference!");
+                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, this);
+                    break;
+                }
+
+                if(mLoginResponse.isSuccess()) {
                     Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
                     eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), this);
                 }
                 else
                 {
-                    Log.d(TAG, "Null Object Reference!");
-                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, this);
+                    Log.d(TAG, "token is not valid");
+                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
                 }
                 break;
             case CMD_STARTLOCATIONSERVICE:
@@ -180,11 +189,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
             case CMD_STOPLOCATIONSERVICE:
                 stopLocationService();
-                break;
-            case CMD_BT_START:
-                if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
-                    mBTService.startBTService("HC-06");
-                }
                 break;
 
             case CMD_BT_GET_PAIRED_LIST:
@@ -235,25 +239,23 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     private void startAutoReauthenticate (eMotoLoginResponse mLoginResponse) {
 
         try {
+
             int corePoolSize = 1;
             //creates ScheduledThreadPoolExecutor object with number of thread 2
             stpe = new ScheduledThreadPoolExecutor(corePoolSize);
-            //starts runnable thread
+
+            //starts runnable thread once
             RunnableThread runThread = new RunnableThread();
-            runThread.mLoginResponse = mLoginResponse;
+            runThread.setLoginResponse(mLoginResponse);
+
             int delay = Integer.parseInt(mLoginResponse.getIdle());
-            //stpe.execute(runThread);
 
             //starts callable thread that will start after delay minutes
             ScheduledFuture sf = stpe.scheduleAtFixedRate(runThread,delay,delay,
                     TimeUnit.MINUTES);
 
-
             int activeCnt = stpe.getActiveCount();
             System.out.println("activeCnt:" + activeCnt);
-            //stops all the threads in ScheduledThreadPoolExecutor
-            //
-            //System.out.println(stpe.isShutdown());
         }
 
         catch(Exception ex)
@@ -266,15 +268,30 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     private void stopAutoReauthenticate ()
     {
         stpe.shutdownNow();
+
     }
-    //runnable thread
+
+    /**
+     * Runable thread to be call periodically to authenticate with server
+     *
+     */
     class RunnableThread implements Runnable {
 
-        public eMotoLoginResponse mLoginResponse;
+        private eMotoLoginResponse mLoginResponse;
+
+        public void setLoginResponse(eMotoLoginResponse mResponse){
+            mLoginResponse = mResponse;
+        }
         @Override
         public void run() {
-            eMotoUtility.performLoginWithLoginResponse(mLoginResponse);
-            eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), eMotoService.this);
+
+            mLoginResponse = eMotoUtility.performLoginWithLoginResponse(mLoginResponse);
+
+            if(mLoginResponse.isSuccess()) {
+
+                eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), eMotoService.this);
+            }
+
             System.out.println("run:" + mLoginResponse.getToken());
         }
     }

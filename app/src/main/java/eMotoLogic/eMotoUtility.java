@@ -57,19 +57,19 @@ public class eMotoUtility
     }
 
 
-    public static void performLoginWithLoginResponse(eMotoLoginResponse mLoginResponse)
+    public static eMotoLoginResponse performLoginWithLoginResponse(eMotoLoginResponse mLoginResponse)
     {
 
         BufferedReader rd  ;
 
-
-
         try {
             bypassSSLAllCertificate();
 
-            URL u = new URL(String.format("https://emotovate.com/api/security/authenticate/%s",mLoginResponse.getCredential()));
+            String urlStr = String.format("https://emotovate.com/api/security/authenticate/%s",mLoginResponse.getCredential());
+            URL u = new URL(urlStr);
             HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
 
+            //Log.d(TAG,urlStr);
             c.setRequestMethod("POST");
 
             c.setRequestProperty("Content-length", "0");
@@ -115,6 +115,8 @@ public class eMotoUtility
         catch (JSONException ex){
             ex.printStackTrace();
         }
+
+        return mLoginResponse;
 
     }
 

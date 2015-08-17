@@ -68,6 +68,14 @@ public class screenBaseActivity extends AppCompatActivity
         super.onPause();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy()");
+
+
+    }
+
 
     //region Child class Interface
 
