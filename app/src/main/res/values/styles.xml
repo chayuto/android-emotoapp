@@ -30,14 +30,39 @@
 
     <style name="AppTheme2" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+
+
         <item name="android:windowBackground">@color/white_theme_color</item>
         <item name="android:colorBackground">@color/white_theme_color</item>
 
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <!-- Support library compatibility -->
-        <item name="actionBarStyle">@style/MyActionBar</item>
 
+        <!--Action bar color-->
+            <item name="android:actionBarStyle">@style/MyActionBar</item>
+            <!-- Support library compatibility -->
+            <item name="actionBarStyle">@style/MyActionBar</item>
+
+        <!--List Selector-->
+            <item name="android:listChoiceBackgroundIndicator">@drawable/apptheme_list_selector_holo_light</item>
+            <item name="android:activatedBackgroundIndicator">@drawable/apptheme_activated_background_holo_light</item>
+
+            <item name="android:listViewStyle">@style/ListViewAppTheme</item>
+            <item name="android:listViewWhiteStyle">@style/ListViewAppTheme.White</item>
+            <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
     </style>
+
+
+    <style name="ListViewAppTheme" parent="android:Widget.ListView">
+        <item name="android:listSelector">@drawable/apptheme_list_selector_holo_light</item>
+    </style>
+
+    <style name="ListViewAppTheme.White" parent="android:Widget.ListView.White">
+        <item name="android:listSelector">@drawable/apptheme_list_selector_holo_light</item>
+    </style>
+
+    <style name="SpinnerItemAppTheme" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">#000000</item>
+    </style>
+
 
     <style name="CodeFont" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@color/emotoColor_text_1</item>
