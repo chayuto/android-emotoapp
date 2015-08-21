@@ -63,7 +63,7 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
 
     public void testInteraction(){
         //HACK: mock up image data
-        int len = 800;
+        int len = 5;
         byte[] testData = new byte[len];
         for (int i =0;i<len;i++){
             testData[i] = (byte) (i%254);

@@ -135,6 +135,13 @@ public class manageDeviceActivity extends screenBaseActivity
         i.putExtra(eMotoService.EXTRA_EMOTOCELL_NAME,eMotoCell);
         this.startService(i);
     }
+
+    @Override
+    public void onClickSetupWifi() {
+
+        Log.d(TAG,"onClickSetupWifi()");
+
+    }
     //endregion
 
 
@@ -143,7 +150,15 @@ public class manageDeviceActivity extends screenBaseActivity
     public void onBTPairedList(ArrayList<String> list){
         Log.d(TAG," onBTPairedList()");
         if(mainFragment != null){
-            mainFragment.deviceListUpdate(list);
+
+            //mainFragment.deviceListUpdate(list);
+
+            //TODO: remove hack
+            requestConnect("HC-06");
+
+        }
+        else {
+            Log.d(TAG,"List Empty");
         }
     }
 

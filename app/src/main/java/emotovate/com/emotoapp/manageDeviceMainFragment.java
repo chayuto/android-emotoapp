@@ -81,6 +81,8 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         Button btnConnect = (Button) view.findViewById(R.id.btnConnect);
         Button btnTest1 = (Button) view.findViewById(R.id.btnTest1);
         Button btnTest2 = (Button) view.findViewById(R.id.btnTest2);
+        Button btnSetupWifi = (Button) view.findViewById(R.id.btnSetupWifi);
+
         pairedListView = (ListView) view.findViewById(R.id.pairedlistView);
         pairedListView.setOnItemClickListener(mOnClickListener);
         fillListView();
@@ -88,6 +90,7 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         btnConnect.setOnClickListener(this);
         btnTest1.setOnClickListener(this);
         btnTest2.setOnClickListener(this);
+        btnSetupWifi.setOnClickListener(this);
 
         return view;
     }
@@ -124,17 +127,21 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
                 case R.id.btnTest2:
                     mListener.onClickBtnTest2();
                     break;
+
+                case R.id.btnSetupWifi:
+                    mListener.onClickSetupWifi();
+                    break;
+
             }
         }
     }
 
     public void deviceListUpdate(ArrayList<String> list){
         pairedArrayList = list;
+        Log.d(TAG,"Size:" + list.toString());
         if(pairedListView != null){
             fillListView();
         }
-
-
     }
 
 
@@ -147,10 +154,12 @@ public class manageDeviceMainFragment extends Fragment implements View.OnClickLi
         public void onClickBtnTest1();
         public void onClickBtnTest2();
         public void requestConnect(String eMotoCell);
+        public void onClickSetupWifi();
     }
 
     //region Listview
     private void fillListView(){
+        Log.d(TAG,"fillListView()");
         pairedListView.setAdapter(myAdapter);
     }
 
