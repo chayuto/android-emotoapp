@@ -2,7 +2,6 @@ package emotovate.com.emotoapp;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoAdsApprovalItem;
 
 

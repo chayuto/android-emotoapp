@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoAdsApprovalItem;
 import eMotoLogic.eMotoCell;
 

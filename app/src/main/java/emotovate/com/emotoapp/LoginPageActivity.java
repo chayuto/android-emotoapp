@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -142,14 +144,34 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
             cancel = true;
         }
 
+        //check if have internet connectivity
+        if(! eMotoUtility.isConnected(this)){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage("No connectivity")
+                    .setTitle("Make Sure you have connection to internet")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            cancel = true;
+        }
+
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
-            focusView.requestFocus();
+            if(focusView!=null) {
+                focusView.requestFocus();
+            }
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            showProgress(false);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
@@ -319,9 +341,9 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
 
         //finish activity
         finish();
-
-
     }
+
+
 
 }
 

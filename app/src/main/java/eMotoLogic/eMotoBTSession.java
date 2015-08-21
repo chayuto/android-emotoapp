@@ -36,7 +36,7 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
 
     public void setupSessionWithDeviceID(String deviceID){
         Log.d(TAG,"setupSessionWithDeviceID()");
-        //TODO:make network call to get device info
+
         mCell = eMotoCell.getDeviceFromServer(mServiceInterface.getLoginToken(),deviceID);
         if(mCell.isFixed()){
             Log.d(TAG,"FixedCell");

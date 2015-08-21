@@ -1,6 +1,9 @@
 package eMotoLogic;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 import android.util.Log;
 
@@ -55,7 +58,6 @@ public class eMotoUtility
         }
         return mLoginResponse;
     }
-
 
     public static eMotoLoginResponse performLoginWithLoginResponse(eMotoLoginResponse mLoginResponse)
     {
@@ -351,6 +353,16 @@ public class eMotoUtility
             hexChars[j * 3 + 2] = ':';
         }
         return new String(hexChars);
+    }
+
+    public static boolean isConnected(Context context){
+
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return  activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
 }

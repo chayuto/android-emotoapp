@@ -3,6 +3,7 @@ package emotovate.com.emotoapp;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,10 +15,11 @@ import eMotoLogic.eMotoService;
 
 
 public class manageDeviceActivity extends screenBaseActivity
-        implements manageDeviceMainFragment.OnFragmentInteractionListener {
+        implements manageDeviceMainFragment.OnFragmentInteractionListener, manageDeviceSetupWifiFragment.OnFragmentInteractionListener {
 
     //Debug
     public static String TAG = "manageDeviceActivity";
+    private static String FragWifiSetupTag = "FragWifiSetup";
 
     manageDeviceMainFragment mainFragment;
 
@@ -38,7 +40,7 @@ public class manageDeviceActivity extends screenBaseActivity
 
     @Override
     public void onResume(){
-        Log.d(TAG,"onResume()");
+        Log.d(TAG, "onResume()");
 
         //set fragment
         super.setupNavFragment(1);
@@ -48,20 +50,20 @@ public class manageDeviceActivity extends screenBaseActivity
 
     @Override
     public void onPause() {
-        Log.d(TAG,"onPause()");
+        Log.d(TAG, "onPause()");
         super.onPause();
     }
 
     @Override
     public void onNewIntent (Intent intent){
         super.onNewIntent(intent);
-        Log.d(TAG,"onNewIntent()");
+        Log.d(TAG, "onNewIntent()");
     }
 
     @Override
     public void onOverrideTest(){
         //super.onOverrideTest();
-        Log.d(TAG,"onOverrideTest successful");
+        Log.d(TAG, "onOverrideTest successful");
     }
 
 
@@ -121,7 +123,7 @@ public class manageDeviceActivity extends screenBaseActivity
         this.startService(i);
     }
     public void onClickBtnTest2(){
-        Log.d(TAG,"onClickBtnTest2()");
+        Log.d(TAG, "onClickBtnTest2()");
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_GET_REPORT);
         this.startService(i);
@@ -129,26 +131,40 @@ public class manageDeviceActivity extends screenBaseActivity
 
     public void requestConnect(String eMotoCell)
     {
-        Log.d(TAG,"requestConnect()");
+        Log.d(TAG, "requestConnect()");
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_CONNECT_CELL);
-        i.putExtra(eMotoService.EXTRA_EMOTOCELL_NAME,eMotoCell);
+        i.putExtra(eMotoService.EXTRA_EMOTOCELL_NAME, eMotoCell);
         this.startService(i);
     }
 
     @Override
     public void onClickSetupWifi() {
+        Log.d(TAG, "onClickSetupWifi()");
 
-        Log.d(TAG,"onClickSetupWifi()");
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.container, manageDeviceSetupWifiFragment.newInstance(),FragWifiSetupTag).addToBackStack(FragWifiSetupTag);
+
+        // Commit the transaction
+        transaction.commit();
 
     }
+
+    @Override
+    public void onFragmentWifiSetup(String SSID, int SecType, String key) {
+
+        //TODO: invoke BT service to send data
+
+    }
+
     //endregion
 
 
     //region Service Interaction
     @Override
     public void onBTPairedList(ArrayList<String> list){
-        Log.d(TAG," onBTPairedList()");
+        Log.d(TAG, " onBTPairedList()");
         if(mainFragment != null){
 
             //mainFragment.deviceListUpdate(list);
@@ -173,6 +189,7 @@ public class manageDeviceActivity extends screenBaseActivity
         Toast.makeText(getApplicationContext(),"Disconnected from eMotoCell",
                 Toast.LENGTH_SHORT).show();
     }
+
 
 
 }
