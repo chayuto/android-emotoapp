@@ -74,6 +74,12 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
         mPacketManager.sendPendingPackets();
     }
 
+    public void setDeviceWifi(String SSID, int sectype, String key){
+        eMotoBTPacket testPacket = eMotoBTPacket.setDeviceWifiPacket(getNewTransactionID(), SSID, sectype, key);
+        mPacketManager.addPacketToPendingList(testPacket);
+        mPacketManager.sendPendingPackets();
+    }
+
     public void reveiceIncomingPacket(eMotoBTPacketIncoming mPacket){
         mPacketManager.ackReceived(mPacket);
     }

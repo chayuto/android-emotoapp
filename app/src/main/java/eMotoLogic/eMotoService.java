@@ -46,6 +46,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     //EXTRA
     public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
     public static final String EXTRA_EMOTOCELL_NAME = "EXTRA_EMOTOCELL_NAME";
+    public static final String EXTRA_WIFI_SSID = "EXTRA_WIFI_SSID";
+    public static final String EXTRA_WIFI_SEC = "EXTRA_WIFI_SEC";
+    public static final String EXTRA_WIFI_KEY = "EXTRA_WIFI_KEY";
 
 
     //Public CMD
@@ -59,6 +62,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_BT_GET_REPORT = "CMD_BT_GET_REPORT";
     public final static String CMD_BT_SEND_DATA = "CMD_BT_SEND_DATA";
     public final static String CMD_BT_SEND_TEST1 = "CMD_BT_SEND_TEST1";
+    public final static String CMD_BT_SET_WIFI = "CMD_BT_SET_WIFI";
     public final static String CMD_TEST_SCHEDULE = "CMD_TEST_SCHEDULE";
 
 
@@ -206,7 +210,18 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
 
             case CMD_BT_SEND_TEST1:
-                mBTService.btTestInteractionTrigger();
+                if(mBTService.sessionIsReady()) {
+                    mBTService.getSession().testInteraction();
+                }
+                break;
+
+            case CMD_BT_SET_WIFI:
+                if(mBTService.sessionIsReady()) {
+                    String ssid = intent.getStringExtra(EXTRA_WIFI_SSID);
+                    int secType = intent.getIntExtra(EXTRA_WIFI_SEC,0);
+                    String key = intent.getStringExtra(EXTRA_WIFI_KEY);
+                    mBTService.getSession().setDeviceWifi(ssid,secType,key);
+                }
                 break;
 
             case CMD_TEST_SCHEDULE:

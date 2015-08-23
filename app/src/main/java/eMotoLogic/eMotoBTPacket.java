@@ -2,6 +2,8 @@ package eMotoLogic;
 
 import android.util.Log;
 
+import java.nio.charset.Charset;
+
 /**
  * Created by chayut on 27/02/15.
  */
@@ -34,12 +36,21 @@ public class eMotoBTPacket {
     public final static byte DID_IMG_DATA = (byte)0x21;
     public final static byte DID_IMG_ONLIST = (byte)0x22;
 
+    public final static byte DID_WIFI_SETUP = (byte)0x30;
+
+    public final static int LEN_DID_BYTE = 1;
     public final static int LEN_DID_ACK_DEV_ID = 4;
     public final static int LEN_DID_GET_DEV_ID = 1;
     public final static int LEN_DID_HW_VER = 2;
     public final static int LEN_DID_FW_VER = 2;
     public final static int LEN_DID_C_TIME = 6;
     public final static int LEN_DID_SET_IMG_INFO = 15;
+
+    public final static int LEN_DID_SET_WIFI_SETUP = 62;
+
+    public final static int LEN_WIFI_SSID_BYTE = 20;
+    public final static int LEN_WIFI_SEC_BYTE = 1;
+    public final static int LEN_WIFI_KEY_BYTE = 40;
 
 
     //Constants
@@ -143,6 +154,25 @@ public class eMotoBTPacket {
         payloadBytes[0] = DID_DEVICE_ID;
 
         mPacket = new eMotoBTPacket(GET_COMMAND,transactionID,payloadBytes);
+
+        return mPacket;
+    }
+
+    public static eMotoBTPacket setDeviceWifiPacket(int transactionID, String SSID, int sectype, String key)
+    {
+        eMotoBTPacket mPacket;
+
+        byte[] payloadBytes = new byte[LEN_DID_SET_WIFI_SETUP];
+
+        byte[] SSIDBytes = SSID.getBytes(Charset.forName("UTF-8"));
+        byte[] keyBytes = key.getBytes(Charset.forName("UTF-8"));
+
+        payloadBytes[0] = DID_WIFI_SETUP;
+        System.arraycopy(SSIDBytes,0,payloadBytes,LEN_DID_BYTE,SSIDBytes.length);
+        payloadBytes[LEN_WIFI_SSID_BYTE+LEN_DID_BYTE] = (byte) sectype;
+        System.arraycopy(keyBytes,0,payloadBytes,LEN_DID_BYTE+LEN_WIFI_SSID_BYTE+LEN_WIFI_SEC_BYTE,keyBytes.length);
+
+        mPacket = new eMotoBTPacket(SET_COMMAND,transactionID,payloadBytes);
 
         return mPacket;
     }

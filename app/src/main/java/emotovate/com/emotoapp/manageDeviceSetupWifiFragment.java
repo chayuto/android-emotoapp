@@ -159,30 +159,30 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
             return;
         }
 
-        Log.d("wifiInfo", wifiInfo.toString());
+        Log.d(TAG, wifiInfo.toString());
         if (wifiInfo.getSSID() != null) {
-            Log.d("SSID", wifiInfo.getSSID());
+            Log.d(TAG, "SSID:" + wifiInfo.getSSID());
         }
         else
         {
-            Log.d("SSID", "not associate with any wifi");
+            Log.d(TAG, "not associate with any wifi");
         }
 
         //scan for sequcity
-        Log.d("Wifi", "Scan for nearby SSID");
+        Log.d(TAG, "Scan for nearby SSID");
         WifiManager wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         List<ScanResult> networkList = wifi.getScanResults();
         ssidArray.clear();
         if (networkList != null) {
             for (ScanResult network : networkList) {
                 String Capabilities = network.capabilities;
-                Log.d("Security info", network.SSID + " capabilities : " + Capabilities);
+                Log.d(TAG, network.SSID + " capabilities : " + Capabilities);
                 getSecurity(network);
                 ssidArray.add(network);
             }
 
         }
-        Log.d("Wifi", "Scan completed");
+        Log.d(TAG, "Wifi Scan completed");
 
         fillListView();
 
@@ -192,20 +192,20 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
 
         int secType = -1 ;
         if (result.capabilities.contains("WEP")) {
-            Log.d ("Security info","SECURITY_WEP");
+            Log.d (TAG,"Security info: SECURITY_WEP");
             secType = WIRELESS_WEP;
 
         }
         else if (result.capabilities.contains("WPA2")) {
-            Log.d ("Security info","SECURITY_WPA2");
+            Log.d (TAG,"Security info: SECURITY_WPA2");
             secType = WIRELESS_WPA2;
 
         } else if (result.capabilities.contains("WPA")) {
-            Log.d ("Security info","SECURITY_WPA");
+            Log.d (TAG,"Security info: SECURITY_WPA");
             secType = WIRELESS_WPA;
         }
         else{
-            Log.d ("Security info"," SECURITY_NONE");
+            Log.d (TAG,"Security info: SECURITY_NONE");
             secType = WIRELESS_NO_SEC;
         }
 
@@ -288,6 +288,7 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
     public void onFinishWifiSetup(ScanResult network,String key)
     {
         mListener.onFragmentWifiSetup(network.SSID,getSecurity(network),key);
+        getFragmentManager().popBackStack();
     }
 
     /**

@@ -191,15 +191,27 @@ public class eMotoBTService implements eMotoBTServiceInterface {
 
     //region send data section
 
+    /**
+     * provide interface for the eMotoService to send information to the session
+     * @return
+     */
+    public eMotoBTSession getSession(){
+        return mBTSession;
+    }
 
     /**
-     * Test functionality
+     * check if the session is ready for end-to-end communication
+     * @return boolean
      */
-    public void btTestInteractionTrigger(){
-        if(mBTSession!= null){
-            mBTSession.testInteraction();
+    public boolean sessionIsReady(){
+
+        boolean returnVal = false;
+        if(mBTSession!=null){
+            returnVal = true;
         }
+        return returnVal;
     }
+
 
     /**
      * Send byte array over outputStream

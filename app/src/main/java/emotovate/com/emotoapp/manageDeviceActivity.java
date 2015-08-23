@@ -127,6 +127,8 @@ public class manageDeviceActivity extends screenBaseActivity
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_GET_REPORT);
         this.startService(i);
+
+
     }
 
     public void requestConnect(String eMotoCell)
@@ -139,8 +141,21 @@ public class manageDeviceActivity extends screenBaseActivity
     }
 
     @Override
-    public void onClickSetupWifi() {
-        Log.d(TAG, "onClickSetupWifi()");
+    public void onFragmentWifiSetup(String SSID, int SecType, String key) {
+
+        //TODO: invoke BT service to send data
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_SET_WIFI);
+        i.putExtra(eMotoService.EXTRA_WIFI_SSID,SSID);
+        i.putExtra(eMotoService.EXTRA_WIFI_SEC,SecType);
+        i.putExtra(eMotoService.EXTRA_WIFI_KEY,key);
+        this.startService(i);
+
+    }
+
+    @Override
+    public void onClickSetupWifiFragment() {
+        Log.d(TAG, "onClickSetupWifiFragment()");
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -148,14 +163,6 @@ public class manageDeviceActivity extends screenBaseActivity
 
         // Commit the transaction
         transaction.commit();
-
-    }
-
-    @Override
-    public void onFragmentWifiSetup(String SSID, int SecType, String key) {
-
-        //TODO: invoke BT service to send data
-
     }
 
     //endregion
