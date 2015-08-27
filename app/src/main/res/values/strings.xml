@@ -2,7 +2,7 @@
     <string name="app_name">eMotoApp</string>
 
     <string name="screen_nav_draw_section1">Manage Ads</string>
-    <string name="screen_nav_draw_section2">Connect Device</string>
+    <string name="screen_nav_draw_section2">Manage eMotoCell</string>
     <string name="screen_nav_draw_section3">My Account</string>
     <string name="screen_nav_draw_section4">To Advertiser View</string>
 

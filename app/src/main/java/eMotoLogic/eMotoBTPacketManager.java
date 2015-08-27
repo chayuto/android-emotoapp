@@ -136,14 +136,25 @@ public class eMotoBTPacketManager {
                         switch(mPacket.getDataId()){
 
                             case eMotoBTPacket.DID_DEVICE_ID:
+                                Log.d(TAG,"DID_DEVICE_ID");
+
                                 int len = eMotoBTPacket.LEN_DID_ACK_DEV_ID;
-                                byte[] devIDbytes = new byte[len];
-                                System.arraycopy(mPacket.getmPayloadBytes(), 1, devIDbytes, 0, len);
-                                String devID = String.format("%02x%02x%02x%02x",devIDbytes[0],devIDbytes[1],devIDbytes[2],devIDbytes[3]);
-                                Log.d(TAG,String.format("devID:%s ",devID));
-                                mBTSessionInterface.setupSessionWithDeviceID(devID);
+
+                                if (mPacket.getmPayloadBytes().length == len){
+                                    byte[] devIDbytes = new byte[len];
+                                    System.arraycopy(mPacket.getmPayloadBytes(), 1, devIDbytes, 0, len);
+                                    String devID = String.format("%02x%02x%02x%02x",devIDbytes[0],devIDbytes[1],devIDbytes[2],devIDbytes[3]);
+                                    Log.d(TAG,String.format("devID:%s ",devID));
+                                    mBTSessionInterface.setupSessionWithDeviceID(devID);
+                                }
+                                else
+                                {
+                                    Log.d(TAG,"Payload length mismatch DID");
+                                }
+
 
                             case eMotoBTPacket.DID_HW_VERSION:
+
                             case eMotoBTPacket.DID_FW_VERSION:
                             case eMotoBTPacket.DID_IMG_INFO:
 
