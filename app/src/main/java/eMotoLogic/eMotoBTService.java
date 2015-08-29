@@ -47,7 +47,6 @@ public class eMotoBTService implements eMotoBTServiceInterface {
 
     private Context mContext;
     private eMotoServiceInterface mServiceInterface;
-    private eMotoBTPacketManager mPacketManager;
     private eMotoBTSession mBTSession;
 
 

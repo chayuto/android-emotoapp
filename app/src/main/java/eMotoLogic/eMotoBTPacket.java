@@ -37,6 +37,7 @@ public class eMotoBTPacket {
     public final static byte DID_IMG_ONLIST = (byte)0x22;
 
     public final static byte DID_WIFI_SETUP = (byte)0x30;
+    public final static byte DID_AUTHEN_SETUP = (byte)0x31;
 
     public final static int LEN_DID_BYTE = 1;
     public final static int LEN_DID_ACK_DEV_ID = 4;
@@ -176,6 +177,29 @@ public class eMotoBTPacket {
 
         return mPacket;
     }
+
+
+    public static eMotoBTPacket setDeviceAuthenPacket(int transactionID, String credential)
+    {
+        eMotoBTPacket mPacket;
+
+
+
+        byte[] CredentialBytes = credential.getBytes(Charset.forName("UTF-8"));
+
+        byte[] payloadBytes = new byte[CredentialBytes.length + 1 ];
+
+
+        payloadBytes[0] = DID_AUTHEN_SETUP;
+        System.arraycopy(CredentialBytes,0,payloadBytes,LEN_DID_BYTE,CredentialBytes.length);
+
+        mPacket = new eMotoBTPacket(SET_COMMAND,transactionID,payloadBytes);
+
+        return mPacket;
+    }
+
+
+
 
     /*
      * Functional modules

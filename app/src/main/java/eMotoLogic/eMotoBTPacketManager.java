@@ -149,6 +149,7 @@ public class eMotoBTPacketManager {
                                 }
                                 else
                                 {
+                                    //length error
                                     Log.d(TAG,"Payload length mismatch DID");
                                 }
 

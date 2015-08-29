@@ -29,6 +29,7 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
 
     private void initializeSession(){
         Log.d(TAG,"initializeSession()");
+
         //get device ID
         mPacketManager.addPacketToPendingList(eMotoBTPacket.GetDeviceIdPacket(getNewTransactionID()));
         mPacketManager.sendPendingPackets();
@@ -37,6 +38,7 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
     public void setupSessionWithDeviceID(String deviceID){
         Log.d(TAG,"setupSessionWithDeviceID()");
 
+        //find out which type of device is connected to
         mCell = eMotoCell.getDeviceFromServer(mServiceInterface.getLoginToken(),deviceID);
         if(mCell.isFixed()){
             Log.d(TAG,"FixedCell");
@@ -48,6 +50,8 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
         mCell.setDeviceAssetId("Test2");
         mCell.deviceLatitude = "-33.7238297";
         mCell.deviceLongitude =  "151.1220244";
+
+        //report connection back to server
         mCell.putDeviceOnServer(mServiceInterface.getLoginToken());
     }
 
@@ -75,8 +79,14 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
     }
 
     public void setDeviceWifi(String SSID, int sectype, String key){
-        eMotoBTPacket testPacket = eMotoBTPacket.setDeviceWifiPacket(getNewTransactionID(), SSID, sectype, key);
-        mPacketManager.addPacketToPendingList(testPacket);
+        eMotoBTPacket mPacket = eMotoBTPacket.setDeviceWifiPacket(getNewTransactionID(), SSID, sectype, key);
+        mPacketManager.addPacketToPendingList(mPacket);
+        mPacketManager.sendPendingPackets();
+    }
+
+    public void setDeviceAuthen(String Credential){
+        eMotoBTPacket mPacket = eMotoBTPacket.setDeviceAuthenPacket(getNewTransactionID(), Credential);
+        mPacketManager.addPacketToPendingList(mPacket);
         mPacketManager.sendPendingPackets();
     }
 

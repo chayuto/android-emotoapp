@@ -63,6 +63,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_BT_SEND_DATA = "CMD_BT_SEND_DATA";
     public final static String CMD_BT_SEND_TEST1 = "CMD_BT_SEND_TEST1";
     public final static String CMD_BT_SET_WIFI = "CMD_BT_SET_WIFI";
+    public final static String CMD_BT_SET_CELL_AUTHEN = "CMD_BT_SET_CELL_AUTHEN";
     public final static String CMD_TEST_SCHEDULE = "CMD_TEST_SCHEDULE";
 
 
@@ -216,12 +217,11 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
 
             case CMD_BT_SET_WIFI:
-                if(mBTService.sessionIsReady()) {
-                    String ssid = intent.getStringExtra(EXTRA_WIFI_SSID);
-                    int secType = intent.getIntExtra(EXTRA_WIFI_SEC,0);
-                    String key = intent.getStringExtra(EXTRA_WIFI_KEY);
-                    mBTService.getSession().setDeviceWifi(ssid,secType,key);
-                }
+                this.setCmdBtSetWifi(intent);
+                break;
+
+            case CMD_BT_SET_CELL_AUTHEN:
+                this.setCmdBtSetCellAuthen();
                 break;
 
             case CMD_TEST_SCHEDULE:
@@ -232,6 +232,28 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
         }
     }
+
+    //region command actions
+
+    private void setCmdBtSetCellAuthen(){
+        //if the login session is active and cell is ready
+        if(mBTService.sessionIsReady() && mLoginResponse.isSuccess() ) {
+
+            mBTService.getSession().setDeviceAuthen(mLoginResponse.getCredential());
+        }
+    }
+
+    private void setCmdBtSetWifi(Intent intent){
+        if(mBTService.sessionIsReady()) {
+            String ssid = intent.getStringExtra(EXTRA_WIFI_SSID);
+            int secType = intent.getIntExtra(EXTRA_WIFI_SEC,0);
+            String key = intent.getStringExtra(EXTRA_WIFI_KEY);
+            mBTService.getSession().setDeviceWifi(ssid, secType, key);
+        }
+    }
+
+
+    //endregion
 
 
     //region Testing
