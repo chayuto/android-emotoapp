@@ -134,7 +134,6 @@ public class eMotoAdsSchedule {
             ex.printStackTrace();
         }
 
-        //TODO: remove this later!
         return mySchedule;
     }
 

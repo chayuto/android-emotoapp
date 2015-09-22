@@ -239,38 +239,80 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
 
-        //TODO: IF the network has security
-        // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        //TODO: Check if the network has security
 
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.wifi_key_dialogue, null));
+        if (true){
+            //inflate layout to prompt for user key input
+
+            // Get the layout inflater
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+
+            // Inflate and set the layout for the dialog
+            // Pass null as the parent view because its going in the dialog layout
+            builder.setView(inflater.inflate(R.layout.wifi_key_dialogue, null));
 
 
-        // 2. Chain together various setter methods to set the dialog characteristics
-        builder.setMessage("Setup eMotoCell with this wifi?")
-                .setTitle("Network: " + network.SSID);
+            // 2. Chain together various setter methods to set the dialog characteristics
+            builder.setMessage("Setup eMotoCell with this wifi?")
+                    .setTitle("Network: " + network.SSID);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
 
-                Dialog f = (Dialog) dialog;
-                EditText wifiKeyEditText = (EditText) f.findViewById(R.id.editTextssidKey);
+                    Dialog f = (Dialog) dialog;
+                    EditText wifiKeyEditText = (EditText) f.findViewById(R.id.editTextssidKey);
 
-                onFinishWifiSetup(network,wifiKeyEditText.getText().toString());
-            }
-        })
+                    onFinishWifiSetup(network,wifiKeyEditText.getText().toString());
+                }
+            })
 
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
 
-        // 3. Get the AlertDialog from create()
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            // 3. Get the AlertDialog from create()
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+        }
+
+        else {
+            //IF the network has no security
+
+            // Get the layout inflater
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+
+            // Inflate and set the layout for the dialog
+            // Pass null as the parent view because its going in the dialog layout
+            builder.setView(inflater.inflate(R.layout.wifi_key_dialogue_no_security, null));
+
+
+            // 2. Chain together various setter methods to set the dialog characteristics
+            builder.setMessage("Setup eMotoCell with this wifi?")
+                    .setTitle("Network: " + network.SSID);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    onFinishWifiSetup(network,""); //pass empty string for no security key
+                }
+            })
+
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+
+            // 3. Get the AlertDialog from create()
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+
+        }
+
 
     }
 

@@ -56,8 +56,8 @@ public class manageDevicePairFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_manage_device_pair, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+
+    public void onButtonPressed() {
         if (mListener != null) {
            // mListener.onFragmentInteraction(uri);
         }

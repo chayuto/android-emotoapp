@@ -18,10 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import eMotoLogic.eMotoAdsCollection;
 import eMotoLogic.eMotoCell;
 import eMotoLogic.eMotoCellArrayAdapter;
-import eMotoLogic.eMotoUtility;
 
 /**
  *@deprecated

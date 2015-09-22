@@ -21,7 +21,7 @@ public class manageDeviceActivity extends screenBaseActivity
     public static String TAG = "manageDeviceActivity";
     private static String FragWifiSetupTag = "FragWifiSetup";
 
-    manageDeviceMainFragment mainFragment;
+    manageDeviceMainFragment mainDevFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +32,9 @@ public class manageDeviceActivity extends screenBaseActivity
 
         //setup simple fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        mainFragment =  manageDeviceMainFragment.newInstance();
+        mainDevFragment =  manageDeviceMainFragment.newInstance();
         fragmentManager.beginTransaction()
-                .replace(R.id.container,mainFragment)
+                .replace(R.id.container, mainDevFragment)
                 .commit();
     }
 
@@ -143,7 +143,7 @@ public class manageDeviceActivity extends screenBaseActivity
     @Override
     public void onFragmentWifiSetup(String SSID, int SecType, String key) {
 
-        //TODO: invoke BT service to send data
+        //invoke BT service to send data
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_SET_WIFI);
         i.putExtra(eMotoService.EXTRA_WIFI_SSID,SSID);
@@ -172,9 +172,9 @@ public class manageDeviceActivity extends screenBaseActivity
     @Override
     public void onBTPairedList(ArrayList<String> list){
         Log.d(TAG, " onBTPairedList()");
-        if(mainFragment != null){
+        if(mainDevFragment != null){
 
-            //mainFragment.deviceListUpdate(list);
+            //mainDevFragment.deviceListUpdate(list);
 
             //TODO: remove hack
             requestConnect("HC-06");

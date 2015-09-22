@@ -157,40 +157,13 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
         switch (ServiceCMD){
             case CMD_STARTAUTOREAUTHENTICATE:
-                mLoginResponse = intent.getExtras().getParcelable(EXTRA_EMOTOLOGINRESPONSE);
-                if(mLoginResponse != null) {
-                    Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
-                    this.startAutoReauthenticate(mLoginResponse);
-                    //eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.token, this);
-                }
-                else
-                {
-                    Log.d(TAG, "Null Object Reference!");
-                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, eMotoService.this);
-                }
+                cmdStartAutoAuthenticate(intent);
                 break;
             case CMD_GETTOKEN:
-
-                if (mLoginResponse == null)
-                {
-                    Log.d(TAG, "Null Object Reference!");
-                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, this);
-                    break;
-                }
-
-                if(mLoginResponse.isSuccess()) {
-                    Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
-                    eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), this);
-                }
-                else
-                {
-                    Log.d(TAG, "token is not valid");
-                    eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
-                }
+                this.cmdGettoken();
                 break;
             case CMD_STARTLOCATIONSERVICE:
                 startLocationService();
-
                 break;
             case CMD_STOPLOCATIONSERVICE:
                 stopLocationService();
@@ -217,11 +190,11 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
 
             case CMD_BT_SET_WIFI:
-                this.setCmdBtSetWifi(intent);
+                this.cmdBtSetWifi(intent);
                 break;
 
             case CMD_BT_SET_CELL_AUTHEN:
-                this.setCmdBtSetCellAuthen();
+                this.cmdBtSetCellAuthen();
                 break;
 
             case CMD_TEST_SCHEDULE:
@@ -233,9 +206,47 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         }
     }
 
-    //region command actions
+    //region Command Actions
+    private void cmdStartAutoAuthenticate(Intent intent){
+        mLoginResponse = intent.getExtras().getParcelable(EXTRA_EMOTOLOGINRESPONSE);
+        if(mLoginResponse != null) {
+            Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
+            this.startAutoReauthenticate(mLoginResponse);
+            //eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.token, this);
+        }
+        else
+        {
+            Log.d(TAG, "Null Object Reference!");
+            eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, eMotoService.this);
+        }
 
-    private void setCmdBtSetCellAuthen(){
+    }
+
+    private void cmdGettoken()
+    {
+        if (mLoginResponse == null)
+        {
+            Log.d(TAG, "Null Object Reference!");
+            eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, this);
+            return;
+        }
+
+        if(mLoginResponse.isSuccess()) {
+            Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
+            eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), this);
+        }
+        else
+        {
+            Log.d(TAG, "token is not valid");
+            eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
+        }
+    }
+
+
+    /**
+     * Pass user credential to the eMotocell
+     */
+    private void cmdBtSetCellAuthen(){
         //if the login session is active and cell is ready
         if(mBTService.sessionIsReady() && mLoginResponse.isSuccess() ) {
 
@@ -243,7 +254,12 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         }
     }
 
-    private void setCmdBtSetWifi(Intent intent){
+    /**
+     * Pass wifi SSID and key information to the eMotoCell
+     *
+     * @param intent
+     */
+    private void cmdBtSetWifi(Intent intent){
         if(mBTService.sessionIsReady()) {
             String ssid = intent.getStringExtra(EXTRA_WIFI_SSID);
             int secType = intent.getIntExtra(EXTRA_WIFI_SEC,0);
@@ -251,10 +267,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
             mBTService.getSession().setDeviceWifi(ssid, secType, key);
         }
     }
-
-
     //endregion
-
 
     //region Testing
 

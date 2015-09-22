@@ -15,10 +15,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import eMotoLogic.eMotoAds;
 import eMotoLogic.eMotoAdsApprovalItem;
 import eMotoLogic.eMotoAdsArrayAdapter;
-import eMotoLogic.eMotoAdsCollection;
 import eMotoLogic.eMotoAdsApproval;
 
 /**

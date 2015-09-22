@@ -158,8 +158,10 @@ public class eMotoBTService implements eMotoBTServiceInterface {
     }
 
     public String getServiceReport (){
-        //TODO:Add debugging functionality
-        return String.format("State:%d",getServiceState());
+
+        String report = String.format("State:%d",getServiceState());
+
+        return report;
     }
 
     /**
