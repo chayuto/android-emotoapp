@@ -110,9 +110,12 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
+
+        /*
         if (mAuthTask != null) {
             return;
         }
+        */
 
         // Reset errors.
         mEmailView.setError(null);
