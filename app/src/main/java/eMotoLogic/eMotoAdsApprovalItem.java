@@ -2,6 +2,7 @@ package eMotoLogic;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +11,8 @@ import org.json.JSONObject;
  * Created by chayut on 23/07/15.
  */
 public class eMotoAdsApprovalItem implements Parcelable {
+
+    private static final String TAG = "eMotoAdsApprovalItem";
 
     private String AdsId;
     private String AdsDescription;
@@ -53,6 +56,19 @@ public class eMotoAdsApprovalItem implements Parcelable {
 
         return ThumbnailURL;
     }
+
+
+    public String isApprovedStr() {
+
+        Log.d(TAG,"TEMP: " + Approved);
+        return Approved;
+    }
+
+    public Boolean isApproved(){
+
+        return Boolean.parseBoolean(isApprovedStr());
+    }
+
 
 
     //region Parcelable

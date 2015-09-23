@@ -122,6 +122,83 @@ public class eMotoAdsApproval {
         return hashMap;
     }
 
+    static public HashMap<String,eMotoAdsApprovalItem> getAdsApproved (String token) {
+
+        Log.d(TAG, "getAdsCollection()");
+        HashMap<String,eMotoAdsApprovalItem> hashMap =  new HashMap<String,eMotoAdsApprovalItem>();
+        BufferedReader rd  = null;
+
+
+
+        try {
+            URL u;
+
+            u = new URL(String.format("https://emotovate.com/api/ads/approvalstatus/%s/?status=1",token));
+
+            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+            Log.v(TAG, "GET:" + u);
+            c.setRequestMethod("GET");
+
+            c.setRequestProperty("Content-length", "0");
+            c.setRequestProperty("Content-Type","application/json");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+            int status = c.getResponseCode();
+
+            Log.v(TAG, String.format("http-response:%3d", status));
+            switch (status) {
+
+                case 200:
+                case 201:
+                    rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
+
+                    hashMap.clear();//clear all old entry in hashmap
+
+                    String json = rd.readLine();
+
+                    Log.d(TAG, "Response: " + json);
+
+                    JSONArray jArray  = new JSONArray(json);
+                    for(int n = 0; n < jArray.length(); n++) {
+                        eMotoAdsApprovalItem myAds = new  eMotoAdsApprovalItem(jArray.getJSONObject(n));
+                        hashMap.put(myAds.id(), myAds);
+                    }
+
+                    for(HashMap.Entry<String, eMotoAdsApprovalItem> entry: hashMap.entrySet())  {
+
+                        Log.d(TAG, "Ads: " + entry.getValue().id());
+                    }
+
+                    break;
+                case 400:
+                case 401:
+                case 404:
+                case 500:
+                    rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
+
+                    Log.d(TAG,"ERROR " +rd.readLine());
+                    break;
+                default:
+
+
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        catch (JSONException ex){
+            ex.printStackTrace();
+        }
+        return hashMap;
+    }
+
     public boolean approveAdsWithID(String adsID,String token){
 
         BufferedReader rd  = null;

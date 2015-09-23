@@ -145,7 +145,9 @@ public class manageAdsListFragment extends Fragment {
             String token = ((manageAdsActivity) getActivity()).getLoginToken();
             Log.d(TAG,"getAdsCollectionTask():"+token);
 
+            //get get approved list from server
             myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
+            //myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
 
             return "test";
 
@@ -252,10 +254,12 @@ public class manageAdsListFragment extends Fragment {
         return ((manageAdsActivity) getActivity()).getLoginToken();
     }
     public void approveAds(eMotoAdsApprovalItem  Ads){
+        Log.d(TAG, "approveAds()");
         new ApproveTask().execute(Ads.id(),this.getLoginToken());
     }
 
     public void unapproveAds(eMotoAdsApprovalItem  Ads){
+        Log.d(TAG, "unapproveAds()");
         new UnapproveTask().execute(Ads.id(),this.getLoginToken());
     }
 

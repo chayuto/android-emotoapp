@@ -8,6 +8,9 @@ import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.logging.Handler;
 
 import eMotoLogic.eMotoAdsApprovalItem;
 import eMotoLogic.eMotoCell;
@@ -24,6 +27,8 @@ public class manageAdsActivity extends screenBaseActivity
     private static String FragAdsListTag = "FragAdsList";
     private static String FragAdsDetailsTag = "FragAdsDetails";
     private static String FragStackTag = "FragStack";
+
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,8 @@ public class manageAdsActivity extends screenBaseActivity
     @Override
     public void onResume(){
         super.onResume();
-        Log.d(TAG,"onResume()");
+        Log.d(TAG, "onResume()");
+        this.doubleBackToExitPressedOnce = false;
 
         //set fragment
         super.setupNavFragment(0); //position 0
@@ -65,12 +71,14 @@ public class manageAdsActivity extends screenBaseActivity
     public void onBackPressed()
     {
         Log.d(TAG,"onBackPressed()");
+
         final Fragment fragment = getFragmentManager().findFragmentByTag(FragAdsDetailsTag);
         if(fragment!=null)
         {
             if (fragment.isVisible()) {
                 Log.d(TAG,"FragAdsDetails Visible");
                 getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                this.doubleBackToExitPressedOnce = false;
                 return;
             }
             else {
@@ -93,7 +101,12 @@ public class manageAdsActivity extends screenBaseActivity
         }
         */
 
-        super.onBackPressed(); //exit app
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this,"Double press to exit", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -178,15 +191,18 @@ public class manageAdsActivity extends screenBaseActivity
     }
 
     public void onAdsApproveSelect(eMotoAdsApprovalItem Ads){
+        Log.d(TAG,"onAdsApproveSelect()");
 
         //popbackstack
-        getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getFragmentManager().popBackStack(FragAdsDetailsTag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         //Pass Ads to fragment to make Network calls and update info
         manageAdsListFragment listFrag = (manageAdsListFragment) getFragmentManager().findFragmentByTag(FragAdsListTag);
         listFrag.approveAds(Ads);
 
     }
     public void onAdsUnapproveSelect(eMotoAdsApprovalItem Ads){
+        Log.d(TAG,"onAdsUnapproveSelect()");
+
         //popbackstack
         getFragmentManager().popBackStack(FragAdsDetailsTag,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         //Pass Ads to fragment to make Network calls and update info

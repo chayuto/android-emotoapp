@@ -83,9 +83,8 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         tvAdsID.setText(mAds.id());
         tvAdsDescription.setText(mAds.description());
 
-        //TODO:Update Logic
         //if(mAds.isApproved()){
-        if(true){
+        if(mAds.isApproved()){
             btnAccept.setText("Unapprove");
         }
         else
@@ -130,8 +129,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.btnAccept:
 
-                //TODO:update date status
-                if(false){
+                if(mAds.isApproved()){
                     mListener.onAdsUnapproveSelect(mAds);
                 }
                 else

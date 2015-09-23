@@ -67,7 +67,7 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
 
         // Create global configuration and initialize ImageLoader with this config
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .writeDebugLogs()
+                //.writeDebugLogs()
                 .build();
         ImageLoader.getInstance().init(config);
 
