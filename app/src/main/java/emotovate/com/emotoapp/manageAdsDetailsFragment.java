@@ -24,21 +24,21 @@ import eMotoLogic.eMotoAdsApprovalItem;
 public class manageAdsDetailsFragment extends Fragment implements View.OnClickListener{
 
 
-    //debug
-    private static String TAG = "manageAdsDetailsFragment";
-
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "eMotoAdsApprovalItem";
-
-
+    //debug
+    private static String TAG = "manageAdsDetailsFragment";
+    ImageLoader imageLoader = ImageLoader.getInstance();
+    DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
+            .cacheOnDisc(true).resetViewBeforeLoading(false).build();
     private eMotoAdsApprovalItem mAds;
     private OnAdsApproveSelectListener mListener;
     private ImageView ivAdsImage;
 
-    ImageLoader imageLoader = ImageLoader.getInstance();
-    DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
-            .cacheOnDisc(true).resetViewBeforeLoading(false).build();
 
+    public manageAdsDetailsFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Create new instance of manageAdsDetailsFragment
@@ -52,10 +52,6 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         args.putParcelable(ARG_PARAM1,ads);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public manageAdsDetailsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -74,7 +70,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_manage_ads_details, container, false);
 
-        Button btnAccept = (Button) view.findViewById(R.id.btnAccept);
+        Button btnAccept = (Button) view.findViewById(R.id.btnApproveAds);
         btnAccept.setOnClickListener(this);
         TextView tvAdsID = (TextView)  view.findViewById(R.id.adsIDTextview);
         TextView tvAdsDescription = (TextView)  view.findViewById(R.id.adsDescriptionTextview);
@@ -82,6 +78,10 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
 
         tvAdsID.setText(mAds.id());
         tvAdsDescription.setText(mAds.description());
+
+        Log.d(TAG, mAds.id());
+        Log.d(TAG, mAds.description());
+        Log.d(TAG, "Is Approved:" + mAds.isApprovedStr());
 
         //if(mAds.isApproved()){
         if(mAds.isApproved()){
@@ -125,15 +125,17 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
     @Override
     public void onClick(View v) {
         Log.d(TAG, "onClick()");
-        //do what you want to do when button is clicked
-        switch (v.getId()) {
-            case R.id.btnAccept:
 
+        switch (v.getId()) {
+            case R.id.btnApproveAds:
+                Log.d(TAG,"btnApproveAds Clicked");
                 if(mAds.isApproved()){
+                    Log.d(TAG,"Request unapprove:" + mAds.id());
                     mListener.onAdsUnapproveSelect(mAds);
                 }
                 else
                 {
+                    Log.d(TAG, "Request approve:" + mAds.id());
                     mListener.onAdsApproveSelect(mAds);
                 }
                 break;

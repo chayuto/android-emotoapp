@@ -24,26 +24,6 @@ public class eMotoAdsApproval {
 
     public HashMap<String,eMotoAdsApprovalItem> adsHashMap =  new HashMap<String,eMotoAdsApprovalItem>();
 
-
-    //region ads management
-    public eMotoAdsApprovalItem getAdsWithId (String id)
-    {
-        return  adsHashMap.get(id);
-    }
-
-    public boolean removeAdsWithId (String id){
-
-        if(adsHashMap.remove(id) == null)
-        {
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-    //endregion
-
-
     //region network connection
     static public HashMap<String,eMotoAdsApprovalItem> getAdsUnapproved (String token) {
 
@@ -198,6 +178,24 @@ public class eMotoAdsApproval {
         }
         return hashMap;
     }
+    //endregion
+
+    //region ads management
+    public eMotoAdsApprovalItem getAdsWithId (String id)
+    {
+        return  adsHashMap.get(id);
+    }
+
+    public boolean removeAdsWithId (String id){
+
+        if(adsHashMap.remove(id) == null)
+        {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
     public boolean approveAdsWithID(String adsID,String token){
 
@@ -207,8 +205,10 @@ public class eMotoAdsApproval {
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
-                URL u = new URL(String.format("https://emotovate.com/api/ads/approve/%s?userIP=%s",token,"192.168.1.1"));
-                HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+                //TODO: fix asset ID
+                String s = String.format("https://emotovate.com/api/ads/approve/%s?scheduleAssetId=%s&userIP=%s",token,adsID,"192.168.1.1");
+                Log.d(TAG,s);
+                URL u = new URL(s);HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
 
                 c.setRequestMethod("POST");
 
@@ -221,7 +221,7 @@ public class eMotoAdsApproval {
                 c.connect();
                 int status = c.getResponseCode();
 
-                Log.d("Application:", String.format("http-response:%3d", status));
+                Log.d(TAG, String.format("http-response:%3d", status));
                 switch (status) {
 
                     case 200:
@@ -229,10 +229,10 @@ public class eMotoAdsApproval {
                         rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
 
                         String json = rd.readLine();
-                        Log.d("Application:",json);
+                        Log.d(TAG,json);
                         break;
                     case 401:
-                        Log.d("Application:","Server unauthorized");
+                        Log.d(TAG,"Server unauthorized");
                         break;
                     default:
 
@@ -257,7 +257,10 @@ public class eMotoAdsApproval {
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
-                URL u = new URL(String.format("https://emotovate.com/api/ads/unapprove/%s?&userIP=%s",token,"192.168.1.1"));
+                //TODO: fix asset ID
+                String s = String.format("https://emotovate.com/api/ads/unapprove/%s?scheduleAssetId=%s&userIP=%s",token,adsID,"192.168.1.1");
+                Log.d(TAG,s);
+                URL u = new URL(s);
                 HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
 
                 c.setRequestMethod("POST");
@@ -271,7 +274,7 @@ public class eMotoAdsApproval {
                 c.connect();
                 int status = c.getResponseCode();
 
-                Log.d("Application:", String.format("http-response:%3d", status));
+                Log.d(TAG, String.format("http-response:%3d", status));
                 switch (status) {
 
                     case 200:
@@ -279,10 +282,10 @@ public class eMotoAdsApproval {
                         rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
 
                         String json = rd.readLine();
-                        Log.d("Application:","Ads" + json);
+                        Log.d(TAG,"Ads" + json);
                         break;
                     case 401:
-                        Log.d("Application:","Server unauthorized");
+                        Log.d(TAG,"Server unauthorized");
                         break;
                     default:
 

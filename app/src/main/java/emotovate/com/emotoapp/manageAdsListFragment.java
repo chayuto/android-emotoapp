@@ -26,18 +26,30 @@ import eMotoLogic.eMotoAdsApproval;
  */
 public class manageAdsListFragment extends Fragment {
 
+    private static final String ARG_PARAM1 = "eMotoCell";
     //debug
     private static String TAG = "manageAdsListFragment";
-
-    private static final String ARG_PARAM1 = "eMotoCell";
-
-    private ArrayList<eMotoAdsApprovalItem> adsArray = new ArrayList<eMotoAdsApprovalItem>();
-    private eMotoAdsApproval myAdsApproval = new eMotoAdsApproval();
-
     ListView listview;
     eMotoAdsArrayAdapter myAdapter;
-
+    private ArrayList<eMotoAdsApprovalItem> adsArray = new ArrayList<eMotoAdsApprovalItem>();
+    private eMotoAdsApproval myAdsApproval = new eMotoAdsApproval();
     private OnAdsListSelectListener mListener;
+    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+            onListItemClick((ListView) parent, v, position, id);
+
+            eMotoAdsApprovalItem ads =  adsArray.get(position);
+            Toast.makeText(getActivity(), String.format("Item Clicked %s", ads.description()),
+                    Toast.LENGTH_SHORT).show();
+
+            mListener.onAdsListSelect(ads);
+        }
+    };
+
+    public manageAdsListFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -54,10 +66,6 @@ public class manageAdsListFragment extends Fragment {
         //args.putParcelable(ARG_PARAM1,myCell);
         //fragment.setArguments(args);
         return fragment;
-    }
-
-    public manageAdsListFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -99,8 +107,6 @@ public class manageAdsListFragment extends Fragment {
         new getAdsCollectionTask().execute();
     }
 
-
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -118,12 +124,39 @@ public class manageAdsListFragment extends Fragment {
         mListener = null;
     }
 
+    //region Task
+
+    //region Listview
+    private void fillListView(){
+
+        listview.setAdapter(myAdapter);
+    }
+
+    protected void onListItemClick(ListView l, View v, int position, long id) { }
+
+    private String getLoginToken (){
+        return ((manageAdsActivity) getActivity()).getLoginToken();
+    }
+
+    //endregion
+
+    public void approveAds(eMotoAdsApprovalItem  Ads){
+        Log.d(TAG, "approveAds()"+ Ads.id());
+        new ApproveTask().execute(Ads.id(),this.getLoginToken());
+    }
+
+    public void unapproveAds(eMotoAdsApprovalItem  Ads){
+        Log.d(TAG, "unapproveAds()" + Ads.id());
+        new UnapproveTask().execute(Ads.id(),this.getLoginToken());
+    }
 
     public interface OnAdsListSelectListener {
         void onAdsListSelect(eMotoAdsApprovalItem Ads);
     }
 
-    //region Task
+    //endregion
+
+    //region logic
 
     private class getAdsCollectionTask extends AsyncTask<Object, Void, String> {
 
@@ -220,47 +253,6 @@ public class manageAdsListFragment extends Fragment {
             new getAdsCollectionTask().execute();
             //completion handler
         }
-    }
-
-    //endregion
-
-    //region Listview
-    private void fillListView(){
-
-        listview.setAdapter(myAdapter);
-    }
-
-
-    protected void onListItemClick(ListView l, View v, int position, long id) { }
-
-    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-            onListItemClick((ListView) parent, v, position, id);
-
-            eMotoAdsApprovalItem ads =  adsArray.get(position);
-            Toast.makeText(getActivity(), String.format("Item Clicked %s", ads.description()),
-                    Toast.LENGTH_SHORT).show();
-
-            mListener.onAdsListSelect(ads);
-        }
-    };
-
-    //endregion
-
-    //region logic
-
-    private String getLoginToken (){
-        return ((manageAdsActivity) getActivity()).getLoginToken();
-    }
-    public void approveAds(eMotoAdsApprovalItem  Ads){
-        Log.d(TAG, "approveAds()");
-        new ApproveTask().execute(Ads.id(),this.getLoginToken());
-    }
-
-    public void unapproveAds(eMotoAdsApprovalItem  Ads){
-        Log.d(TAG, "unapproveAds()");
-        new UnapproveTask().execute(Ads.id(),this.getLoginToken());
     }
 
 }

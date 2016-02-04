@@ -93,7 +93,6 @@ public class eMotoAdsSchedule {
 
                         for(int m = 0; m < adsJSONArray.length(); m++) {
 
-
                             JSONObject adsJSONObject = adsJSONArray.getJSONObject(m);
                             eMotoAds myAds = new eMotoAds(adsJSONObject);
                             adsList.add(myAds);
