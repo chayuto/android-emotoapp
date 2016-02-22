@@ -23,28 +23,161 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class eMotoCell implements Parcelable {
 
-    private static final String TAG = "eMotoCell";
+    public static final Creator<eMotoCell> CREATOR
+            = new Creator<eMotoCell>() {
+        public eMotoCell createFromParcel(Parcel in) {
+            return new eMotoCell(in);
+        }
 
+        public eMotoCell[] newArray(int size) {
+            return new eMotoCell[size];
+        }
+    };
+    private static final String TAG = "eMotoCell";
     public String deviceID;
     public String deviceName;
     public String eMotocellSerialNo;
-    private String deviceFixed;
-
     public String deviceLatitude;
     public String deviceLongitude;
-
-
-
+    private String deviceFixed;
+    private int dailyAdsLimit;
     private String deviceAssetId;
-
-
     public eMotoCell(JSONObject cell)
     {
         setCellProperty(cell);
     }
+
     public eMotoCell(){
 
     }
+
+    private eMotoCell(Parcel in) {
+        deviceID = in.readString();
+        deviceName = in.readString();
+        eMotocellSerialNo = in.readString();
+        deviceLatitude = in.readString();
+        deviceLongitude = in.readString();
+        deviceFixed = in.readString();
+        deviceAssetId = in.readString();
+        dailyAdsLimit = in.readInt();
+    }
+
+    public static eMotoCell getDeviceFromServer (String token, String DevID) {
+
+         Log.d(TAG,"getDeviceFromServer()");
+
+        BufferedReader rd = null;
+        eMotoCell mCell =null;
+
+        try {
+            URL u = new URL(String.format("https://emotovate.com/api/device/get/%s?deviceId=%s", token,DevID));
+            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+
+            c.setRequestMethod("GET");
+
+            c.setRequestProperty("Content-length", "0");
+            c.setRequestProperty("Content-Type", "application/json");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+            int status = c.getResponseCode();
+
+            Log.d(TAG, String.format("http-response:%3d", status));
+            switch (status) {
+
+                case 200:
+                case 201:
+                    rd = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    String json = rd.readLine();
+                    Log.d(TAG, json);
+                    JSONObject dev= new JSONObject(json);
+                    mCell = new eMotoCell(dev);
+                    break;
+                case 401:
+                    rd = new BufferedReader(new InputStreamReader(c.getErrorStream()));
+
+                    Log.d(TAG, "Server unauthorized: " + rd.readLine());
+                    break;
+                default:
+
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return mCell;
+    }
+
+    public static HashMap<String,eMotoCell> getDeviceListFromServer (String token) {
+
+        BufferedReader rd  = null;
+
+        HashMap<String,eMotoCell> cellHashMap = new HashMap<String,eMotoCell>();
+
+
+
+        try {
+            URL u = new URL(String.format("https://emotovate.com/api/device/all/%s",token));
+            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+
+            c.setRequestMethod("GET");
+
+            c.setRequestProperty("Content-length", "0");
+            c.setRequestProperty("Content-Type","application/json");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+            int status = c.getResponseCode();
+
+            Log.d(TAG, String.format("http-response:%3d", status));
+            switch (status) {
+
+                case 200:
+                case 201:
+                    rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    String json = rd.readLine();
+                    Log.d(TAG,json);
+                    JSONArray devArray  = new JSONArray(json);
+
+                    for(int n = 0; n < devArray .length(); n++) {
+                        eMotoCell mCell = new eMotoCell(devArray.getJSONObject(n));
+                        cellHashMap.put(mCell.deviceID,mCell);
+                        Log.d(TAG,"eMtotoCell:"+mCell.deviceID);
+                    }
+
+                    break;
+                case 401:
+                    rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
+
+                    Log.d(TAG,"Server unauthorized: " +rd.readLine());
+                    break;
+                default:
+
+
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        catch (JSONException ex){
+            ex.printStackTrace();
+        }
+        return cellHashMap;
+    }
+
+    //endregion
 
     //constructor
     private void setCellProperty(JSONObject cell)
@@ -55,6 +188,7 @@ public class eMotoCell implements Parcelable {
             eMotocellSerialNo = cell.getString("eMotocellSerialNo");
             deviceFixed = cell.getString("Fixed");
             deviceAssetId = ""; //set empty string
+            dailyAdsLimit = cell.getInt("DailyAdsLiimt");
 
         }
         catch (JSONException ex){
@@ -74,7 +208,6 @@ public class eMotoCell implements Parcelable {
     public void setDeviceAssetId(String deviceAssetId) {
         this.deviceAssetId = deviceAssetId;
     }
-
     //endregion
 
     //region Parcelable
@@ -91,29 +224,9 @@ public class eMotoCell implements Parcelable {
         out.writeString(deviceLongitude);
         out.writeString(deviceFixed);
         out.writeString(deviceAssetId);
+        out.writeInt(dailyAdsLimit);
+
     }
-
-    public static final Creator<eMotoCell> CREATOR
-            = new Creator<eMotoCell>() {
-        public eMotoCell createFromParcel(Parcel in) {
-            return new eMotoCell(in);
-        }
-
-        public eMotoCell[] newArray(int size) {
-            return new eMotoCell[size];
-        }
-    };
-
-    private eMotoCell(Parcel in) {
-        deviceID = in.readString();
-        deviceName = in.readString();
-        eMotocellSerialNo = in.readString();
-        deviceLatitude = in.readString();
-        deviceLongitude = in.readString();
-        deviceFixed = in.readString();
-        deviceAssetId = in.readString();
-    }
-    //endregion
 
     //region network connection
     public void putDeviceOnServer (String token) {
@@ -180,120 +293,6 @@ public class eMotoCell implements Parcelable {
             ex.printStackTrace();
         }
 
-    }
-
-    public static eMotoCell getDeviceFromServer (String token, String DevID) {
-
-        BufferedReader rd = null;
-        eMotoCell mCell =null;
-
-        try {
-            URL u = new URL(String.format("https://emotovate.com/api/device/get/%s?deviceId=%s", token,DevID));
-            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
-
-            c.setRequestMethod("GET");
-
-            c.setRequestProperty("Content-length", "0");
-            c.setRequestProperty("Content-Type", "application/json");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.setConnectTimeout(5000);
-            c.setReadTimeout(5000);
-            c.connect();
-            int status = c.getResponseCode();
-
-            Log.d(TAG, String.format("http-response:%3d", status));
-            switch (status) {
-
-                case 200:
-                case 201:
-                    rd = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                    String json = rd.readLine();
-                    Log.d(TAG, json);
-                    JSONObject dev= new JSONObject(json);
-                    mCell = new eMotoCell(dev);
-                    break;
-                case 401:
-                    rd = new BufferedReader(new InputStreamReader(c.getErrorStream()));
-
-                    Log.d(TAG, "Server unauthorized: " + rd.readLine());
-                    break;
-                default:
-
-            }
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-        return mCell;
-    }
-
-
-    public static HashMap<String,eMotoCell> getDeviceListFromServer (String token) {
-
-        BufferedReader rd  = null;
-
-        HashMap<String,eMotoCell> cellHashMap = new HashMap<String,eMotoCell>();
-
-
-
-        try {
-            URL u = new URL(String.format("https://emotovate.com/api/device/all/%s",token));
-            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
-
-            c.setRequestMethod("GET");
-
-            c.setRequestProperty("Content-length", "0");
-            c.setRequestProperty("Content-Type","application/json");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.setConnectTimeout(5000);
-            c.setReadTimeout(5000);
-            c.connect();
-            int status = c.getResponseCode();
-
-            Log.d(TAG, String.format("http-response:%3d", status));
-            switch (status) {
-
-                case 200:
-                case 201:
-                    rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                    String json = rd.readLine();
-                    Log.d(TAG,json);
-                    JSONArray devArray  = new JSONArray(json);
-
-                    for(int n = 0; n < devArray .length(); n++) {
-                        eMotoCell mCell = new eMotoCell(devArray.getJSONObject(n));
-                        cellHashMap.put(mCell.deviceID,mCell);
-                        Log.d(TAG,"eMtotoCell:"+mCell.deviceID);
-                    }
-
-                    break;
-                case 401:
-                    rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
-
-                    Log.d(TAG,"Server unauthorized: " +rd.readLine());
-                    break;
-                default:
-
-
-            }
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        catch (JSONException ex){
-            ex.printStackTrace();
-        }
-        return cellHashMap;
     }
     //endregion  static
 

@@ -12,8 +12,17 @@ import org.json.JSONObject;
  */
 public class eMotoAdsApprovalItem implements Parcelable {
 
-    private static final String TAG = "eMotoAdsApprovalItem";
+    public static final Creator<eMotoAdsApprovalItem> CREATOR
+            = new Creator<eMotoAdsApprovalItem>() {
+        public eMotoAdsApprovalItem createFromParcel(Parcel in) {
+            return new eMotoAdsApprovalItem(in);
+        }
 
+        public eMotoAdsApprovalItem[] newArray(int size) {
+            return new eMotoAdsApprovalItem[size];
+        }
+    };
+    private static final String TAG = "eMotoAdsApprovalItem";
     private String AdsId;
     private String AdsDescription;
     private String AdsUrl;
@@ -24,6 +33,15 @@ public class eMotoAdsApprovalItem implements Parcelable {
     public eMotoAdsApprovalItem(JSONObject ads)
     {
         setAdsProperties(ads);
+    }
+
+    private eMotoAdsApprovalItem(Parcel in) {
+        AdsId= in.readString();
+        AdsDescription= in.readString();
+        AdsUrl = in.readString();
+        Approved = in.readString();
+        AdsApprovalDate = in.readString();
+        AdsApprovedById = in.readString();
     }
 
     private void setAdsProperties(JSONObject ads){
@@ -57,10 +75,9 @@ public class eMotoAdsApprovalItem implements Parcelable {
         return ThumbnailURL;
     }
 
-
     public String isApprovedStr() {
 
-        Log.d(TAG,"TEMP: " + Approved);
+        Log.d(TAG,"isApproved: " + Approved);
         return Approved;
     }
 
@@ -68,8 +85,6 @@ public class eMotoAdsApprovalItem implements Parcelable {
 
         return Boolean.parseBoolean(isApprovedStr());
     }
-
-
 
     //region Parcelable
     public int describeContents() {
@@ -84,26 +99,6 @@ public class eMotoAdsApprovalItem implements Parcelable {
         out.writeString(Approved);
         out.writeString(AdsApprovalDate);
         out.writeString(AdsApprovedById);
-    }
-
-    public static final Creator<eMotoAdsApprovalItem> CREATOR
-            = new Creator<eMotoAdsApprovalItem>() {
-        public eMotoAdsApprovalItem createFromParcel(Parcel in) {
-            return new eMotoAdsApprovalItem(in);
-        }
-
-        public eMotoAdsApprovalItem[] newArray(int size) {
-            return new eMotoAdsApprovalItem[size];
-        }
-    };
-
-    private eMotoAdsApprovalItem(Parcel in) {
-        AdsId= in.readString();
-        AdsDescription= in.readString();
-        AdsUrl = in.readString();
-        Approved = in.readString();
-        AdsApprovalDate = in.readString();
-        AdsApprovedById = in.readString();
     }
 
     //endregion

@@ -44,11 +44,10 @@ import eMotoLogic.eMotoUtility;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginPageActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginPageActivity extends Activity {
 
-    private eMotoLoginResponse mLoginResponse;
     private static final String TAG = "LoginPageActivity";
-
+    private eMotoLoginResponse mLoginResponse;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -74,7 +73,6 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -97,10 +95,6 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-    }
-
-    private void populateAutoComplete() {
-        getLoaderManager().initLoader(0, null, this);
     }
 
 
@@ -219,58 +213,27 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
+    private void LoginSuccessful (){
 
 
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginPageActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+        // use this to start and trigger a service
+        Intent i= new Intent(this, eMotoService.class);
+        // add data to the intent
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_STARTAUTOREAUTHENTICATE);
+        i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
+        this.startService(i);
 
-        mEmailView.setAdapter(adapter);
+        //start new activity
+        Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
+        this.startActivity(newActivityIntent);
+
+        //testIntent
+        Intent testIntent= new Intent(this, eMotoService.class);
+        testIntent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_TEST_SCHEDULE);
+        this.startService(testIntent);
+
+        //finish activity
+        finish();
     }
 
     /**
@@ -296,7 +259,7 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
         @Override
         protected String doInBackground(Void... params) {
 
-            eMotoUtility.bypassSSLAllCertificate();
+            //eMotoUtility.bypassSSLAllCertificate();
             mLoginResponse = eMotoUtility.performLogin(mEmail, mPassword);
 
             return "Login Task";
@@ -321,29 +284,6 @@ public class LoginPageActivity extends Activity implements LoaderCallbacks<Curso
             Log.d("AyncThread", "onPostExecute");
 
         }
-    }
-
-    private void LoginSuccessful (){
-
-
-        // use this to start and trigger a service
-        Intent i= new Intent(this, eMotoService.class);
-        // add data to the intent
-        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_STARTAUTOREAUTHENTICATE);
-        i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
-        this.startService(i);
-
-        //start new activity
-        Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
-        this.startActivity(newActivityIntent);
-
-        //testIntent
-        Intent testIntent= new Intent(this, eMotoService.class);
-        testIntent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_TEST_SCHEDULE);
-        this.startService(testIntent);
-
-        //finish activity
-        finish();
     }
 
 

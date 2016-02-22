@@ -34,6 +34,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class eMotoUtility
 {
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private static final String TAG = "eMotoUtility";
 
     public static eMotoLoginResponse performLogin (String username, String password){
@@ -59,13 +60,57 @@ public class eMotoUtility
         return mLoginResponse;
     }
 
+    /*
+    public static void bypassSSLAllCertificate(){
+        try {
+
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                    }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        }
+        catch (NoSuchAlgorithmException ex ){
+            ex.printStackTrace();
+        }
+        catch (KeyManagementException ex){
+            ex.printStackTrace();
+        }
+    }
+    */
+
     public static eMotoLoginResponse performLoginWithLoginResponse(eMotoLoginResponse mLoginResponse)
     {
 
         BufferedReader rd  ;
 
         try {
-            bypassSSLAllCertificate();
+            //bypassSSLAllCertificate();
 
             String urlStr = String.format("https://emotovate.com/api/security/authenticate/%s",mLoginResponse.getCredential());
             URL u = new URL(urlStr);
@@ -120,48 +165,6 @@ public class eMotoUtility
 
         return mLoginResponse;
 
-    }
-
-    public static void bypassSSLAllCertificate(){
-        try {
-
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        public X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                        }
-
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                        }
-
-                    }
-            };
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-            // Install the all-trusting host verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        }
-        catch (NoSuchAlgorithmException ex ){
-            ex.printStackTrace();
-        }
-        catch (KeyManagementException ex){
-            ex.printStackTrace();
-        }
     }
 
     public static JSONArray getCountryDataFromServer () {
@@ -223,6 +226,7 @@ public class eMotoUtility
         }
         return jArray;
     }
+
     public static JSONArray getCityDataFromServer (String countryIDorShortName) {
 
         BufferedReader rd;
@@ -282,6 +286,7 @@ public class eMotoUtility
         }
         return jArray;
     }
+
     public static JSONArray getZoneDataFromServer (String cityId) {
 
         BufferedReader rd ;
@@ -341,9 +346,6 @@ public class eMotoUtility
         return jArray;
     }
 
-
-
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 3];
         for ( int j = 0; j < bytes.length; j++ ) {

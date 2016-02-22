@@ -179,6 +179,7 @@ public class manageAdsListFragment extends Fragment {
             Log.d(TAG,"getAdsCollectionTask():"+token);
 
             //get get approved list from server
+
             myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
             //myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
 

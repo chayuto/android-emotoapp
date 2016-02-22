@@ -23,13 +23,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class eMotoService extends Service implements eMotoServiceInterface {
 
-    //Debug
-    private final static String TAG = "eMotoService";
-
     // Defines Intent action
     public static final String BROADCAST_ACTION = "com.emotovate.android.eMotoApp.BROADCAST";
     public static final String BROADCAST_STATUS = "com.emotovate.android.eMotoApp.STATUS";
-
     //Public RESPONSE
     public static final String RES_LOCATION_UPDATE = "RES_LOCATION_UPDATE";
     public static final String RES_LOCATION_ERROR = "RES_LOCATION_ERROR";
@@ -42,15 +38,12 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public static final String RES_BT_DISCONNECTED = "RES_BT_DISCONNECTED";
     public static final String RES_BT_STATUS= "RES_BT_STATUS";
     public static final String RES_BT_ERROR= "RES_BT_ERROR";
-
     //EXTRA
     public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
     public static final String EXTRA_EMOTOCELL_NAME = "EXTRA_EMOTOCELL_NAME";
     public static final String EXTRA_WIFI_SSID = "EXTRA_WIFI_SSID";
     public static final String EXTRA_WIFI_SEC = "EXTRA_WIFI_SEC";
     public static final String EXTRA_WIFI_KEY = "EXTRA_WIFI_KEY";
-
-
     //Public CMD
     public final static String SERVICE_CMD = "ServiceCMD";
     public final static String CMD_STARTAUTOREAUTHENTICATE = "CMD_STARTAUTOREAUTHENTICATE";
@@ -65,20 +58,23 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_BT_SET_WIFI = "CMD_BT_SET_WIFI";
     public final static String CMD_BT_SET_CELL_AUTHEN = "CMD_BT_SET_CELL_AUTHEN";
     public final static String CMD_TEST_SCHEDULE = "CMD_TEST_SCHEDULE";
-
-
-    //LocalVariable
-    private eMotoLoginResponse mLoginResponse ;
-    private Handler handler;
-
-
-    private boolean serviceIsInitialized = false;
-
-
+    //Debug
+    private final static String TAG = "eMotoService";
     /** interface for clients that bind */
     private final IBinder mBinder = new LocalBinder();
     /** indicates whether onRebind should be used */
     boolean mAllowRebind = true;
+    //LocalVariable
+    private eMotoLoginResponse mLoginResponse ;
+    private Handler handler;
+    private boolean serviceIsInitialized = false;
+    private ScheduledThreadPoolExecutor stpe;
+    //region Bluetooth Service
+    private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private String locationProvider;
+    private boolean locationServiceIsRunning = false;
 
     @Override
     public void onCreate() {
@@ -133,18 +129,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public void onDestroy() {
         Log.d(TAG,"onDestroy()");
     }
+    //endregion
 
-    /**
-     * Class for clients to access.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with
-     * IPC.
-     */
-    public class LocalBinder extends Binder {
-        eMotoService getService() {
-            return eMotoService.this;
-        }
-    }
-
+    //region Testing
 
     /**
      * classify intent from activity and decide what action to take
@@ -205,6 +192,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
         }
     }
+    //endregion
+
+    //region Authentication Service
 
     //region Command Actions
     private void cmdStartAutoAuthenticate(Intent intent){
@@ -242,7 +232,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         }
     }
 
-
     /**
      * Pass user credential to the eMotocell
      */
@@ -267,24 +256,24 @@ public class eMotoService extends Service implements eMotoServiceInterface {
             mBTService.getSession().setDeviceWifi(ssid, secType, key);
         }
     }
-    //endregion
-
-    //region Testing
 
     private void testGetSchedule ()
     {
         String token = mLoginResponse.getToken();
         eMotoCell mCell = eMotoCell.getDeviceFromServer(token, "00000000");
 
-        eMotoAdsSchedule.getScheduleAds (token, mCell);
+        if(mCell != null)
+        {
+            eMotoAdsSchedule.getScheduleAds(token, mCell);
+        }
+        else
+        {
+            Log.d(TAG,"device is empty");
+        }
 
     }
+
     //endregion
-
-    //region Authentication Service
-
-
-    private ScheduledThreadPoolExecutor stpe;
 
     private void startAutoReauthenticate (eMotoLoginResponse mLoginResponse) {
 
@@ -315,57 +304,20 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
     }
 
+
+    //endregion
+
+    //region Location Service
+
     private void stopAutoReauthenticate ()
     {
         stpe.shutdownNow();
 
     }
 
-    /**
-     * Runable thread to be call periodically to authenticate with server
-     *
-     */
-    class RunnableThread implements Runnable {
-
-        private eMotoLoginResponse mLoginResponse;
-
-        public void setLoginResponse(eMotoLoginResponse mResponse){
-            mLoginResponse = mResponse;
-        }
-        @Override
-        public void run() {
-
-            mLoginResponse = eMotoUtility.performLoginWithLoginResponse(mLoginResponse);
-
-            if(mLoginResponse.isSuccess()) {
-
-                eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), eMotoService.this);
-            }
-
-            System.out.println("run:" + mLoginResponse.getToken());
-        }
-    }
-
     public String getLoginToken(){
         return mLoginResponse.getToken();
     }
-
-    //endregion
-
-    //region Bluetooth Service
-    private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
-
-
-    //endregion
-
-    //region Location Service
-
-
-
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-    private String locationProvider;
-    private boolean locationServiceIsRunning = false;
 
     private void startLocationService()
     {
@@ -417,6 +369,42 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     private void stopLocationService(){
         locationManager.removeUpdates(locationListener);
         locationServiceIsRunning =false;
+    }
+
+    /**
+     * Class for clients to access.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with
+     * IPC.
+     */
+    public class LocalBinder extends Binder {
+        eMotoService getService() {
+            return eMotoService.this;
+        }
+    }
+
+    /**
+     * Runable thread to be call periodically to authenticate with server
+     *
+     */
+    class RunnableThread implements Runnable {
+
+        private eMotoLoginResponse mLoginResponse;
+
+        public void setLoginResponse(eMotoLoginResponse mResponse){
+            mLoginResponse = mResponse;
+        }
+        @Override
+        public void run() {
+
+            mLoginResponse = eMotoUtility.performLoginWithLoginResponse(mLoginResponse);
+
+            if(mLoginResponse.isSuccess()) {
+
+                eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), eMotoService.this);
+            }
+
+            System.out.println("run:" + mLoginResponse.getToken());
+        }
     }
 
 

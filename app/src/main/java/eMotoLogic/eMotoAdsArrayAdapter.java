@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import emotovate.com.emotoapp.R;
 
 
-
 /**
  * Created by chayut on 8/01/15.
  */
@@ -29,12 +28,11 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
 
 
     private final String TAG = "AdsArrayAdapter";
-
+    ImageLoader imageLoader;
+    DisplayImageOptions options;
     // declaring our ArrayList of items
     private ArrayList<eMotoAdsApprovalItem> objects;
     private LayoutInflater inflater;
-    ImageLoader imageLoader;
-    DisplayImageOptions options;
 
     /* here we must override the constructor for ArrayAdapter
     * the only variable we care about now is ArrayList<Item> objects,
@@ -50,15 +48,6 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
         options = new DisplayImageOptions.Builder().cacheInMemory(true)
                 .cacheOnDisc(true).resetViewBeforeLoading(true).build();
     }
-
-
-    private static class ViewHolder {
-        ImageView imageView;
-        TextView textView;
-        Bitmap bitmap;
-        eMotoAdsApprovalItem ads;
-    }
-
 
     /*
      * we are overriding the getView method here - this is what defines how each
@@ -125,6 +114,13 @@ public class eMotoAdsArrayAdapter extends ArrayAdapter<eMotoAdsApprovalItem> {
         // the view must be returned to our activity
         return convertView;
 
+    }
+
+    private static class ViewHolder {
+        ImageView imageView;
+        TextView textView;
+        Bitmap bitmap;
+        eMotoAdsApprovalItem ads;
     }
 
     /*

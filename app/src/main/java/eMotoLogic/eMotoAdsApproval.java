@@ -200,13 +200,13 @@ public class eMotoAdsApproval {
     public boolean approveAdsWithID(String adsID,String token){
 
         BufferedReader rd  = null;
-
+        Log.d(TAG,"approveAdsWithID:" + adsID);
         if(this.getAdsWithId(adsID) != null)
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
                 //TODO: fix asset ID
-                String s = String.format("https://emotovate.com/api/ads/approve/%s?scheduleAssetId=%s&userIP=%s",token,adsID,"192.168.1.1");
+                String s = String.format("https://emotovate.com/api/ads/approve/%s/?assetId=%s",token,adsID);
                 Log.d(TAG,s);
                 URL u = new URL(s);HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
 
@@ -252,13 +252,13 @@ public class eMotoAdsApproval {
     public boolean unapproveAdsWithID(String adsID,String token){
 
         BufferedReader rd  = null;
-
+        Log.d(TAG,"unapproveAdsWithID:" + adsID);
         if(this.getAdsWithId(adsID) != null)
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
                 //TODO: fix asset ID
-                String s = String.format("https://emotovate.com/api/ads/unapprove/%s?scheduleAssetId=%s&userIP=%s",token,adsID,"192.168.1.1");
+                String s = String.format("https://emotovate.com/api/ads/unapprove/%s/?assetId=%s",token,adsID);
                 Log.d(TAG,s);
                 URL u = new URL(s);
                 HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
