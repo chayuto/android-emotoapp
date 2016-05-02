@@ -50,7 +50,7 @@ public class eMotoAdsApprovalItem implements Parcelable {
             AdsDescription= ads.getString("Description");
             AdsUrl =ads.getString("Url");
             Approved = ads.getString ("Approved");
-            AdsApprovalDate = ads.getString("ApprovalDate");
+            AdsApprovalDate = ads.getString("ApprovalDateUTC");
             AdsApprovedById = ads.getString("ApprovedById");
         }
         catch (JSONException ex){

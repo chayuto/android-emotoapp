@@ -106,7 +106,8 @@ public class screenNavigationDrawerFragment extends Fragment {
                         getString(R.string.screen_nav_draw_section1),
                         getString(R.string.screen_nav_draw_section2),
                         getString(R.string.screen_nav_draw_section3),
-                        getString(R.string.screen_nav_draw_section4)
+                        getString(R.string.screen_nav_draw_section4),
+                        getString(R.string.screen_nav_draw_section5)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

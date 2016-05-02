@@ -5,6 +5,7 @@
     <string name="screen_nav_draw_section2">Manage eMotoCell</string>
     <string name="screen_nav_draw_section3">My Account</string>
     <string name="screen_nav_draw_section4">To Advertiser View</string>
+    <string name="screen_nav_draw_section5">To Debug Mode</string>
 
     <string name="advert_nav_draw_section1">Add new Ads</string>
     <string name="advert_nav_draw_section2">Schedule an Ads</string>

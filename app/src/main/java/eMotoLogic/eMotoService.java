@@ -1,5 +1,6 @@
 package eMotoLogic;
 
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -7,15 +8,20 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import emotovate.com.emotoapp.R;
 
 
 /**
@@ -69,6 +75,10 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     private Handler handler;
     private boolean serviceIsInitialized = false;
     private ScheduledThreadPoolExecutor stpe;
+    private int swapSeconds = 15;
+    private int pullSeconds = 3600;
+    private int reportSeconds = 3600;
+
     //region Bluetooth Service
     private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
     private LocationManager locationManager;
@@ -186,6 +196,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
             case CMD_TEST_SCHEDULE:
                 this.testGetSchedule();
+
+                new GetAppConfigTask().execute((Void) null);
+
                 break;
             default:
                 Log.d(TAG, "Service Command Unrecognized");
@@ -408,7 +421,26 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     }
 
 
+    public class GetAppConfigTask extends AsyncTask<Void, Void,JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+
+            return eMotoUtility.getAppConfigFromServer();
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+
+            Log.d(TAG,result.toString());
+            Log.d("AsyncThread", "onPostExecute");
+        }
+    }
+
+
 
     //endregion
+
+
 
 }

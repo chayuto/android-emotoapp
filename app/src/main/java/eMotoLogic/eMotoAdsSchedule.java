@@ -27,14 +27,13 @@ public class eMotoAdsSchedule {
 
 
     //region network connection
-    static public List<eMotoAdsScheduleEntry> getScheduleAds (String token,eMotoCell eMotoCell) {
+    static public List<eMotoAds> getScheduleAds (String token,eMotoCell eMotoCell) {
 
         Log.d(TAG, "getScheduleAds()");
 
-        List<eMotoAdsScheduleEntry> mySchedule = new ArrayList<>();
+        List<eMotoAds> mySchedule = new ArrayList<>();
 
         BufferedReader rd  = null;
-
 
         try {
             URL u;
@@ -70,39 +69,16 @@ public class eMotoAdsSchedule {
 
                     String json = rd.readLine();
 
-                    //Log.d(TAG, "Response: " + json);
+                    Log.d(TAG, "Response: " + json);
 
                     JSONArray jArray  = new JSONArray(json);
                     for(int n = 0; n < jArray.length(); n++) {
 
+                        JSONObject adsJSONObject = jArray.getJSONObject(n);
 
-                        HashMap<String,eMotoAds> hashMap =  new HashMap<String,eMotoAds>();
+                        eMotoAds myAds = new eMotoAds(adsJSONObject);
 
-                        JSONObject myJSONObject = jArray.getJSONObject(n);
-
-                        String entryFrom = myJSONObject.getString("From");
-                        String entryTo = myJSONObject.getString("To");
-
-
-                        Log.d(TAG, "From: " + entryFrom );
-                        Log.d(TAG, "TO: " + entryTo);
-
-                        JSONArray adsJSONArray =  myJSONObject.getJSONArray("Ads");
-
-                        List<eMotoAds> adsList = new ArrayList<>();
-
-                        for(int m = 0; m < adsJSONArray.length(); m++) {
-
-                            JSONObject adsJSONObject = adsJSONArray.getJSONObject(m);
-                            eMotoAds myAds = new eMotoAds(adsJSONObject);
-                            adsList.add(myAds);
-
-                            Log.d(TAG, "Ads ID" + adsJSONObject.getString("Id") );
-
-                        }
-                        eMotoAdsScheduleEntry myEntry = new eMotoAdsScheduleEntry(entryFrom,entryTo,adsList);
-
-                        mySchedule.add(myEntry);
+                        Log.d(TAG,myAds.id() + " " + myAds.isApprovedStr());
                     }
 
 
@@ -135,6 +111,5 @@ public class eMotoAdsSchedule {
 
         return mySchedule;
     }
-
 
 }

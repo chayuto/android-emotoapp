@@ -205,7 +205,6 @@ public class eMotoAdsApproval {
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
-                //TODO: fix asset ID
                 String s = String.format("https://emotovate.com/api/ads/approve/%s/?assetId=%s",token,adsID);
                 Log.d(TAG,s);
                 URL u = new URL(s);HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
@@ -257,7 +256,7 @@ public class eMotoAdsApproval {
         {
             eMotoAdsApprovalItem ads = adsHashMap.get(adsID);
             try {
-                //TODO: fix asset ID
+
                 String s = String.format("https://emotovate.com/api/ads/unapprove/%s/?assetId=%s",token,adsID);
                 Log.d(TAG,s);
                 URL u = new URL(s);

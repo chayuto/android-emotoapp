@@ -60,7 +60,7 @@ public class eMotoUtility
         return mLoginResponse;
     }
 
-    /*
+
     public static void bypassSSLAllCertificate(){
         try {
 
@@ -102,7 +102,7 @@ public class eMotoUtility
             ex.printStackTrace();
         }
     }
-    */
+
 
     public static eMotoLoginResponse performLoginWithLoginResponse(eMotoLoginResponse mLoginResponse)
     {
@@ -167,12 +167,77 @@ public class eMotoUtility
 
     }
 
+    public static JSONObject JSONFromUrl(String url){
+        BufferedReader rd ;
+        JSONObject jObject = null;
+
+        try {
+            URL u = new URL(url);
+            HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+
+            c.setRequestMethod("GET");
+
+            c.setRequestProperty("Content-length", "0");
+            c.setRequestProperty("Content-Type","application/json");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+            int status = c.getResponseCode();
+
+            Log.d(TAG, String.format("http-response:%3d", status));
+            switch (status) {
+
+                case 200:
+                case 201:
+                    rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    String json ="";
+
+                    String receiveString = "";
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ( (receiveString = rd.readLine()) != null ) {
+                        stringBuilder.append(receiveString);
+                    }
+
+                    json = stringBuilder.toString();
+                    Log.d(TAG,json);
+                    jObject  = new JSONObject(json);
+                    break;
+                case 401:
+                    rd  = new BufferedReader(new InputStreamReader(c.getErrorStream()));
+
+                    Log.d(TAG,"Server unauthorized: " +rd.readLine());
+                    break;
+                default:
+
+
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        catch (JSONException ex){
+            ex.printStackTrace();
+        }
+        return jObject;
+    }
+
+
+    public static JSONObject getAppConfigFromServer () {
+        return JSONFromUrl("https://emotovate.com/api/mconfig.json");
+    }
+
+
     public static JSONArray getCountryDataFromServer () {
 
         BufferedReader rd ;
         JSONArray jArray = null;
-
-
         try {
             URL u = new URL(String.format("https://emotovate.com/api/location/countries"));
             HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
@@ -356,6 +421,10 @@ public class eMotoUtility
         }
         return new String(hexChars);
     }
+
+
+
+
 
     public static boolean isConnected(Context context){
 

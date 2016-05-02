@@ -83,6 +83,15 @@ public class advertiserActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             }
+            case 4: {
+                //start new activity;
+                Intent intent = new Intent(advertiserActivity.this, debugUIActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                break;
+            }
             default:
                 break;
         }
@@ -150,6 +159,9 @@ public class advertiserActivity extends AppCompatActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        public PlaceholderFragment() {
+        }
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -160,9 +172,6 @@ public class advertiserActivity extends AppCompatActivity
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
-        }
-
-        public PlaceholderFragment() {
         }
 
         @Override

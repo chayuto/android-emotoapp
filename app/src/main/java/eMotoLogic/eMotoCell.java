@@ -188,7 +188,7 @@ public class eMotoCell implements Parcelable {
             eMotocellSerialNo = cell.getString("eMotocellSerialNo");
             deviceFixed = cell.getString("Fixed");
             deviceAssetId = ""; //set empty string
-            dailyAdsLimit = cell.getInt("DailyAdsLiimt");
+            dailyAdsLimit = cell.getInt("DailyAdsLimit");
 
         }
         catch (JSONException ex){
