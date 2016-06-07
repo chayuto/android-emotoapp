@@ -81,8 +81,6 @@ public class eMotoAdsSchedule {
                         Log.d(TAG,myAds.id() + " " + myAds.isApprovedStr());
                     }
 
-
-
                     break;
                 case 400:
                 case 401:

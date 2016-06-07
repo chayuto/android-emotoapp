@@ -24,7 +24,7 @@ public class screenBaseActivity extends AppCompatActivity
         implements screenNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     //Debug
-    public String TAG = "screenBaseActivity";
+    public static final String TAG = "screenBaseActivity";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.

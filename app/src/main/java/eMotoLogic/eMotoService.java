@@ -66,10 +66,12 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public final static String CMD_TEST_SCHEDULE = "CMD_TEST_SCHEDULE";
     //Debug
     private final static String TAG = "eMotoService";
+
     /** interface for clients that bind */
     private final IBinder mBinder = new LocalBinder();
     /** indicates whether onRebind should be used */
     boolean mAllowRebind = true;
+
     //LocalVariable
     private eMotoLoginResponse mLoginResponse ;
     private Handler handler;
@@ -78,6 +80,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     private int swapSeconds = 15;
     private int pullSeconds = 3600;
     private int reportSeconds = 3600;
+
+    private eMotoLogic eLogic;
+    private boolean logicInitalised = false;
 
     //region Bluetooth Service
     private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
@@ -90,6 +95,9 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
+
+        eLogic = new eMotoLogic(eMotoService.this);
+        logicInitalised= true;
 
         // Handler will get associated with the current thread,
         // which is the main thread.
@@ -133,6 +141,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public void onRebind(Intent intent) {
 
     }
+
 
     /** Called when The service is no longer used and is being destroyed*/
     @Override
@@ -384,6 +393,8 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         locationServiceIsRunning =false;
     }
 
+    //endregion
+
     /**
      * Class for clients to access.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with
@@ -439,7 +450,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
 
 
-    //endregion
+
 
 
 
