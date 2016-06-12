@@ -27,11 +27,9 @@ import emotovate.com.emotoapp.R;
 /**
  * Created by chayut on 6/02/15.
  */
-public class eMotoService extends Service implements eMotoServiceInterface {
+public class eMotoService extends Service  {
 
-    // Defines Intent action
-    public static final String BROADCAST_ACTION = "com.emotovate.android.eMotoApp.BROADCAST";
-    public static final String BROADCAST_STATUS = "com.emotovate.android.eMotoApp.STATUS";
+
     //Public RESPONSE
     public static final String RES_LOCATION_UPDATE = "RES_LOCATION_UPDATE";
     public static final String RES_LOCATION_ERROR = "RES_LOCATION_ERROR";
@@ -44,12 +42,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     public static final String RES_BT_DISCONNECTED = "RES_BT_DISCONNECTED";
     public static final String RES_BT_STATUS= "RES_BT_STATUS";
     public static final String RES_BT_ERROR= "RES_BT_ERROR";
-    //EXTRA
-    public static final String EXTRA_EMOTOLOGINRESPONSE = "EXTRA_EMOTOLOGINRESPONSE";
-    public static final String EXTRA_EMOTOCELL_NAME = "EXTRA_EMOTOCELL_NAME";
-    public static final String EXTRA_WIFI_SSID = "EXTRA_WIFI_SSID";
-    public static final String EXTRA_WIFI_SEC = "EXTRA_WIFI_SEC";
-    public static final String EXTRA_WIFI_KEY = "EXTRA_WIFI_KEY";
+
     //Public CMD
     public final static String SERVICE_CMD = "ServiceCMD";
     public final static String CMD_STARTAUTOREAUTHENTICATE = "CMD_STARTAUTOREAUTHENTICATE";
@@ -72,24 +65,10 @@ public class eMotoService extends Service implements eMotoServiceInterface {
     /** indicates whether onRebind should be used */
     boolean mAllowRebind = true;
 
-    //LocalVariable
-    private eMotoLoginResponse mLoginResponse ;
-    private Handler handler;
-    private boolean serviceIsInitialized = false;
-    private ScheduledThreadPoolExecutor stpe;
-    private int swapSeconds = 15;
-    private int pullSeconds = 3600;
-    private int reportSeconds = 3600;
+
 
     private eMotoLogic eLogic;
     private boolean logicInitalised = false;
-
-    //region Bluetooth Service
-    private eMotoBTService mBTService = new eMotoBTService(eMotoService.this,this);
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-    private String locationProvider;
-    private boolean locationServiceIsRunning = false;
 
     @Override
     public void onCreate() {
@@ -99,13 +78,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         eLogic = new eMotoLogic(eMotoService.this);
         logicInitalised= true;
 
-        // Handler will get associated with the current thread,
-        // which is the main thread.
-        handler = new Handler();
-
-        mLoginResponse = new eMotoLoginResponse();
-
-        serviceIsInitialized = true;
     }
 
     @Override
@@ -163,50 +135,53 @@ public class eMotoService extends Service implements eMotoServiceInterface {
 
         switch (ServiceCMD){
             case CMD_STARTAUTOREAUTHENTICATE:
-                cmdStartAutoAuthenticate(intent);
+                //cmdStartAutoAuthenticate(intent);
                 break;
             case CMD_GETTOKEN:
-                this.cmdGettoken();
+                //this.cmdGettoken();
                 break;
             case CMD_STARTLOCATIONSERVICE:
-                startLocationService();
+                //startLocationService();
                 break;
             case CMD_STOPLOCATIONSERVICE:
-                stopLocationService();
+                //stopLocationService();
                 break;
 
             case CMD_BT_GET_PAIRED_LIST:
                 //response with List of paired emotocell
-                eMotoServiceBroadcaster.broadcastBTPairedList(mBTService.getPairedCellList(),eMotoService.this);
+               // eMotoServiceBroadcaster.broadcastBTPairedList(mBTService.getPairedCellList(),eMotoService.this);
                 break;
             case CMD_BT_CONNECT_CELL:
-                if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
+               /* if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
                     mBTService.startBTService(intent.getStringExtra(EXTRA_EMOTOCELL_NAME));
                 }
+                */
                 break;
 
             case CMD_BT_GET_REPORT:
-                eMotoServiceBroadcaster.broadcastBTStatus(mBTService.getServiceReport(),eMotoService.this);
+                //eMotoServiceBroadcaster.broadcastBTStatus(mBTService.getServiceReport(),eMotoService.this);
                 break;
 
             case CMD_BT_SEND_TEST1:
-                if(mBTService.sessionIsReady()) {
+
+                /*if(mBTService.sessionIsReady()) {
                     mBTService.getSession().testInteraction();
                 }
+                */
                 break;
 
             case CMD_BT_SET_WIFI:
-                this.cmdBtSetWifi(intent);
+                //this.cmdBtSetWifi(intent);
                 break;
 
             case CMD_BT_SET_CELL_AUTHEN:
-                this.cmdBtSetCellAuthen();
+                //this.cmdBtSetCellAuthen();
                 break;
 
             case CMD_TEST_SCHEDULE:
-                this.testGetSchedule();
+                //this.testGetSchedule();
 
-                new GetAppConfigTask().execute((Void) null);
+                //new GetAppConfigTask().execute((Void) null);
 
                 break;
             default:
@@ -214,186 +189,6 @@ public class eMotoService extends Service implements eMotoServiceInterface {
                 break;
         }
     }
-    //endregion
-
-    //region Authentication Service
-
-    //region Command Actions
-    private void cmdStartAutoAuthenticate(Intent intent){
-        mLoginResponse = intent.getExtras().getParcelable(EXTRA_EMOTOLOGINRESPONSE);
-        if(mLoginResponse != null) {
-            Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
-            this.startAutoReauthenticate(mLoginResponse);
-            //eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.token, this);
-        }
-        else
-        {
-            Log.d(TAG, "Null Object Reference!");
-            eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, eMotoService.this);
-        }
-
-    }
-
-    private void cmdGettoken()
-    {
-        if (mLoginResponse == null)
-        {
-            Log.d(TAG, "Null Object Reference!");
-            eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, this);
-            return;
-        }
-
-        if(mLoginResponse.isSuccess()) {
-            Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
-            eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), this);
-        }
-        else
-        {
-            Log.d(TAG, "token is not valid");
-            eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
-        }
-    }
-
-    /**
-     * Pass user credential to the eMotocell
-     */
-    private void cmdBtSetCellAuthen(){
-        //if the login session is active and cell is ready
-        if(mBTService.sessionIsReady() && mLoginResponse.isSuccess() ) {
-
-            mBTService.getSession().setDeviceAuthen(mLoginResponse.getCredential());
-        }
-    }
-
-    /**
-     * Pass wifi SSID and key information to the eMotoCell
-     *
-     * @param intent
-     */
-    private void cmdBtSetWifi(Intent intent){
-        if(mBTService.sessionIsReady()) {
-            String ssid = intent.getStringExtra(EXTRA_WIFI_SSID);
-            int secType = intent.getIntExtra(EXTRA_WIFI_SEC,0);
-            String key = intent.getStringExtra(EXTRA_WIFI_KEY);
-            mBTService.getSession().setDeviceWifi(ssid, secType, key);
-        }
-    }
-
-    private void testGetSchedule ()
-    {
-        String token = mLoginResponse.getToken();
-        eMotoCell mCell = eMotoCell.getDeviceFromServer(token, "00000000");
-
-        if(mCell != null)
-        {
-            eMotoAdsSchedule.getScheduleAds(token, mCell);
-        }
-        else
-        {
-            Log.d(TAG,"device is empty");
-        }
-
-    }
-
-    //endregion
-
-    private void startAutoReauthenticate (eMotoLoginResponse mLoginResponse) {
-
-        try {
-
-            int corePoolSize = 1;
-            //creates ScheduledThreadPoolExecutor object with number of thread 2
-            stpe = new ScheduledThreadPoolExecutor(corePoolSize);
-
-            //starts runnable thread once
-            RunnableThread runThread = new RunnableThread();
-            runThread.setLoginResponse(mLoginResponse);
-
-            int delay = Integer.parseInt(mLoginResponse.getIdle());
-
-            //starts callable thread that will start after delay minutes
-            ScheduledFuture sf = stpe.scheduleAtFixedRate(runThread,delay,delay,
-                    TimeUnit.MINUTES);
-
-            int activeCnt = stpe.getActiveCount();
-            System.out.println("activeCnt:" + activeCnt);
-        }
-
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
-    }
-
-
-    //endregion
-
-    //region Location Service
-
-    private void stopAutoReauthenticate ()
-    {
-        stpe.shutdownNow();
-
-    }
-
-    public String getLoginToken(){
-        return mLoginResponse.getToken();
-    }
-
-    private void startLocationService()
-    {
-        Log.d(TAG, "startLocationService()");
-        //if(!locationServiceIsRunning) {
-            // Define a listener that responds to location updates
-            locationListener = new LocationListener() {
-                public void onLocationChanged(Location location) {
-                    // Called when a new location is found by the network location provider.
-                    Log.d(TAG, location.toString());
-                    eMotoServiceBroadcaster.broadcastNewLocation(location, eMotoService.this);
-                    //Toast.toastOnUI(String.format("Location: %f, %f : %f", location.getLatitude(), location.getLongitude(), location.getAccuracy()));
-                }
-
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                    Log.d("Location", "onStatusChanged : " + provider);
-                }
-
-                public void onProviderEnabled(String provider) {
-                }
-
-                public void onProviderDisabled(String provider) {
-                }
-            };
-            // Get the location manager
-            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-            // Define the criteria how to select the locatioin provider -> use
-            // default
-            Criteria criteria = new Criteria();
-            locationProvider = locationManager.getBestProvider(criteria, false);
-            Location location = locationManager.getLastKnownLocation(locationProvider);
-
-            Log.d(TAG,"Location Provider:"+ locationProvider);
-            //Log.d(TAG,"Last know location:" + location.toString());
-            // Register the listener with the Location Manager to receive location updates
-
-            final Runnable r = new Runnable() {
-                public void run() {
-                    locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);//.NETWORK_PROVIDER,.GPS_PROVIDER
-                }
-            };
-            handler.post(r);
-
-          locationServiceIsRunning = true;
-        //}
-    }
-
-    private void stopLocationService(){
-        locationManager.removeUpdates(locationListener);
-        locationServiceIsRunning =false;
-    }
-
-    //endregion
 
     /**
      * Class for clients to access.  Because we know this service always
@@ -406,47 +201,7 @@ public class eMotoService extends Service implements eMotoServiceInterface {
         }
     }
 
-    /**
-     * Runable thread to be call periodically to authenticate with server
-     *
-     */
-    class RunnableThread implements Runnable {
 
-        private eMotoLoginResponse mLoginResponse;
-
-        public void setLoginResponse(eMotoLoginResponse mResponse){
-            mLoginResponse = mResponse;
-        }
-        @Override
-        public void run() {
-
-            mLoginResponse = eMotoUtility.performLoginWithLoginResponse(mLoginResponse);
-
-            if(mLoginResponse.isSuccess()) {
-
-                eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.getToken(), eMotoService.this);
-            }
-
-            System.out.println("run:" + mLoginResponse.getToken());
-        }
-    }
-
-
-    public class GetAppConfigTask extends AsyncTask<Void, Void,JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(Void... params) {
-
-            return eMotoUtility.getAppConfigFromServer();
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-
-            Log.d(TAG,result.toString());
-            Log.d("AsyncThread", "onPostExecute");
-        }
-    }
 
 
 

@@ -24,21 +24,17 @@ import java.util.Set;
 public class eMotoBTService implements eMotoBTServiceInterface {
 
 
-    //debug
-    private static final String TAG = "eMotoBTService";
-
     //Flags
     public final static byte PREAMBLE0 = (byte)0xEC;
     public final static byte PREAMBLE1 = (byte)0xDF;
-
     public final static int BT_STATE_DISCONNECTED = 0;
     public final static int BT_STATE_CONNECTED = 1;
-
     //Constants
     public final static int PAYLOAD_MTU = 1000;
     public final static int LEN_PKT_HEADER = 8;
     public final static String eMotoCellBTName = "HC-06";
-
+    //debug
+    private static final String TAG = "eMotoBTService";
     //Declarations
     private final BluetoothAdapter mAdapter;
     private ConnectThread mConnectThread;
@@ -46,11 +42,11 @@ public class eMotoBTService implements eMotoBTServiceInterface {
     private int BTServiceState;
 
     private Context mContext;
-    private eMotoServiceInterface mServiceInterface;
+    private eMotoLogicInterface mServiceInterface;
     private eMotoBTSession mBTSession;
 
 
-    public eMotoBTService(Context context,eMotoServiceInterface myServiceInterface) { //, Handler handler
+    public eMotoBTService(Context context, eMotoLogicInterface myServiceInterface) { //, Handler handler
         BTServiceState = BT_STATE_DISCONNECTED;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         //mHandler = handler;

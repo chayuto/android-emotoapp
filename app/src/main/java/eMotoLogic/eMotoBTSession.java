@@ -12,13 +12,13 @@ public class eMotoBTSession implements eMotoBTSessionInterface {
 
     //Setup
     private eMotoBTServiceInterface mBTServiceInterface;
-    private eMotoServiceInterface  mServiceInterface;
+    private eMotoLogicInterface mServiceInterface;
     private eMotoBTPacketManager mPacketManager;
     private eMotoCell mCell;
     private int iTransactionID;
 
 
-    public eMotoBTSession(eMotoBTServiceInterface BTServiceInterface, eMotoServiceInterface serviceInterface) {
+    public eMotoBTSession(eMotoBTServiceInterface BTServiceInterface, eMotoLogicInterface serviceInterface) {
         Log.d(TAG,"eMotoBTSession()");
         mServiceInterface = serviceInterface;
         mBTServiceInterface = BTServiceInterface;
