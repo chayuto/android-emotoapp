@@ -18,10 +18,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, status);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, status);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
         // Gets an instance of the support library local broadcastmanager
@@ -35,10 +35,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, eMotoService.RES_TOKEN_UPDATE);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, eMotoService.RES_TOKEN_UPDATE);
         localIntent.putExtra(eMotoService.RES_TOKEN_UPDATE,token);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
@@ -51,10 +51,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, eMotoService.RES_LOCATION_UPDATE);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, eMotoService.RES_LOCATION_UPDATE);
         localIntent.putExtra(eMotoService.RES_LOCATION_UPDATE,location);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
@@ -67,10 +67,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, eMotoService.RES_BT_PAIRED_LIST);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, eMotoService.RES_BT_PAIRED_LIST);
         localIntent.putStringArrayListExtra(eMotoService.RES_BT_PAIRED_LIST, cellList);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
@@ -83,10 +83,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, eMotoService.RES_BT_STATUS);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, eMotoService.RES_BT_STATUS);
         localIntent.putExtra(eMotoService.RES_BT_STATUS,string);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
@@ -99,10 +99,10 @@ public class eMotoServiceBroadcaster {
         Intent localIntent = new Intent();
 
         // The Intent contains the custom broadcast action for this app
-        localIntent.setAction(eMotoService.BROADCAST_ACTION);
+        localIntent.setAction(eMotoLogic.BROADCAST_ACTION);
 
         // Puts the status into the Intent
-        localIntent.putExtra(eMotoService.BROADCAST_STATUS, eMotoService.RES_BT_ERROR);
+        localIntent.putExtra(eMotoLogic.BROADCAST_STATUS, eMotoService.RES_BT_ERROR);
         localIntent.putExtra(eMotoService.RES_BT_ERROR,string);
         localIntent.addCategory(Intent.CATEGORY_DEFAULT);
 

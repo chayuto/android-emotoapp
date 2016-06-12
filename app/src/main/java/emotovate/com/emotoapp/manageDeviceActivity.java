@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import eMotoLogic.eMotoLogic;
 import eMotoLogic.eMotoService;
 
 
@@ -136,7 +137,7 @@ public class manageDeviceActivity extends screenBaseActivity
         Log.d(TAG, "requestConnect()");
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_CONNECT_CELL);
-        i.putExtra(eMotoService.EXTRA_EMOTOCELL_NAME, eMotoCell);
+        i.putExtra(eMotoLogic.EXTRA_EMOTOCELL_NAME, eMotoCell);
         this.startService(i);
     }
 
@@ -146,9 +147,9 @@ public class manageDeviceActivity extends screenBaseActivity
         //invoke BT service to send data
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_BT_SET_WIFI);
-        i.putExtra(eMotoService.EXTRA_WIFI_SSID,SSID);
-        i.putExtra(eMotoService.EXTRA_WIFI_SEC,SecType);
-        i.putExtra(eMotoService.EXTRA_WIFI_KEY,key);
+        i.putExtra(eMotoLogic.EXTRA_WIFI_SSID,SSID);
+        i.putExtra(eMotoLogic.EXTRA_WIFI_SEC,SecType);
+        i.putExtra(eMotoLogic.EXTRA_WIFI_KEY,key);
         this.startService(i);
 
     }

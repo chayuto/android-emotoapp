@@ -36,6 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+import eMotoLogic.eMotoLogic;
 import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 import eMotoLogic.eMotoUtility;
@@ -220,7 +221,7 @@ public class LoginPageActivity extends Activity {
         Intent i= new Intent(this, eMotoService.class);
         // add data to the intent
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_STARTAUTOREAUTHENTICATE);
-        i.putExtra(eMotoService.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
+        i.putExtra(eMotoLogic.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
         this.startService(i);
 
         //start new activity

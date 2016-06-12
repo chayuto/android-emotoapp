@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import eMotoLogic.eMotoLogic;
 import eMotoLogic.eMotoLoginResponse;
 import eMotoLogic.eMotoService;
 
@@ -234,7 +235,7 @@ public class screenBaseActivity extends AppCompatActivity
 
         // The filter's action is BROADCAST_ACTION
         IntentFilter statusIntentFilter = new IntentFilter(
-                eMotoService.BROADCAST_ACTION);
+                eMotoLogic.BROADCAST_ACTION);
 
         // Sets the filter's category to DEFAULT
         statusIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -268,9 +269,9 @@ public class screenBaseActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Log.d(TAG, "BroadCastReceived: " + intent.getStringExtra(eMotoService.BROADCAST_STATUS));
+            Log.d(TAG, "BroadCastReceived: " + intent.getStringExtra(eMotoLogic.BROADCAST_STATUS));
 
-            switch(intent.getStringExtra(eMotoService.BROADCAST_STATUS)){
+            switch(intent.getStringExtra(eMotoLogic.BROADCAST_STATUS)){
                 case eMotoService.RES_TOKEN_UPDATE:
                     String token = intent.getStringExtra(eMotoService.RES_TOKEN_UPDATE);
                     if (token != null){
