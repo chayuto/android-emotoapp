@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by chayut on 7/06/16.
  */
+
 public class eMotoLogic implements eMotoLogicInterface {
 
     // Defines Intent action
@@ -56,7 +57,7 @@ public class eMotoLogic implements eMotoLogicInterface {
 
     public eMotoLogic(Context context) {
 
-        Log.d(TAG,"Santa Logic initiated");
+        Log.d(TAG,"eMotoLogic initiated");
 
         mLoginResponse = new eMotoLoginResponse();
 
@@ -70,9 +71,11 @@ public class eMotoLogic implements eMotoLogicInterface {
 
     }
 
-    private void startAutoReauthenticate (eMotoLoginResponse mLoginResponse) {
+    public void startAutoReauthenticate (eMotoLoginResponse mLoginResponse) {
 
         try {
+
+            this.mLoginResponse = mLoginResponse;
 
             int corePoolSize = 1;
             //creates ScheduledThreadPoolExecutor object with number of thread 2
@@ -125,24 +128,6 @@ public class eMotoLogic implements eMotoLogicInterface {
         stpe.shutdownNow();
 
     }
-
-
-    /*
-    private void cmdStartAutoAuthenticate(Intent intent){
-        mLoginResponse = intent.getExtras().getParcelable(EXTRA_EMOTOLOGINRESPONSE);
-        if(mLoginResponse != null) {
-            Log.d(TAG, "Login Credential: " + mLoginResponse.getToken());
-            this.startAutoReauthenticate(mLoginResponse);
-            //eMotoServiceBroadcaster.broadcastNewToken(mLoginResponse.token, this);
-        }
-        else
-        {
-            Log.d(TAG, "Null Object Reference!");
-            eMotoServiceBroadcaster.broadcastIntentWithState(RES_EXCEPTION_ENCOUNTERED, eMotoService.this);
-        }
-
-    }
-    */
 
     public String getLoginToken(){
         return mLoginResponse.getToken();
@@ -244,6 +229,8 @@ public class eMotoLogic implements eMotoLogicInterface {
             mBTService.getSession().setDeviceWifi(ssid, secType, key);
         }
     }
+
+
 
     /**
      * Runable thread to be call periodically to authenticate with server

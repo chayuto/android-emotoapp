@@ -1,27 +1,12 @@
 package eMotoLogic;
 
-import android.app.ProgressDialog;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import org.json.JSONObject;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import emotovate.com.emotoapp.R;
 
 
 /**
@@ -45,6 +30,8 @@ public class eMotoService extends Service  {
 
     //Public CMD
     public final static String SERVICE_CMD = "ServiceCMD";
+
+    public final static String CMD_SERVICE_START = "CMD_SERVICE_START";
     public final static String CMD_STARTAUTOREAUTHENTICATE = "CMD_STARTAUTOREAUTHENTICATE";
     public final static String CMD_GETTOKEN = "CMD_GETTOKEN";
     public final static String CMD_STARTLOCATIONSERVICE = "CMD_STARTLOCATIONSERVICE";
@@ -83,7 +70,7 @@ public class eMotoService extends Service  {
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
-        Log.d(TAG, "onStartCommand() id: " + startId + ": " + intent);
+        Log.d(TAG,"onStartCommand() id: " + startId + ": " + intent);
 
         Thread t = new Thread(new Runnable() {
             public void run() {
@@ -93,12 +80,13 @@ public class eMotoService extends Service  {
         t.start();
 
         //this.classifyIntent(intent);
-        return Service.START_NOT_STICKY;
+        return Service.START_STICKY;
     }
 
     /** A client is binding to the service with bindService() */
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG,"onBind() id: "  + intent);
         return mBinder;
     }
 
@@ -190,13 +178,23 @@ public class eMotoService extends Service  {
         }
     }
 
+    public eMotoLogic getLogic()
+    {
+        return eLogic;
+    }
+
+    public String getHello()
+    {
+        return "Service Hello!";
+    }
+
     /**
      * Class for clients to access.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with
      * IPC.
      */
     public class LocalBinder extends Binder {
-        eMotoService getService() {
+        public eMotoService getService() {
             return eMotoService.this;
         }
     }

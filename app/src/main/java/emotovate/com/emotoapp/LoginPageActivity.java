@@ -7,16 +7,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,6 +52,9 @@ import eMotoLogic.eMotoUtility;
 public class LoginPageActivity extends Activity {
 
     private static final String TAG = "LoginPageActivity";
+    eMotoService mService;
+    eMotoLogic mLogic;
+    boolean mBound = false;
     private eMotoLoginResponse mLoginResponse;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -58,7 +65,27 @@ public class LoginPageActivity extends Activity {
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mLoginFormView;
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
 
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            eMotoService.LocalBinder binder = (eMotoService.LocalBinder) service;
+            mService = binder.getService();
+            mLogic = mService.getLogic();
+            mBound = true;
+
+
+            Log.d(TAG,mService.getHello());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +124,6 @@ public class LoginPageActivity extends Activity {
 
         mLoginFormView = findViewById(R.id.login_form);
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -216,25 +242,40 @@ public class LoginPageActivity extends Activity {
 
     private void LoginSuccessful (){
 
-
-        // use this to start and trigger a service
-        Intent i= new Intent(this, eMotoService.class);
-        // add data to the intent
-        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_STARTAUTOREAUTHENTICATE);
-        i.putExtra(eMotoLogic.EXTRA_EMOTOLOGINRESPONSE,mLoginResponse);
-        this.startService(i);
+        mLogic.startAutoReauthenticate(mLoginResponse);
 
         //start new activity
         Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
         this.startActivity(newActivityIntent);
 
         //testIntent
-        Intent testIntent= new Intent(this, eMotoService.class);
-        testIntent.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_TEST_SCHEDULE);
-        this.startService(testIntent);
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_SERVICE_START);
+        this.startService(i);
 
         //finish activity
         finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Bind to LocalService
+        Intent intent = new Intent(this, eMotoService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+
     }
 
     /**

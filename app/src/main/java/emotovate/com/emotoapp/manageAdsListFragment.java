@@ -172,9 +172,6 @@ public class manageAdsListFragment extends Fragment {
         @Override
         protected String doInBackground(Object... prams) {
 
-
-            while( ((manageAdsActivity) getActivity()).getLoginToken() == null){} // loop while waiting for token
-
             String token = ((manageAdsActivity) getActivity()).getLoginToken();
             Log.d(TAG,"getAdsCollectionTask():"+token);
 

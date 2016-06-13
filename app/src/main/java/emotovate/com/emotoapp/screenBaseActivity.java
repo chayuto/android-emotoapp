@@ -1,9 +1,12 @@
 package emotovate.com.emotoapp;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.location.Location;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.content.Context;
@@ -27,6 +30,10 @@ public class screenBaseActivity extends AppCompatActivity
     //Debug
     public static final String TAG = "screenBaseActivity";
 
+    eMotoService mService;
+    eMotoLogic mLogic;
+    boolean mBound = false;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -42,6 +49,27 @@ public class screenBaseActivity extends AppCompatActivity
      */
     private eMotoLoginResponse mLoginResponse = new eMotoLoginResponse();
     private ServiceResponseReceiver mServiceResponseReceiver;
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            eMotoService.LocalBinder binder = (eMotoService.LocalBinder) service;
+            mService = binder.getService();
+            mLogic = mService.getLogic();
+            mBound = true;
+
+
+            Log.d(TAG,mService.getHello());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +85,9 @@ public class screenBaseActivity extends AppCompatActivity
 
         //register for background service
         this.registerBackgroundService();
-        //request initial token
-        this.requestToken();
+
+
+
 
     }
 
@@ -77,8 +106,29 @@ public class screenBaseActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Bind to LocalService
+        Intent intent = new Intent(this, eMotoService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+    }
+
 
     //region Child class Interface
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+
+    }
 
     public void setupNavFragment (int position){
         Log.d(TAG, "setupNavFragment()");
@@ -92,10 +142,12 @@ public class screenBaseActivity extends AppCompatActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout), position);
     }
 
-
     public String getLoginToken()
     {
-        return mLoginResponse.getToken();
+        while(!mBound){
+            //wait till bound to service
+        }
+        return mLogic.getLoginToken();
     }
 
     public void onOverrideTest(){
@@ -122,6 +174,7 @@ public class screenBaseActivity extends AppCompatActivity
     public void onNavigationFirstItemSelected(){
 
     }
+
     public void onNavigationSecondItemSelected(){
 
     }
@@ -134,6 +187,9 @@ public class screenBaseActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+
+    //endregion
+
     public void onNavigationFifthItemSelected(){
         Intent intent = new Intent(screenBaseActivity.this, debugUIActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
@@ -141,9 +197,6 @@ public class screenBaseActivity extends AppCompatActivity
         //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
-
-
-    //endregion
 
     //region Nav Drawer
     @Override
@@ -205,6 +258,9 @@ public class screenBaseActivity extends AppCompatActivity
         actionBar.setTitle(mTitle);
     }
 
+    //endregion
+
+    //region Background Service
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -217,18 +273,6 @@ public class screenBaseActivity extends AppCompatActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
-    }
-
-    //endregion
-
-    //region Background Service
-
-    private void requestToken(){
-        Log.d(TAG, "requestToken()");
-        // use this to start and trigger a service
-        Intent i= new Intent(this, eMotoService.class);
-        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_GETTOKEN);
-        this.startService(i);
     }
 
     private void registerBackgroundService(){
@@ -259,6 +303,9 @@ public class screenBaseActivity extends AppCompatActivity
         LocalBroadcastManager.getInstance(this).unregisterReceiver(this.mServiceResponseReceiver);
 
     }
+
+
+    //endregion
 
     private class ServiceResponseReceiver extends BroadcastReceiver
     {
@@ -322,10 +369,5 @@ public class screenBaseActivity extends AppCompatActivity
             }
         }
     }
-
-
-    //endregion
-
-
 
 }
