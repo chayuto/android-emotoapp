@@ -49,6 +49,8 @@ public class screenBaseActivity extends AppCompatActivity
      */
     private eMotoLoginResponse mLoginResponse = new eMotoLoginResponse();
     private ServiceResponseReceiver mServiceResponseReceiver;
+
+
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -76,6 +78,11 @@ public class screenBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         this.onOverrideTest();
+
+        //startIntent
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_SERVICE_START);
+        this.startService(i);
     }
 
     @Override

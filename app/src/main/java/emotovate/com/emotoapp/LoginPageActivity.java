@@ -115,6 +115,7 @@ public class LoginPageActivity extends Activity {
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -248,7 +249,7 @@ public class LoginPageActivity extends Activity {
         Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
         this.startActivity(newActivityIntent);
 
-        //testIntent
+        //startIntent
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_SERVICE_START);
         this.startService(i);

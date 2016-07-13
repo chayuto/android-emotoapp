@@ -6,9 +6,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-
-
-
 /**
  * Created by chayut on 6/02/15.
  */
@@ -122,6 +119,9 @@ public class eMotoService extends Service  {
         Log.d(TAG, ServiceCMD);
 
         switch (ServiceCMD){
+
+            case CMD_SERVICE_START:
+                break;
             case CMD_STARTAUTOREAUTHENTICATE:
                 //cmdStartAutoAuthenticate(intent);
                 break;

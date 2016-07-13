@@ -1,10 +1,13 @@
 package emotovate.com.emotoapp;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +29,10 @@ public class debugUIActivity extends AppCompatActivity {
 
     public static final String TAG = "debugUIActivity";
 
+    eMotoService mService;
+    eMotoLogic mLogic;
+    boolean mBound = false;
+
 
     Button btnGetSchedule,btnMimicScreen;
     /**
@@ -33,19 +40,44 @@ public class debugUIActivity extends AppCompatActivity {
      */
     private eMotoLoginResponse mLoginResponse = new eMotoLoginResponse();
     private ServiceResponseReceiver mServiceResponseReceiver;
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
 
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            eMotoService.LocalBinder binder = (eMotoService.LocalBinder) service;
+            mService = binder.getService();
+            mLogic = mService.getLogic();
+            mBound = true;
+
+
+            Log.d(TAG,mService.getHello());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug_ui);
 
+        //check service
+        //startIntent
+        Intent i= new Intent(this, eMotoService.class);
+        i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_SERVICE_START);
+        this.startService(i);
+
 
         btnGetSchedule = (Button) findViewById(R.id.btnGetSch);
         btnGetSchedule.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
-
                         //do something
                         new GetScheduleTask().execute((Void) null);
                     }
@@ -54,6 +86,9 @@ public class debugUIActivity extends AppCompatActivity {
 
 
         btnMimicScreen = (Button) findViewById(R.id.btnMimicScreen);
+
+
+
     }
 
     @Override
@@ -68,14 +103,14 @@ public class debugUIActivity extends AppCompatActivity {
 
     }
 
+    //region Background Service
+
     @Override
     public void onPause() {
         Log.d(TAG,"onPause()");
         this.unregisterBackgroundService();
         super.onPause();
     }
-
-    //region Background Service
 
     private void requestToken(){
         Log.d(TAG, "requestToken()");
@@ -115,6 +150,31 @@ public class debugUIActivity extends AppCompatActivity {
     }
 
 
+    //endregion
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Bind to LocalService
+        Intent intent = new Intent(this, eMotoService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+
+    }
+
+
+    //region Child class Interface
 
     private class ServiceResponseReceiver extends BroadcastReceiver
     {
@@ -147,10 +207,6 @@ public class debugUIActivity extends AppCompatActivity {
 
     }
 
-
-    //endregion
-
-
     public class GetScheduleTask extends AsyncTask<Void, Void,String> {
 
         @Override
@@ -178,4 +234,6 @@ public class debugUIActivity extends AppCompatActivity {
             Log.d("AsyncThread", "onPostExecute");
         }
     }
+
 }
+
