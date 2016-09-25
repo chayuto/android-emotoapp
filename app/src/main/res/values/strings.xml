@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">eMotoApp</string>
+    <string name="app_name">eMotovate</string>
 
     <string name="screen_nav_draw_section1">Manage Ads</string>
     <string name="screen_nav_draw_section2">Manage eMotoCell</string>

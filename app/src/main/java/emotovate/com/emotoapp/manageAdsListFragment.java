@@ -178,7 +178,7 @@ public class manageAdsListFragment extends Fragment {
             //get get approved list from server
 
             myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
-            //myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
+            myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
 
             return "test";
 

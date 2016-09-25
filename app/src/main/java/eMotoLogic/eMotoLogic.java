@@ -1,7 +1,9 @@
 package eMotoLogic;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -9,7 +11,10 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONObject;
 
@@ -41,6 +46,18 @@ public class eMotoLogic implements eMotoLogicInterface {
     private int pullSeconds = 3600;
     private int reportSeconds = 3600;
 
+    private String FCM_token = "";
+    BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String token = intent.getStringExtra("FCM_token");
+            if(token != null)
+            {
+                FCM_token_update(token);
+            }
+
+        }
+    };
     //LocalVariable
     private eMotoLoginResponse mLoginResponse ;
     private LocationManager locationManager;
@@ -48,12 +65,8 @@ public class eMotoLogic implements eMotoLogicInterface {
     private String locationProvider;
     private Handler handler;
     private boolean locationServiceIsRunning = false;
-
     //region Bluetooth Service
     private eMotoBTService mBTService ;
-
-
-
 
     public eMotoLogic(Context context) {
 
@@ -68,6 +81,14 @@ public class eMotoLogic implements eMotoLogicInterface {
         mContext = context;
 
         mBTService = new eMotoBTService(mContext,this);
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(tokenReceiver,
+                new IntentFilter("FCM_tokenReceiver"));
+
+        //TODO: get token after user login
+        FCM_token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG,"User FCM_token: " + FCM_token );
+
 
     }
 
@@ -101,6 +122,7 @@ public class eMotoLogic implements eMotoLogicInterface {
         }
 
     }
+    //region Authentication Service
 
     private void cmdGettoken()
     {
@@ -121,7 +143,6 @@ public class eMotoLogic implements eMotoLogicInterface {
             //eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
         }
     }
-    //region Authentication Service
 
     private void stopAutoReauthenticate ()
     {
@@ -147,6 +168,10 @@ public class eMotoLogic implements eMotoLogicInterface {
             Log.d(TAG,"device is empty");
         }
 
+    }
+
+    public void FCM_token_update(String token){
+        FCM_token = token;
     }
 
     /**
@@ -207,14 +232,16 @@ public class eMotoLogic implements eMotoLogicInterface {
         //}
     }
 
-    private void stopLocationService(){
-        locationManager.removeUpdates(locationListener);
-        locationServiceIsRunning =false;
-    }
+
 
 
 
     //region Location Service
+
+    private void stopLocationService(){
+        locationManager.removeUpdates(locationListener);
+        locationServiceIsRunning =false;
+    }
 
     /**
      * Pass wifi SSID and key information to the eMotoCell
@@ -230,7 +257,7 @@ public class eMotoLogic implements eMotoLogicInterface {
         }
     }
 
-
+    //endregion
 
     /**
      * Runable thread to be call periodically to authenticate with server
@@ -256,8 +283,6 @@ public class eMotoLogic implements eMotoLogicInterface {
             System.out.println("run:" + mLoginResponse.getToken());
         }
     }
-
-    //endregion
 
     public class GetAppConfigTask extends AsyncTask<Void, Void,JSONObject> {
 

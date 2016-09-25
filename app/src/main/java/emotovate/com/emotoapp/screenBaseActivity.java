@@ -17,6 +17,8 @@ import android.view.Menu;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 
 import eMotoLogic.eMotoLogic;
@@ -27,13 +29,13 @@ import eMotoLogic.eMotoService;
 public class screenBaseActivity extends AppCompatActivity
         implements screenNavigationDrawerFragment.NavigationDrawerCallbacks {
 
+
     //Debug
     public static final String TAG = "screenBaseActivity";
-
     eMotoService mService;
     eMotoLogic mLogic;
     boolean mBound = false;
-
+    private FirebaseAnalytics mFirebaseAnalytics;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -78,6 +80,9 @@ public class screenBaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         this.onOverrideTest();
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //startIntent
         Intent i= new Intent(this, eMotoService.class);

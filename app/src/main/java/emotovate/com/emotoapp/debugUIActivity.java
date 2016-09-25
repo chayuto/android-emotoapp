@@ -86,9 +86,6 @@ public class debugUIActivity extends AppCompatActivity {
 
 
         btnMimicScreen = (Button) findViewById(R.id.btnMimicScreen);
-
-
-
     }
 
     @Override

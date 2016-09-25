@@ -16,11 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 
 public class advertiserActivity extends AppCompatActivity
         implements advertiserNavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private static final String TAG = "advertiserActivity";
+    private FirebaseAnalytics mFirebaseAnalytics;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -36,6 +39,9 @@ public class advertiserActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate()");
         setContentView(R.layout.activity_advertiser);
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mNavigationDrawerFragment = (advertiserNavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);

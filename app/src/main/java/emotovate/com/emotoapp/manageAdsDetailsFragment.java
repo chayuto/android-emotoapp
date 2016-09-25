@@ -27,7 +27,7 @@ public class manageAdsDetailsFragment extends Fragment implements View.OnClickLi
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "eMotoAdsApprovalItem";
     //debug
-    private static String TAG = "manageAdsDetailsFragment";
+    private static String TAG = "manageAdsDetailsFrag";
     ImageLoader imageLoader = ImageLoader.getInstance();
     DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
             .cacheOnDisc(true).resetViewBeforeLoading(false).build();

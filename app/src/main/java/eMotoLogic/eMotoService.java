@@ -1,10 +1,16 @@
 package eMotoLogic;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 /**
  * Created by chayut on 6/02/15.
@@ -61,6 +67,7 @@ public class eMotoService extends Service  {
 
         eLogic = new eMotoLogic(eMotoService.this);
         logicInitalised= true;
+
 
     }
 
@@ -187,6 +194,8 @@ public class eMotoService extends Service  {
     {
         return "Service Hello!";
     }
+
+
 
     /**
      * Class for clients to access.  Because we know this service always

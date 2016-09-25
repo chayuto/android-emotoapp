@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_number": "753858278323",
+    "firebase_url": "https://emotovate-app.firebaseio.com",
+    "project_id": "emotovate-app",
+    "storage_bucket": "emotovate-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753858278323:android:f44d8a9fbda6f92d",
+        "android_client_info": {
+          "package_name": "emotovate.com.emotoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753858278323-dsrq6ujbg0oqp998fgiam5pdg125n0da.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "emotovate.com.emotoapp",
+            "certificate_hash": "A8D64FC36790B240D24B45407C3B500ED4000410"
+          }
+        },
+        {
+          "client_id": "753858278323-srlicnl2je22if2ki8vt13m0j9jbvak3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhjeWuNiyu8ITJyohlljCgs1Ble4_Qe8Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
