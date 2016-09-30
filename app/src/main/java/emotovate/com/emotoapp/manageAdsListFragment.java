@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 
 import eMotoLogic.eMotoAdsApprovalItem;
@@ -31,13 +33,12 @@ import eMotoLogic.eMotoAdsApproval;
  */
 public class manageAdsListFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "eMotoCell";
     //debug
     private static String TAG = "manageAdsListFragment";
     ListView listview;
     eMotoAdsArrayAdapter myAdapter;
     boolean viewApprovedAds = false;
-
+    private FirebaseAnalytics mFirebaseAnalytics;
     private ArrayList<eMotoAdsApprovalItem> adsArray = new ArrayList<eMotoAdsApprovalItem>();
     private eMotoAdsApproval myAdsApproval = new eMotoAdsApproval();
     private OnAdsListSelectListener mListener;
@@ -98,6 +99,7 @@ public class manageAdsListFragment extends Fragment {
         //setup ads array
         myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity().getApplicationContext());
     }
 
     @Override
@@ -274,6 +276,12 @@ public class manageAdsListFragment extends Fragment {
         protected String doInBackground(String... prams) {
             try {
                 myAdsApproval.approveAdsWithID(prams[0],prams[1]);
+
+                //log analytics
+                Bundle FAParams = new Bundle();
+                FAParams.putString("ads_id", prams[0]);
+                mFirebaseAnalytics.logEvent("approve_ads", FAParams);
+
                 return "put the background thread function here";
             } catch (Exception ex) {
                 return "Unable to retrieve web page. URL may be invalid.";
@@ -299,6 +307,12 @@ public class manageAdsListFragment extends Fragment {
         protected String doInBackground(String... prams) {
             try {
                 myAdsApproval.unapproveAdsWithID(prams[0], prams[1]);
+
+                //log analytics
+                Bundle FAParams = new Bundle();
+                FAParams.putString("ads_id", prams[0]);
+                mFirebaseAnalytics.logEvent("unapprove_ads", FAParams);
+
                 return "put the background thread function here";
             } catch (Exception ex) {
                 return "Unable to retrieve web page. URL may be invalid.";

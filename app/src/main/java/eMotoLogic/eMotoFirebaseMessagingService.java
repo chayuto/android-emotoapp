@@ -14,6 +14,9 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import emotovate.com.emotoapp.R;
+import emotovate.com.emotoapp.manageAdsActivity;
+
 
 public class eMotoFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -34,9 +37,9 @@ public class eMotoFirebaseMessagingService extends FirebaseMessagingService {
     //It is same as we did in earlier posts
     private void sendNotification(String messageBody) {
 
-        /*
 
-        Intent intent = new Intent(this, MainActivity.class);
+
+        Intent intent = new Intent(this, manageAdsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -44,7 +47,7 @@ public class eMotoFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Firebase Push Notification")
+                .setContentTitle("eMotovate Notification")
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
@@ -54,7 +57,5 @@ public class eMotoFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
-
-        */
     }
 }

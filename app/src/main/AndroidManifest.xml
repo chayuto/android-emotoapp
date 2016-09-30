@@ -40,7 +40,7 @@
 
         <activity
             android:name=".manageAdsActivity"
-            android:label="manageAdsActivity"
+            android:label="Manage Ads"
             android:theme="@style/AppTheme2" >
         </activity>
         <activity

@@ -76,14 +76,17 @@ public class eMotoService extends Service  {
 
         Log.d(TAG,"onStartCommand() id: " + startId + ": " + intent);
 
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                classifyIntent(intent);
-            }
-        });
-        t.start();
+        /*
+        if  (intent != null) {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+                    classifyIntent(intent);
+                }
+            });
+            t.start();
+        }
+        */
 
-        //this.classifyIntent(intent);
         return Service.START_STICKY;
     }
 
@@ -122,7 +125,9 @@ public class eMotoService extends Service  {
      * @param intent
      */
     private void classifyIntent(Intent intent){
+
         String ServiceCMD = intent.getStringExtra(SERVICE_CMD);
+        if (ServiceCMD ==null)   return;
         Log.d(TAG, ServiceCMD);
 
         switch (ServiceCMD){
