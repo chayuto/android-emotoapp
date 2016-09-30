@@ -156,6 +156,8 @@ public class manageAdsActivity extends screenBaseActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+
     //endregion
 
 

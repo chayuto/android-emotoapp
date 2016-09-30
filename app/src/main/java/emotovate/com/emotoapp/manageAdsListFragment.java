@@ -5,8 +5,13 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,6 +36,8 @@ public class manageAdsListFragment extends Fragment {
     private static String TAG = "manageAdsListFragment";
     ListView listview;
     eMotoAdsArrayAdapter myAdapter;
+    boolean viewApprovedAds = false;
+
     private ArrayList<eMotoAdsApprovalItem> adsArray = new ArrayList<eMotoAdsApprovalItem>();
     private eMotoAdsApproval myAdsApproval = new eMotoAdsApproval();
     private OnAdsListSelectListener mListener;
@@ -73,6 +80,16 @@ public class manageAdsListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Log.d(TAG, "onCreate()");
+
+        setHasOptionsMenu(true);
+        if (viewApprovedAds){
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("Pending Unapprove");
+        }
+        else {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("Pending Approve");
+        }
+
+
         //if (getArguments() != null) {
         //    mCell = getArguments().getParcelable(ARG_PARAM1);
         //
@@ -82,6 +99,45 @@ public class manageAdsListFragment extends Fragment {
         myAdapter = new eMotoAdsArrayAdapter(getActivity(),R.layout.adsview_item_row,adsArray);
 
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Add your menu entries here
+        inflater.inflate(R.menu.menu_ads_list_frag, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            /*
+            case R.id.activity_menu_item:
+                // Not implemented here
+                return false; */
+
+            case R.id.switchApprovalViewItem:
+
+                // Do Fragment menu item stuff here
+                Log.d(TAG,"R.id.viewUnapprovedAdsItem pressed");
+                viewApprovedAds = !viewApprovedAds;
+                new getAdsCollectionTask().execute();
+                if (viewApprovedAds){
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("Pending Unapprove");
+                }
+                else {
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("Pending Approve");
+                }
+
+                return true;
+
+            default:
+                break;
+        }
+
+        return false;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,6 +167,7 @@ public class manageAdsListFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+
             mListener = (OnAdsListSelectListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -177,9 +234,12 @@ public class manageAdsListFragment extends Fragment {
 
             //get get approved list from server
 
-            myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
-            myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
-
+            if (viewApprovedAds) {
+                myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsApproved(token);
+            }
+            else {
+                myAdsApproval.adsHashMap= eMotoAdsApproval.getAdsUnapproved(token);
+            }
             return "test";
 
         }

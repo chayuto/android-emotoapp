@@ -97,10 +97,6 @@ public class screenBaseActivity extends AppCompatActivity
 
         //register for background service
         this.registerBackgroundService();
-
-
-
-
     }
 
     @Override
@@ -152,6 +148,11 @@ public class screenBaseActivity extends AppCompatActivity
         mScreenNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout), position);
+    }
+
+
+    public void setActionBarTitle(String title){
+        getSupportActionBar().setTitle(title);
     }
 
     public String getLoginToken()
