@@ -126,6 +126,16 @@ public class manageAdsActivity extends screenBaseActivity
         startActivity(intent);
     }
 
+    public void onNavigationThirdItemSelected() {
+        super.onNavigationThirdItemSelected();
+        //start first item in nav drawer
+        Intent intent = new Intent(manageAdsActivity.this, accountActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
+
     //region OptionMenu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

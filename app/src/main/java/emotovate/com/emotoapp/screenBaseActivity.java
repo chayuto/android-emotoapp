@@ -151,10 +151,6 @@ public class screenBaseActivity extends AppCompatActivity
     }
 
 
-    public void setActionBarTitle(String title){
-        getSupportActionBar().setTitle(title);
-    }
-
     public String getLoginToken()
     {
         while(!mBound){
@@ -192,6 +188,10 @@ public class screenBaseActivity extends AppCompatActivity
 
     }
 
+    public void onNavigationThirdItemSelected(){
+
+    }
+
     public void onNavigationForthItemSelected(){
         Intent intent = new Intent(screenBaseActivity.this, advertiserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
@@ -199,7 +199,6 @@ public class screenBaseActivity extends AppCompatActivity
         //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
-
 
     //endregion
 
@@ -226,7 +225,7 @@ public class screenBaseActivity extends AppCompatActivity
                 break;
             }
             case 2: {
-
+                this.onNavigationThirdItemSelected();
                 break;
             }
             case 3:{

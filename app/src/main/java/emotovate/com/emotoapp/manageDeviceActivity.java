@@ -79,6 +79,17 @@ public class manageDeviceActivity extends screenBaseActivity
         startActivity(intent);
     }
 
+    @Override
+    public void onNavigationThirdItemSelected() {
+        super.onNavigationThirdItemSelected();
+        //start first item in nav drawer
+        Intent intent = new Intent(manageDeviceActivity.this, accountActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

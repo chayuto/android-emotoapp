@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="emotovate.com.emotoapp" >
+    package="emotovate.com.emotoapp">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -17,36 +17,29 @@
         android:icon="@drawable/em_logo_sq"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <service
             android:name="eMotoLogic.eMotoService"
-            android:label="eMotoService" >
-        </service>
-
-        <service
-            android:name="eMotoLogic.eMotoFirebaseMessagingService">
+            android:label="eMotoService"></service>
+        <service android:name="eMotoLogic.eMotoFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service
-            android:name="eMotoLogic.eMotoFirebaseInstanceIDService">
+        <service android:name="eMotoLogic.eMotoFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
         <activity
             android:name=".manageAdsActivity"
             android:label="Manage Ads"
-            android:theme="@style/AppTheme2" >
-        </activity>
+            android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".LoginPageActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -56,15 +49,13 @@
         <activity
             android:name=".manageDeviceActivity"
             android:label="@string/title_activity_manage_device"
-            android:theme="@style/AppTheme2" >
-        </activity>
+            android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".advertiserActivity"
             android:label="@string/title_activity_advertiser"
-            android:theme="@style/AppTheme2" >
-        </activity>
-        <activity android:name=".debugUIActivity" >
-        </activity>
+            android:theme="@style/AppTheme2"></activity>
+        <activity android:name=".debugUIActivity"></activity>
+        <activity android:name=".accountActivity"></activity>
     </application>
 
 </manifest>
