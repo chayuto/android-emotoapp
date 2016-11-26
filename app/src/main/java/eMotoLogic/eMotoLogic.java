@@ -82,6 +82,9 @@ public class eMotoLogic implements eMotoLogicInterface {
 
         mBTService = new eMotoBTService(mContext,this);
 
+        //TODO: remove once SSL certificate reissued
+        eMotoUtility.bypassSSLAllCertificate();
+
         LocalBroadcastManager.getInstance(mContext).registerReceiver(tokenReceiver,
                 new IntentFilter("FCM_tokenReceiver"));
 
@@ -122,6 +125,7 @@ public class eMotoLogic implements eMotoLogicInterface {
         }
 
     }
+
     //region Authentication Service
 
     private void cmdGettoken()
@@ -143,6 +147,26 @@ public class eMotoLogic implements eMotoLogicInterface {
             //eMotoServiceBroadcaster.broadcastIntentWithState(RES_TOKEN_UNAUTHORIZED, this);
         }
     }
+
+    public void onLoginSuccess(){
+        try {
+
+            //update demo device + FCM to server
+            //TODO: only send this when get emotocell info from real device
+            new UpdateFCMTokenTask().execute("00000000");
+            new TestTask().execute("test");
+
+        }
+        catch (Exception e) {
+
+        }
+    }
+
+    public void onEmotoCellConnected()
+    {
+        //TODO: call this when get connectted to emotocell
+    }
+
 
     private void stopAutoReauthenticate ()
     {
@@ -173,6 +197,8 @@ public class eMotoLogic implements eMotoLogicInterface {
     public void FCM_token_update(String token){
         FCM_token = token;
     }
+
+
 
     /**
      * Pass user credential to the eMotocell
@@ -297,6 +323,41 @@ public class eMotoLogic implements eMotoLogicInterface {
 
             Log.d(TAG,result.toString());
             Log.d("AsyncThread", "onPostExecute");
+        }
+    }
+
+
+    public class UpdateFCMTokenTask extends AsyncTask<String, Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            eMotoUtility.sendFCMTokenToServer(FCM_token,params[0],mLoginResponse.getToken());
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+
+            Log.d(TAG,"UpdateFCMTokenTask");
+        }
+    }
+
+    public class TestTask extends AsyncTask<String, Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            testGetSchedule();
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+
+            Log.d(TAG,"TestTask");
         }
     }
 

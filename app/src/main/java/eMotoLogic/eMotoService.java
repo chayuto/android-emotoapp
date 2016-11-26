@@ -119,77 +119,6 @@ public class eMotoService extends Service  {
 
     //region Testing
 
-    /**
-     * classify intent from activity and decide what action to take
-     *
-     * @param intent
-     */
-    private void classifyIntent(Intent intent){
-
-        String ServiceCMD = intent.getStringExtra(SERVICE_CMD);
-        if (ServiceCMD ==null)   return;
-        Log.d(TAG, ServiceCMD);
-
-        switch (ServiceCMD){
-
-            case CMD_SERVICE_START:
-                break;
-            case CMD_STARTAUTOREAUTHENTICATE:
-                //cmdStartAutoAuthenticate(intent);
-                break;
-            case CMD_GETTOKEN:
-                //this.cmdGettoken();
-                break;
-            case CMD_STARTLOCATIONSERVICE:
-                //startLocationService();
-                break;
-            case CMD_STOPLOCATIONSERVICE:
-                //stopLocationService();
-                break;
-
-            case CMD_BT_GET_PAIRED_LIST:
-                //response with List of paired emotocell
-               // eMotoServiceBroadcaster.broadcastBTPairedList(mBTService.getPairedCellList(),eMotoService.this);
-                break;
-            case CMD_BT_CONNECT_CELL:
-               /* if(mBTService.getServiceState() == eMotoBTService.BT_STATE_DISCONNECTED){
-                    mBTService.startBTService(intent.getStringExtra(EXTRA_EMOTOCELL_NAME));
-                }
-                */
-                break;
-
-            case CMD_BT_GET_REPORT:
-                //eMotoServiceBroadcaster.broadcastBTStatus(mBTService.getServiceReport(),eMotoService.this);
-                break;
-
-            case CMD_BT_SEND_TEST1:
-
-                /*if(mBTService.sessionIsReady()) {
-                    mBTService.getSession().testInteraction();
-                }
-                */
-                break;
-
-            case CMD_BT_SET_WIFI:
-                //this.cmdBtSetWifi(intent);
-                break;
-
-            case CMD_BT_SET_CELL_AUTHEN:
-                //this.cmdBtSetCellAuthen();
-                break;
-
-            case CMD_TEST_SCHEDULE:
-                //this.testGetSchedule();
-
-                //new GetAppConfigTask().execute((Void) null);
-
-                break;
-            default:
-                Log.d(TAG, "Service Command Unrecognized");
-                break;
-        }
-    }
-
     public eMotoLogic getLogic()
     {
         return eLogic;
@@ -199,8 +128,6 @@ public class eMotoService extends Service  {
     {
         return "Service Hello!";
     }
-
-
 
     /**
      * Class for clients to access.  Because we know this service always

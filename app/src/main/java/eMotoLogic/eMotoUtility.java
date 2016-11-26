@@ -233,6 +233,54 @@ public class eMotoUtility
         return JSONFromUrl("https://emotovate.com/api/mconfig.json");
     }
 
+    public static boolean sendFCMTokenToServer(String FCMToken,String deviceID,String token){
+
+        BufferedReader rd  = null;
+        Log.d(TAG,"sendFCMTokenToServer:" + FCMToken);
+
+        try {
+            String s = String.format("https://emotovate.com/api/device/UpdateFCMToken/%s/?deviceId=%s&token=%s",token,deviceID,FCMToken);
+            Log.d(TAG,s);
+            URL u = new URL(s);HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+
+            c.setRequestMethod("POST");
+
+            c.setRequestProperty("Content-length", "0");
+            c.setRequestProperty("Content-Type","application/json");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+            int status = c.getResponseCode();
+
+            Log.d(TAG, String.format("http-response:%3d", status));
+            switch (status) {
+                case 200:
+                case 201:
+                    rd  = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    String json = rd.readLine();
+                    Log.d(TAG,json);
+                    break;
+
+                case 401:
+                    Log.d(TAG,"Server unauthorized");
+                    break;
+                default:
+
+
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
 
     public static JSONArray getCountryDataFromServer () {
 

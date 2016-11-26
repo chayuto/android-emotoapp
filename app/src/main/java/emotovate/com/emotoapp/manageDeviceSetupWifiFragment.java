@@ -3,12 +3,16 @@ package emotovate.com.emotoapp;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -21,6 +25,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import android.Manifest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,21 +45,36 @@ import eMotoLogic.ssidArrayAdapter;
  */
 public class manageDeviceSetupWifiFragment extends Fragment implements View.OnClickListener {
 
-    private static String TAG = "manageDeviceSetupWifiFragment";
-
-    private OnFragmentInteractionListener mListener;
-
-    Button btnGetWifiInfo;
-    ListView listViewSSIDS;
-    private ArrayList<ScanResult> ssidArray = new ArrayList<>();
-
     static public int WIRELESS_NO_SEC = 0;
     static public int WIRELESS_WEP = 1;
     static public int WIRELESS_WPA = 2;
     static public int WIRELESS_WPA2 = 3;
-
-
+    private static String TAG = "SetupWifiFrag";
+    Button btnGetWifiInfo;
+    ListView listViewSSIDS;
+    int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1000;
+    WifiManager wifi;
+    WifiScanReceiver wifiReciever;
     ssidArrayAdapter adapter;
+    private OnFragmentInteractionListener mListener;
+    private ArrayList<ScanResult> ssidArray = new ArrayList<>();
+    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+            Log.d("Ok click","test");
+
+            onListItemClick((ListView) parent, v, position, id);
+
+            ScanResult network = ssidArray.get(position);
+
+            popupDialogue(network);
+
+        }
+    };
+
+    public manageDeviceSetupWifiFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -66,8 +88,28 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
         return fragment;
     }
 
-    public manageDeviceSetupWifiFragment() {
-        // Required empty public constructor
+    static int getSecurity(ScanResult result) {
+
+        int secType = -1 ;
+        if (result.capabilities.contains("WEP")) {
+            Log.d (TAG,"Security info: SECURITY_WEP");
+            secType = WIRELESS_WEP;
+
+        }
+        else if (result.capabilities.contains("WPA2")) {
+            Log.d (TAG,"Security info: SECURITY_WPA2");
+            secType = WIRELESS_WPA2;
+
+        } else if (result.capabilities.contains("WPA")) {
+            Log.d (TAG,"Security info: SECURITY_WPA");
+            secType = WIRELESS_WPA;
+        }
+        else{
+            Log.d (TAG,"Security info: SECURITY_NONE");
+            secType = WIRELESS_NO_SEC;
+        }
+
+        return secType;
     }
 
     @Override
@@ -83,6 +125,7 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_device_setup_wifi, container, false);
 
+
         btnGetWifiInfo = (Button) view.findViewById(R.id.btnGetWifi);
         btnGetWifiInfo.setOnClickListener(this);
 
@@ -90,6 +133,11 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
         listViewSSIDS.setOnItemClickListener(mOnClickListener);
 
         adapter = new ssidArrayAdapter(getActivity(),R.layout.wifi_ssid_cell,ssidArray);
+
+        wifiReciever = new WifiScanReceiver();
+
+        wifi= (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+
 
         return view;
     }
@@ -99,7 +147,7 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
         super.onAttach(activity);
         try {
             mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
+            } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
@@ -108,10 +156,23 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
     @Override
     public void onDetach() {
         super.onDetach();
+
         mListener = null;
     }
 
+    @Override
+    public void onResume() {
+        Log.e(TAG, "onResume of fragment");
+        getActivity().registerReceiver(wifiReciever, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        super.onResume();
+    }
 
+    @Override
+    public void onPause() {
+        Log.e(TAG, "OnPause of fragment");
+        getActivity().unregisterReceiver(wifiReciever);
+        super.onPause();
+    }
 
     private void getWifiInfo (){
 
@@ -168,48 +229,35 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
             Log.d(TAG, "not associate with any wifi");
         }
 
-        //scan for sequcity
-        Log.d(TAG, "Scan for nearby SSID");
-        WifiManager wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        List<ScanResult> networkList = wifi.getScanResults();
-        ssidArray.clear();
-        if (networkList != null) {
-            for (ScanResult network : networkList) {
-                String Capabilities = network.capabilities;
-                Log.d(TAG, network.SSID + " capabilities : " + Capabilities);
-                getSecurity(network);
-                ssidArray.add(network);
-            }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
+            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 
+        }else{
+
+            //do something, permission was previously granted; or legacy device
+            wifi.startScan();
+            Toast.makeText(getActivity().getApplicationContext(), "Scan for nearby SSID", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Scan for nearby SSID");
         }
-        Log.d(TAG, "Wifi Scan completed");
 
-        fillListView();
+
+
+
 
     }
 
-    static int getSecurity(ScanResult result) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Do something with granted permission
 
-        int secType = -1 ;
-        if (result.capabilities.contains("WEP")) {
-            Log.d (TAG,"Security info: SECURITY_WEP");
-            secType = WIRELESS_WEP;
+            //scan for sequcity
 
         }
-        else if (result.capabilities.contains("WPA2")) {
-            Log.d (TAG,"Security info: SECURITY_WPA2");
-            secType = WIRELESS_WPA2;
-
-        } else if (result.capabilities.contains("WPA")) {
-            Log.d (TAG,"Security info: SECURITY_WPA");
-            secType = WIRELESS_WPA;
-        }
-        else{
-            Log.d (TAG,"Security info: SECURITY_NONE");
-            secType = WIRELESS_NO_SEC;
-        }
-
-        return secType;
     }
 
     //region Listview
@@ -218,20 +266,6 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) { }
-
-    private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-            Log.d("Ok click","test");
-
-            onListItemClick((ListView) parent, v, position, id);
-
-            ScanResult network = ssidArray.get(position);
-
-            popupDialogue(network);
-
-        }
-    };
 
     public void popupDialogue (final ScanResult network)
     {
@@ -316,9 +350,6 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
 
     }
 
-    //endregion
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -326,6 +357,8 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
 
         getWifiInfo();
     }
+
+    //endregion
 
     public void onFinishWifiSetup(ScanResult network,String key)
     {
@@ -338,6 +371,28 @@ public class manageDeviceSetupWifiFragment extends Fragment implements View.OnCl
      */
     public interface OnFragmentInteractionListener {
         void onFragmentWifiSetup(String SSID,int SecType, String key);
+    }
+
+    private class WifiScanReceiver extends BroadcastReceiver {
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> networkList = wifi.getScanResults();
+            ssidArray.clear();
+
+            if (networkList != null) {
+
+                Log.d(TAG, "listing wifi ssids...");
+                for (ScanResult network : networkList) {
+                    String Capabilities = network.capabilities;
+                    Log.d(TAG, network.SSID + " capabilities : " + Capabilities);
+                    getSecurity(network);
+                    ssidArray.add(network);
+                }
+            }
+            Toast.makeText(getActivity().getApplicationContext(), "Wifi Scan completed", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Wifi Scan completed");
+
+            fillListView();
+        }
     }
 
 

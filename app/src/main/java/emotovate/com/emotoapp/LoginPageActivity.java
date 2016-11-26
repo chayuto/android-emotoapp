@@ -249,10 +249,14 @@ public class LoginPageActivity extends Activity {
         Intent newActivityIntent = new Intent(LoginPageActivity.this, manageAdsActivity.class);
         this.startActivity(newActivityIntent);
 
+
         //startIntent
         Intent i= new Intent(this, eMotoService.class);
         i.putExtra(eMotoService.SERVICE_CMD, eMotoService.CMD_SERVICE_START);
         this.startService(i);
+
+        mLogic.onLoginSuccess();
+
 
         //finish activity
         finish();
